@@ -28,9 +28,9 @@ interface Criterion{
       const YEAR = 'YEAR(%s)';
       const TRIM = 'TRIM(%s)';
 
-      const INNER_JOIN = 'INNER_JOIN';
-      const LEFT_JOIN = 'LEFT_JOIN';
-      const RIGHT_JOIN = 'RIGHT_JOIN';
+      const INNER_JOIN = 'INNER JOIN';
+      const LEFT_JOIN = 'LEFT JOIN';
+      const RIGHT_JOIN = 'RIGHT JOIN';
 
       /**
        *

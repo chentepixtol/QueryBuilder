@@ -35,9 +35,9 @@ class QueryBuilder implements SelectCriterion
 	protected $quoteStrategy;
 
 	/**
-	 * @var string
+	 * @var array
 	 */
-	protected $from;
+	protected $from = array();
 
 	/**
 	 * @var array
@@ -134,8 +134,13 @@ class QueryBuilder implements SelectCriterion
 	 * Enter description here ...
 	 * @param unknown_type $table
 	 */
-	public function from($table){
-		$this->from = $table;
+	public function from($table, $alias = null){
+		if( is_string($alias) ){
+			$this->from[$alias] = $table;
+		}else{
+			$this->from[] = $table;
+		}
+
 		return $this;
 	}
 
@@ -162,7 +167,7 @@ class QueryBuilder implements SelectCriterion
 	 * @return QueryBuilder
 	 */
 	public function addColumn($column, $alias = null){
-		if($alias)
+		if( is_string($alias) )
 			$this->columns[$alias] = $column;
 		else
 			$this->columns[] = $column;
@@ -248,8 +253,8 @@ class QueryBuilder implements SelectCriterion
 		$n = count($this->columns);
 		$i = 0;
 		foreach ($this->columns as $alias => $column){
-			$sql .= $column;
-			if( is_string($alias) ) $sql.= ' as '. $alias;
+			$sql .= $this->quoteStrategy->quoteColumn($column);
+			if( is_string($alias) ) $sql.= ' as '. $this->quoteStrategy->quote($alias);
 			$i++;
 			if( $i != $n ) $sql.= ', ';
 		}
@@ -261,7 +266,18 @@ class QueryBuilder implements SelectCriterion
 	 * @see SelectCriterion::createFromSql()
 	 */
 	public function createFromSql() {
-		return 'FROM '. $this->from;
+
+		$sql = 'FROM ';
+		$tables = count($this->from);
+		$i = 1;
+		foreach ($this->from as $alias => $table){
+			$alias = is_string($alias) ? ' as '.$this->quoteStrategy->quoteTable($alias) : '';
+			$sql .= $this->quoteStrategy->quoteTable($table).$alias;
+			if($tables != $i) $sql.= ', ';
+			$i++;
+		}
+
+		return $sql;
 	}
 
 	/* (non-PHPdoc)
@@ -269,7 +285,7 @@ class QueryBuilder implements SelectCriterion
 	 */
 	public function createJoinSql() {
 		foreach ($this->joins as $join){
-			$sql .= $join['type'].' '. $join['table'];
+			$sql .= $join['type'].' '.  $this->quoteStrategy->quoteTable($join['table']);
 			if( $join['using'] )
 				$sql .= " USING ({$join['using']})";
 			else
@@ -285,7 +301,8 @@ class QueryBuilder implements SelectCriterion
 		$sql = '';
 		if (count ( $this->groupByColumns )) {
 			$sql .= "GROUP BY  ";
-			$sql .= implode ( ',', $this->groupByColumns );
+			$columns = array_map(array($this->quoteStrategy, 'quoteColumn'), $this->groupByColumns);
+			$sql .= implode ( ',', $columns);
 		}
 		return $sql;
 	}
@@ -304,10 +321,22 @@ class QueryBuilder implements SelectCriterion
 		$sql = '';
 		if ( count ($this->orderByColumns ) ) {
 			$sql = "ORDER BY  ";
-			$sql .= implode ( ',', $this->orderByColumns );
+			$columns = array_map(array($this, '_quoteOrder'), $this->orderByColumns);
+			$sql .= implode ( ',',  $columns);
 		}
 		return $sql;
 	}
+
+	/**
+	 *
+	 * Enter description here ...
+	 * @param array $orderArray
+	 * @return string
+	 */
+	protected function _quoteOrder($orderArray){
+		return $this->quoteStrategy->quoteColumn($orderArray['column']) .' '. $orderArray['type'];
+	}
+
 
 	/* (non-PHPdoc)
 	 * @see SelectCriterion::createLimitSql()
@@ -407,7 +436,7 @@ class QueryBuilder implements SelectCriterion
 	 * @return  QueryBuilder
 	 */
 	public function addAscendingOrderByColumn($name) {
-		$this->orderByColumns [] = $name . ' ASC';
+		$this->orderByColumns [] = array('column' => $name, 'type' => 'ASC');
 		return $this;
 	}
 
@@ -418,7 +447,7 @@ class QueryBuilder implements SelectCriterion
 	 * @return QueryBuilder
 	 */
 	public function addDescendingOrderByColumn($name) {
-		$this->orderByColumns [] = $name . ' DESC';
+		$this->orderByColumns [] = array('column' => $name, 'type' => 'DESC');
 		return $this;
 	}
 
