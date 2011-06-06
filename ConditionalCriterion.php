@@ -75,13 +75,10 @@ class ConditionalCriterion implements Criterion
      */
     public function createSql()
     {
-        $part1 = $this->mutatorColumn ? sprintf($this->mutatorColumn, $this->quoteStrategy->quoteColumn($this->column))
-        	: $this->quoteStrategy->quoteColumn($this->column);
+    	$column =  $this->quoteStrategy->quoteColumn($this->column);
+        $part1 = $this->mutatorColumn ? sprintf($this->mutatorColumn, $column) : $column;
 
         $value = $this->quoteStrategy->quote($this->value);
-        if( is_array($value) && Criterion::IN == $this->comparison)
-            $value = '('. implode(', ', $value) . ')';
-
         $part3 = $this->mutatorValue ? sprintf($this->mutatorValue, $value) : $value;
 
         if( in_array($this->comparison, self::$BinaryComparison) )

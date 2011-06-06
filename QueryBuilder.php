@@ -25,7 +25,6 @@ class QueryBuilder implements SelectCriterion
 		$this->currentWhereComposite = $this->whereComposite = new ConditionalComposite();
 		$simpleQuoteStrategy = new SimpleQuoteStrategy();
 		$this->setQuoteStrategy($simpleQuoteStrategy);
-		$this->whereComposite->setQuoteStrategy($simpleQuoteStrategy);
 	}
 
 	/**
@@ -239,6 +238,9 @@ class QueryBuilder implements SelectCriterion
 	 * @see SelectCriterion::createWhereSql()
 	 */
 	public function createWhereSql(){
+		if( $this->whereComposite->isEmpty() ){
+			return 'WHERE ( 1 )';
+		}
 		return 'WHERE '.$this->whereComposite->createSql();
 	}
 
@@ -254,7 +256,7 @@ class QueryBuilder implements SelectCriterion
 		$i = 0;
 		foreach ($this->columns as $alias => $column){
 			$sql .= $this->quoteStrategy->quoteColumn($column);
-			if( is_string($alias) ) $sql.= ' as '. $this->quoteStrategy->quote($alias);
+			if( is_string($alias) ) $sql.= ' as '. $this->quoteStrategy->quoteColumn($alias);
 			$i++;
 			if( $i != $n ) $sql.= ', ';
 		}
@@ -372,6 +374,8 @@ class QueryBuilder implements SelectCriterion
 	 */
 	public function setQuoteStrategy(QuoteStrategy $quoteStrategy) {
 		$this->quoteStrategy = $quoteStrategy;
+		$this->currentWhereComposite->setQuoteStrategy($quoteStrategy);
+		$this->whereComposite->setQuoteStrategy($quoteStrategy);
 		return $this;
 	}
 
