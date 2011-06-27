@@ -29,5 +29,3 @@ $qb->addColumn('myColumn', 'alias1')
 
 echo '<pre>';
 echo $qb->createSql();
-
-

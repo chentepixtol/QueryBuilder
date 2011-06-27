@@ -1,14 +1,15 @@
 <?php
 
-interface Criterion{
-
+interface Criterion
+{
+	  // Comparision
       const EQUAL = '=';
       const JUST_LIKE = 'LIKE'; # table.field LIKE '{value}'
       const LIKE = ' LIKE '; # table.field LIKE '%{value}%'
       const LEFT_LIKE = ' LIKE'; # table.field LIKE '%{value}'
       const RIGHT_LIKE = 'LIKE '; # table.field LIKE '{value}%'
-      const NOT_LIKE = ' NOT LIKE '; # table.field NOT LIKE '%{value}%'
-      const NOT_JUST_LIKE = 'NOT LIKE'; # table.field NOT LIKE '{value}'
+      const NOT_LIKE = ' NOT_LIKE '; # table.field NOT LIKE '%{value}%'
+      const NOT_JUST_LIKE = 'NOT_LIKE'; # table.field NOT LIKE '{value}'
       const IN = 'IN';
       const NOT_IN = 'NOT IN';
       const NOT_EQUAL = '!=';
@@ -20,6 +21,7 @@ interface Criterion{
       const IS_NULL = 'IS NULL';
       const IS_NOT_NULL = 'IS NOT NULL';
 
+      //MUTATORS
       const PASSWORD = 'PASSWORD(%s)';
       const LOWER = 'LOWER(%s)';
       const UPPER = 'UPPER(%s)';
@@ -28,6 +30,7 @@ interface Criterion{
       const YEAR = 'YEAR(%s)';
       const TRIM = 'TRIM(%s)';
 
+      //JOINS
       const INNER_JOIN = 'INNER JOIN';
       const LEFT_JOIN = 'LEFT JOIN';
       const RIGHT_JOIN = 'RIGHT JOIN';

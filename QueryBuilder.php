@@ -20,11 +20,15 @@ class QueryBuilder implements SelectCriterion
 	/**
 	 *
 	 * Construct
+	 * @param QuoteStrategy $quoteStrategy
 	 */
-	public function __construct(){
+	public function __construct(QuoteStrategy $quoteStrategy = null)
+	{
 		$this->currentWhereComposite = $this->whereComposite = new ConditionalComposite();
-		$simpleQuoteStrategy = new SimpleQuoteStrategy();
-		$this->setQuoteStrategy($simpleQuoteStrategy);
+		if( null == $quoteStrategy ){
+			$quoteStrategy = new SimpleQuoteStrategy();
+		}
+		$this->setQuoteStrategy($quoteStrategy);
 	}
 
 	/**

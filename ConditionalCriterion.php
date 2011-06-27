@@ -48,9 +48,13 @@ class ConditionalCriterion implements Criterion
     /**
      *
      *
-     * @var array
+     * @staticvar
      */
     private static $BinaryComparison = array(Criterion::IS_NULL, Criterion::IS_NOT_NULL);
+    private static $Likes = array(
+    	Criterion::JUST_LIKE, Criterion::LIKE, Criterion::LEFT_LIKE,
+    	Criterion::RIGHT_LIKE, Criterion::NOT_LIKE, Criterion::NOT_JUST_LIKE
+    );
 
     /**
      *
@@ -61,7 +65,9 @@ class ConditionalCriterion implements Criterion
      * @param string $mutatorColumn
      * @param string $mutatorValue
      */
-    public function __construct($column, $value, $comparison = Criterion::EQUAL, $mutatorColumn = null, $mutatorValue = null){
+    public function __construct($column, $value, $comparison = Criterion::EQUAL,
+    $mutatorColumn = null, $mutatorValue = null)
+    {
         $this->column = $column;
         $this->comparison = $comparison;
         $this->value = $value;
@@ -75,16 +81,36 @@ class ConditionalCriterion implements Criterion
      */
     public function createSql()
     {
-    	$column =  $this->quoteStrategy->quoteColumn($this->column);
+    	$column =  $this->quoteStrategy->quoteColumn(str_replace('`', '', $this->column));
+    	$mutatorValue = $this->mutatorValue;
+    	$value = $this->value;
+    	$comparision = $this->comparison;
+
+    	if( in_array($this->comparison, self::$Likes) ){
+    		$aux = str_replace(' ','%', $comparision);
+    		$comparision = str_replace('_',' ', $comparision);
+    		$aux = str_replace('_',' ', $aux);
+    		$value = str_replace(array('NOT LIKE','LIKE'), $value, $aux);
+        }
+
         $part1 = $this->mutatorColumn ? sprintf($this->mutatorColumn, $column) : $column;
 
-        $value = $this->quoteStrategy->quote($this->value);
-        $part3 = $this->mutatorValue ? sprintf($this->mutatorValue, $value) : $value;
+        $value = $this->quoteStrategy->quote($value);
+        $part3 = $mutatorValue ? sprintf($mutatorValue, $value) : $value;
 
-        if( in_array($this->comparison, self::$BinaryComparison) )
+        if( Criterion::BETWEEN == $comparision ){
+        	$part3 = str_replace(array('(',')', ','), array('','',' AND'), $part3);
+        }
+
+        if( in_array($comparision, self::$BinaryComparison) ){
             $part3 = '';
+        }
 
-        return " {$part1} {$this->comparison} {$part3} ";
+        $part1 = trim($part1);
+        $part2 = trim($comparision);
+        $part3 = trim($part3);
+		$sql = trim("{$part1} {$part2} {$part3}");
+        return $sql;
     }
 
     /**
