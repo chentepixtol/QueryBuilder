@@ -5,6 +5,7 @@ class SimpleQuoteStrategy implements QuoteStrategy
 {
 
 	private $separator = "'";
+	private $implodeGlue = ',';
 
 	/**
 	 * (non-PHPdoc)
@@ -12,6 +13,7 @@ class SimpleQuoteStrategy implements QuoteStrategy
 	 */
     public function quote($value){
     	$this->separator = "'";
+    	$this->implodeGlue = ', ';
         return $this->_quote($value);
     }
 
@@ -20,9 +22,16 @@ class SimpleQuoteStrategy implements QuoteStrategy
     /* (non-PHPdoc)
 	 * @see QuoteStrategy::quoteColumn()
 	 */
-	public function quoteColumn($value) {
+	public function quoteColumn($value)
+	{
 		$this->separator = '`';
-		return $this->_quote(explode('.', $value));
+		$this->implodeGlue = '.';
+		if( is_array($value) ){
+			return $this->_quote($value);
+		}
+		else{
+			return $this->_quote(explode('.', $value));
+		}
 	}
 
 	/* (non-PHPdoc)
@@ -30,6 +39,7 @@ class SimpleQuoteStrategy implements QuoteStrategy
 	 */
 	public function quoteTable($value) {
 		$this->separator = '`';
+		$this->implodeGlue = '.';
 		return $this->_quote(explode('.', $value));
 	}
 
@@ -41,7 +51,7 @@ class SimpleQuoteStrategy implements QuoteStrategy
      */
     protected function _quote($value)
     {
-    	return is_array($value) ? implode('.', array_map(array($this, '_quote'), $value)) : "{$this->separator}{$value}{$this->separator}";
+    	return is_array($value) ? implode($this->implodeGlue, array_map(array($this, '_quote'), $value)) : "{$this->separator}{$value}{$this->separator}";
     }
 
 

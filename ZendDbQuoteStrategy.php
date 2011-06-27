@@ -21,12 +21,7 @@ class ZendDbQuoteStrategy implements QuoteStrategy
 	 * @param mixed $value
 	 */
     public function quote($value){
-    	$append = $prepend = '';
-    	if( is_array($value) ){
-    		$append = ')';
-    		$prepend = '(';
-    	}
-    	return $prepend . $this->db->quote($value) . $append;
+    	return $this->db->quote($value);
     }
 
     /**

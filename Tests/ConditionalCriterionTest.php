@@ -7,7 +7,20 @@ class ConditionalCriterionTest extends BaseTest{
 	 * @dataProvider getArgs
 	 * @test
 	 */
-	public function main($i, $column, $value, $comparision, $mutatorColumn = null, $mutatorValue = null)
+	public function withSimpleQuote($i, $column, $value, $comparision, $mutatorColumn = null, $mutatorValue = null)
+	{
+		$criterion = new ConditionalCriterion($column, $value, $comparision, $mutatorColumn, $mutatorValue);
+		$criterion->setQuoteStrategy(new SimpleQuoteStrategy());
+
+		$this->assertEquals($this->getExpected($i), $criterion->createSql());
+	}
+
+	/**
+	 *
+	 * @dataProvider getArgs
+	 * @test
+	 */
+	public function withZendDbQuote($i, $column, $value, $comparision, $mutatorColumn = null, $mutatorValue = null)
 	{
 		$criterion = new ConditionalCriterion($column, $value, $comparision, $mutatorColumn, $mutatorValue);
 		$criterion->setQuoteStrategy($this->getZendDbQuoteStrategy());
