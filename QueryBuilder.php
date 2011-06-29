@@ -242,9 +242,6 @@ class QueryBuilder implements SelectCriterion
 	 * @see SelectCriterion::createWhereSql()
 	 */
 	public function createWhereSql(){
-		if( $this->whereComposite->isEmpty() ){
-			return 'WHERE ( 1 )';
-		}
 		return 'WHERE '.$this->whereComposite->createSql();
 	}
 

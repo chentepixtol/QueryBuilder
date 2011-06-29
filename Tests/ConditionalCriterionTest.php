@@ -78,6 +78,8 @@ class ConditionalCriterionTest extends BaseTest{
 			array(31, array('math', 'pi'), '3.1416', Criterion::EQUAL),
 			//BETWEEN
 			array(32, 'date', array('2011-01-01', '20011-01-31'), Criterion::BETWEEN),
+			//IDS
+			array(33, 'id', 5115, Criterion::EQUAL),
 		);
 	}
 
@@ -132,6 +134,7 @@ class ConditionalCriterionTest extends BaseTest{
 			31 => "`math`.`pi` = '3.1416'",
 			// BETWEEN
 			32 => "`date` BETWEEN '2011-01-01' AND '20011-01-31'",
+			33 => "`id` = 5115",
 		);
 		return $expected[$i];
 	}

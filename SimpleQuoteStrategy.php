@@ -11,8 +11,9 @@ class SimpleQuoteStrategy implements QuoteStrategy
 	 * (non-PHPdoc)
 	 * @see QuoteStrategy::quote()
 	 */
-    public function quote($value){
-    	$this->separator = "'";
+    public function quote($value)
+    {
+    	$this->separator = is_int($value) ? null : "'";
     	$this->implodeGlue = ', ';
         return $this->_quote($value);
     }

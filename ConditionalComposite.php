@@ -53,7 +53,12 @@ class ConditionalComposite implements CriterionComposite
      * (non-PHPdoc)
      * @see Criterion::createSql()
      */
-   public function createSql(){
+   public function createSql()
+   {
+   		if( $this->isEmpty() ){
+			return '( 1 )';
+		}
+
         $sql = '';
         $total = $this->count();
         foreach( $this->getChildrens() as $i => $criterion ){
