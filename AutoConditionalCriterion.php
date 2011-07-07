@@ -31,6 +31,10 @@ class AutoConditionalCriterion extends ConditionalCriterion
     		$this->comparison = Criterion::IS_NULL;
     	}
 
+    	if( Criterion::AUTO == $this->comparison ){
+    		throw new Exception("No se encontro una comparacion automatica para este tipo de dato");
+    	}
+
     	$sql = parent::createSql();
 
     	$this->column = $column;

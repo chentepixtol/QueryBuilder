@@ -2,6 +2,10 @@
 
 require_once 'QueryBuilder.php';
 
+echo '<pre>';
+
+
+
 $qb = new QueryBuilder();
 $qb->addColumn('myColumn', 'alias1')
 	->addColumn('myColumn2')
@@ -15,7 +19,7 @@ $qb->addColumn('myColumn', 'alias1')
 		->setAND()
 			->add('nivel', '3')
 			->add('nivel', '3')
-			->add('nivel', array('linux', 'win', 'mac'), Criterion::IN)
+			->add('nivel', array('linux', 'win', 'mac'))
 		->end()
 		->add('nivel', '2')
 		->add('nivel', '2')
@@ -27,5 +31,16 @@ $qb->addColumn('myColumn', 'alias1')
 	->addDescendingOrderByColumn('myColumn2')
 ;
 
-echo '<pre>';
-echo $qb->createSql();
+$ini = time();
+$i = 0;
+while ($i <= 100000) {
+	$i++;
+	$qb->createSql();
+}
+
+$end = time();
+echo "\n";
+$sec = $end - $ini;
+echo "En 100000 iteraciones sin Lazy Load tarda 201 seg \n";
+echo "En 100000 iteraciones con Lazy Load tarda 38 seg\n";
+echo "En 100000 iteraciones con Lazy Load en todas las partes tarda ".$sec." seg\n";

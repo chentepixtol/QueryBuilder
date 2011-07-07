@@ -94,6 +94,62 @@ class QueryBuilder implements SelectCriterion
 
 	/**
 	 *
+	 * Lazy Load
+	 * @var string
+	 */
+	protected $selectSql;
+
+	/**
+	 *
+	 * Lazy Load
+	 * @var string
+	 */
+	protected $fromSql;
+
+	/**
+	 *
+	 * Lazy Load
+	 * @var string
+	 */
+	protected $joinSql;
+
+	/**
+	 *
+	 * Lazy Load
+	 * @var string
+	 */
+	protected $whereSql;
+
+	/**
+	 *
+	 * Lazy Load
+	 * @var string
+	 */
+	protected $groupSql;
+
+	/**
+	 *
+	 * Lazy Load
+	 * @var string
+	 */
+	protected $havingSql;
+
+	/**
+	 *
+	 * Lazy Load
+	 * @var string
+	 */
+	protected $orderSql;
+
+	/**
+	 *
+	 * Lazy Load
+	 * @var string
+	 */
+	protected $limitSql;
+
+	/**
+	 *
 	 *
 	 * @param string $table
 	 * @param string $on
@@ -101,6 +157,7 @@ class QueryBuilder implements SelectCriterion
 	 */
 	public function join($table, $on = null, $type = Criterion::INNER_JOIN, $using = null)
 	{
+		$this->joinSql = null;
 		$this->joins[$table] = array(
 			'table' => $table,
 			'type' => $type,
@@ -116,6 +173,7 @@ class QueryBuilder implements SelectCriterion
 	 */
 	public function removeJoins()
 	{
+		$this->joinSql = null;
 		$this->joins = array();
 		return $this;
 	}
@@ -128,6 +186,7 @@ class QueryBuilder implements SelectCriterion
 	 */
 	public function removeJoin($table)
 	{
+		$this->joinSql = null;
 		if( isset($this->joins[$table]) )
 			unset($this->joins[$table]);
 		return $this;
@@ -138,7 +197,9 @@ class QueryBuilder implements SelectCriterion
 	 * Enter description here ...
 	 * @param unknown_type $table
 	 */
-	public function from($table, $alias = null){
+	public function from($table, $alias = null)
+	{
+		$this->fromSql = null;
 		if( is_string($alias) ){
 			$this->from[$alias] = $table;
 		}else{
@@ -153,7 +214,9 @@ class QueryBuilder implements SelectCriterion
 	 * @param string $column
 	 * @return QueryBuilder
 	 */
-	public function removeColumn($column = null){
+	public function removeColumn($column = null)
+	{
+		$this->selectSql = null;
 		if( $column ){
 			$k = array_search($column, $this->columns);
 			if( $k ) unset($this->columns[$k]);
@@ -170,14 +233,15 @@ class QueryBuilder implements SelectCriterion
 	 * @param string $alias
 	 * @return QueryBuilder
 	 */
-	public function addColumn($column, $alias = null){
+	public function addColumn($column, $alias = null)
+	{
+		$this->selectSql = null;
 		if( is_string($alias) )
 			$this->columns[$alias] = $column;
 		else
 			$this->columns[] = $column;
 		return $this;
 	}
-
 
 	/**
 	 *
@@ -189,10 +253,10 @@ class QueryBuilder implements SelectCriterion
 	 * @param string $mutatorValue
 	 * @return QueryBuilder
 	 */
-	public function add($column, $value, $comparison = Criterion::EQUAL, $mutatorColumn = null, $mutatorValue = null)
+	public function add($column, $value, $comparison = Criterion::AUTO, $mutatorColumn = null, $mutatorValue = null)
 	{
+		$this->whereSql = null;
 		$criterion = ConditionalCriterion::factory($column, $value, $comparison, $mutatorColumn, $mutatorValue);
-
 		$this->currentWhereComposite->addCriterion($criterion);
 		return $this;
 	}
@@ -234,7 +298,8 @@ class QueryBuilder implements SelectCriterion
 	 *
 	 * @return QueryBuilder
 	 */
-	public function end(){
+	public function end()
+	{
 		$this->currentWhereComposite = $this->currentWhereComposite->getParent();
 		return $this;
 	}
@@ -243,14 +308,24 @@ class QueryBuilder implements SelectCriterion
 	 * (non-PHPdoc)
 	 * @see SelectCriterion::createWhereSql()
 	 */
-	public function createWhereSql(){
-		return 'WHERE '.$this->whereComposite->createSql();
+	public function createWhereSql()
+	{
+		if( null !== $this->whereSql ){
+			return $this->whereSql;
+		}
+		$this->whereSql = 'WHERE '.$this->whereComposite->createSql();
+		return $this->whereSql;
 	}
 
 	/* (non-PHPdoc)
 	 * @see SelectCriterion::createSelectSql()
 	 */
-	public function createSelectSql() {
+	public function createSelectSql()
+	{
+		if( null !== $this->selectSql ){
+			return $this->selectSql;
+		}
+
 		$sql = 'SELECT ';
 
 		if(empty($this->columns)) $sql .= '* ';
@@ -264,13 +339,18 @@ class QueryBuilder implements SelectCriterion
 			if( $i != $n ) $sql.= ', ';
 		}
 
-		return $sql;
+		$this->selectSql = $sql;
+		return $this->selectSql;
 	}
 
 	/* (non-PHPdoc)
 	 * @see SelectCriterion::createFromSql()
 	 */
-	public function createFromSql() {
+	public function createFromSql()
+	{
+		if( null !== $this->fromSql ){
+			return $this->fromSql;
+		}
 
 		$sql = 'FROM ';
 		$tables = count($this->from);
@@ -281,14 +361,19 @@ class QueryBuilder implements SelectCriterion
 			if($tables != $i) $sql.= ', ';
 			$i++;
 		}
-
-		return $sql;
+		$this->fromSql = $sql;
+		return $this->fromSql;
 	}
 
 	/* (non-PHPdoc)
 	 * @see SelectCriterion::createJoinSql()
 	 */
-	public function createJoinSql() {
+	public function createJoinSql()
+	{
+		if( null !== $this->joinSql ){
+			return $this->joinSql;
+		}
+
 		foreach ($this->joins as $join){
 			$sql .= $join['type'].' '.  $this->quoteStrategy->quoteTable($join['table']);
 			if( $join['using'] )
@@ -296,20 +381,27 @@ class QueryBuilder implements SelectCriterion
 			else
 				$sql .= " ON ({$join['on']})";
 		}
-		return $sql;
+		$this->joinSql = $sql;
+		return $this->joinSql;
 	}
 
 	/* (non-PHPdoc)
 	 * @see SelectCriterion::createGroupSql()
 	 */
-	public function createGroupSql() {
+	public function createGroupSql()
+	{
+		if( null !== $this->groupSql ){
+			return $this->groupSql;
+		}
+
 		$sql = '';
 		if (count ( $this->groupByColumns )) {
 			$sql .= "GROUP BY  ";
 			$columns = array_map(array($this->quoteStrategy, 'quoteColumn'), $this->groupByColumns);
 			$sql .= implode ( ',', $columns);
 		}
-		return $sql;
+		$this->groupSql = $sql;
+		return $this->groupSql;
 	}
 
 	/* (non-PHPdoc)
@@ -322,14 +414,20 @@ class QueryBuilder implements SelectCriterion
 	/* (non-PHPdoc)
 	 * @see SelectCriterion::createOrderSql()
 	 */
-	public function createOrderSql() {
+	public function createOrderSql()
+	{
+		if( null !== $this->orderSql ){
+			return $this->orderSql;
+		}
+
 		$sql = '';
 		if ( count ($this->orderByColumns ) ) {
 			$sql = "ORDER BY  ";
 			$columns = array_map(array($this, '_quoteOrder'), $this->orderByColumns);
 			$sql .= implode ( ',',  $columns);
 		}
-		return $sql;
+		$this->orderSql = $sql;
+		return $this->orderSql;
 	}
 
 	/**
@@ -346,7 +444,12 @@ class QueryBuilder implements SelectCriterion
 	/* (non-PHPdoc)
 	 * @see SelectCriterion::createLimitSql()
 	 */
-	public function createLimitSql() {
+	public function createLimitSql()
+	{
+		if( null !== $this->limitSql ){
+			return $this->limitSql;
+		}
+
 		$sql = '';
 		if ($this->limit != 0) {
 			$sql .= "LIMIT " . $this->limit;
@@ -354,7 +457,8 @@ class QueryBuilder implements SelectCriterion
 		if ($this->offset != 0) {
 			$sql .= " OFFSET " . $this->offset;
 		}
-		return $sql;
+		$this->limitSql = $sql;
+		return $this->limitSql;
 	}
 
 	/* (non-PHPdoc)
@@ -375,7 +479,8 @@ class QueryBuilder implements SelectCriterion
 	 * @see Criterion::setQuoteStrategy()
 	 *
 	 */
-	public function setQuoteStrategy(QuoteStrategy $quoteStrategy) {
+	public function setQuoteStrategy(QuoteStrategy $quoteStrategy)
+	{
 		$this->quoteStrategy = $quoteStrategy;
 		$this->currentWhereComposite->setQuoteStrategy($quoteStrategy);
 		$this->whereComposite->setQuoteStrategy($quoteStrategy);
@@ -406,7 +511,9 @@ class QueryBuilder implements SelectCriterion
 	/**
 	 * @param int $limit
 	 */
-	public function setLimit($limit) {
+	public function setLimit($limit)
+	{
+		$this->limitSql = null;
 		$this->limit = $limit;
 		return $this;
 	}
@@ -414,7 +521,9 @@ class QueryBuilder implements SelectCriterion
 	/**
 	 * @param int $offset
 	 */
-	public function setOffset($offset) {
+	public function setOffset($offset)
+	{
+		$this->limitSql = null;
 		$this->offset = $offset;
 		return $this;
 	}
@@ -424,7 +533,9 @@ class QueryBuilder implements SelectCriterion
 	 * @param string $groupBy
 	 * @return QueryBuilder
 	 */
-	public function addGroupByColumn($groupBy) {
+	public function addGroupByColumn($groupBy)
+	{
+		$this->groupSql = null;
 		$this->groupByColumns [] = $groupBy;
 		return $this;
 	}
@@ -442,7 +553,9 @@ class QueryBuilder implements SelectCriterion
 	 * @param string $name El nombde de la columna.
 	 * @return  QueryBuilder
 	 */
-	public function addAscendingOrderByColumn($name) {
+	public function addAscendingOrderByColumn($name)
+	{
+		$this->orderSql = null;
 		$this->orderByColumns [] = array('column' => $name, 'type' => 'ASC');
 		return $this;
 	}
@@ -453,7 +566,9 @@ class QueryBuilder implements SelectCriterion
 	 * @param string $name El nombre de la columna
 	 * @return QueryBuilder
 	 */
-	public function addDescendingOrderByColumn($name) {
+	public function addDescendingOrderByColumn($name)
+	{
+		$this->orderSql = null;
 		$this->orderByColumns [] = array('column' => $name, 'type' => 'DESC');
 		return $this;
 	}

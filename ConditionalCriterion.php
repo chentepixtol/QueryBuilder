@@ -47,6 +47,12 @@ class ConditionalCriterion implements Criterion
 
     /**
      *
+     * @var string
+     */
+    protected $sql;
+
+    /**
+     *
      *
      * @staticvar
      */
@@ -101,6 +107,9 @@ class ConditionalCriterion implements Criterion
      */
     public function createSql()
     {
+    	if( null !== $this->sql )
+    		return $this->sql;
+
     	$column =  $this->quoteStrategy->quoteColumn(str_replace('`', '', $this->column));
     	$mutatorValue = $this->mutatorValue;
     	$value = $this->value;
@@ -134,8 +143,8 @@ class ConditionalCriterion implements Criterion
         $part1 = trim($part1);
         $part2 = trim($comparision);
         $part3 = trim($part3);
-		$sql = trim("{$part1} {$part2} {$part3}");
-        return $sql;
+		$this->sql = trim("{$part1} {$part2} {$part3}");
+        return $this->sql;
     }
 
     /**

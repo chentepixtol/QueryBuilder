@@ -30,6 +30,12 @@ class ConditionalComposite implements CriterionComposite
 
     /**
      *
+     * @var string
+     */
+    protected $sql;
+
+    /**
+     *
      * @param string $operatorLogic
      */
     public function __construct($operatorLogic = CriterionComposite::LOGICAL_AND){
@@ -42,6 +48,7 @@ class ConditionalComposite implements CriterionComposite
      */
     public function addCriterion(Criterion $criterion)
     {
+    	$this->sql = null;
         $this->criterions[] = $criterion;
         $criterion->setQuoteStrategy($this->quoteStrategy);
         if( $criterion instanceof CriterionComposite )
@@ -55,8 +62,12 @@ class ConditionalComposite implements CriterionComposite
      */
    public function createSql()
    {
+   		if( null !== $this->sql )
+   			return $this->sql;
+
    		if( $this->isEmpty() ){
-			return '( 1 )';
+   			$this->sql = '( 1 )';
+			return $this->sql;
 		}
 
         $sql = '';
@@ -65,7 +76,8 @@ class ConditionalComposite implements CriterionComposite
             $sql .= $criterion->createSql();
             if( $total != $i + 1 ) $sql .= ' '. $this->getOperatorLogic() . ' ';
         }
-        return '( ' . $sql . ' )';
+        $this->sql = '( ' . $sql . ' )';
+        return $this->sql;
     }
 
     /**

@@ -30,6 +30,19 @@ class AutoConditionalCriterionTest extends BaseTest{
 
 	/**
 	 *
+	 * @test
+	 * @expectedException Exception
+	 */
+	public function badArgument()
+	{
+		$criterion = new AutoConditionalCriterion('language', new stdClass(), Criterion::AUTO);
+		$criterion->setQuoteStrategy($this->getZendDbQuoteStrategy());
+
+		$criterion->createSql();
+	}
+
+	/**
+	 *
 	 * @return array
 	 */
 	public function getArgs(){
