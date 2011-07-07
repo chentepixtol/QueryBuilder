@@ -28,9 +28,9 @@ abstract class BaseTest extends PHPUnit_Framework_TestCase
 		if( null == $this->quoteStrategy ){
 			$db = Zend_Db::factory('Pdo_Mysql', array(
 			    'host'     => '127.0.0.1',
-			    'username' => 'user',
+			    'username' => 'sd',
 			    'password' => '123',
-			    'dbname'   => 'database'
+			    'dbname'   => 'sd_ixe'
 			));
 
 			$this->quoteStrategy = new ZendDbQuoteStrategy($db);

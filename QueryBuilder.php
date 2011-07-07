@@ -7,6 +7,7 @@ require_once 'ConditionalCriterion.php';
 require_once 'QuoteStrategy.php';
 require_once 'SimpleQuoteStrategy.php';
 require_once 'SelectCriterion.php';
+require_once 'AutoConditionalCriterion.php';
 
 /**
  *
@@ -190,7 +191,8 @@ class QueryBuilder implements SelectCriterion
 	 */
 	public function add($column, $value, $comparison = Criterion::EQUAL, $mutatorColumn = null, $mutatorValue = null)
 	{
-		$criterion = new ConditionalCriterion($column, $value, $comparison, $mutatorColumn, $mutatorValue);
+		$criterion = ConditionalCriterion::factory($column, $value, $comparison, $mutatorColumn, $mutatorValue);
+
 		$this->currentWhereComposite->addCriterion($criterion);
 		return $this;
 	}

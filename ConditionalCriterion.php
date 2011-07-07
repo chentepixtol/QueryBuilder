@@ -8,50 +8,50 @@ class ConditionalCriterion implements Criterion
 	 *
 	 * @var string
 	 */
-    private $column;
+    protected $column;
 
     /**
 	 *
 	 *
 	 * @var string
 	 */
-    private $comparison;
+    protected $comparison;
 
     /**
 	 *
 	 *
 	 * @var mixed
 	 */
-    private $value;
+    protected $value;
 
     /**
 	 *
 	 *
 	 * @var string
 	 */
-    private $mutatorColumn = null;
+    protected $mutatorColumn = null;
 
     /**
 	 *
 	 *
 	 * @var string
 	 */
-    private $mutatorValue = null;
+    protected $mutatorValue = null;
 
     /**
 	 *
 	 *
 	 * @var QuoteStrategy
 	 */
-    private $quoteStrategy;
+    protected $quoteStrategy;
 
     /**
      *
      *
      * @staticvar
      */
-    private static $BinaryComparison = array(Criterion::IS_NULL, Criterion::IS_NOT_NULL);
-    private static $Likes = array(
+    protected static $BinaryComparison = array(Criterion::IS_NULL, Criterion::IS_NOT_NULL);
+    protected static $Likes = array(
     	Criterion::JUST_LIKE, Criterion::LIKE, Criterion::LEFT_LIKE,
     	Criterion::RIGHT_LIKE, Criterion::NOT_LIKE, Criterion::NOT_JUST_LIKE
     );
@@ -73,6 +73,26 @@ class ConditionalCriterion implements Criterion
         $this->value = $value;
         $this->mutatorColumn = $mutatorColumn;
         $this->mutatorValue = $mutatorValue;
+    }
+
+    /**
+     * @param string $column
+     * @param string $value
+     * @param string $comparison
+     * @param string $mutatorColumn
+     * @param string $mutatorValue
+     * @return ConditionalCriterion
+     */
+    public static function factory($column, $value, $comparison = Criterion::EQUAL,
+    $mutatorColumn = null, $mutatorValue = null)
+    {
+    	if( Criterion::AUTO == $comparison ){
+			$criterion = new AutoConditionalCriterion($column, $value, $comparison, $mutatorColumn, $mutatorValue);
+		}
+		else{
+			$criterion = new ConditionalCriterion($column, $value, $comparison, $mutatorColumn, $mutatorValue);
+		}
+		return $criterion;
     }
 
     /**

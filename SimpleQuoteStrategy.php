@@ -13,7 +13,7 @@ class SimpleQuoteStrategy implements QuoteStrategy
 	 */
     public function quote($value)
     {
-    	$this->separator = is_int($value) ? null : "'";
+    	$this->separator = ( is_int($value) || is_float($value) )? null : "'";
     	$this->implodeGlue = ', ';
         return $this->_quote($value);
     }

@@ -20,6 +20,7 @@ interface Criterion
       const BETWEEN = 'BETWEEN';
       const IS_NULL = 'IS NULL';
       const IS_NOT_NULL = 'IS NOT NULL';
+      const AUTO = 'AUTO';
 
       //MUTATORS
       const PASSWORD = 'PASSWORD(%s)';
