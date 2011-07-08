@@ -11,7 +11,7 @@ require_once 'AutoConditionalCriterion.php';
 
 /**
  *
- * QueryBuilder
+ * Query
  * @author chente
  *
  */
@@ -159,23 +159,95 @@ class Query implements SelectCriterion
 	 *
 	 * @param string $table
 	 * @param string $on
-	 * @return QueryBuilder
+	 * @param strinf $type
+	 * @return Query
 	 */
-	public function join($table, $on = null, $type = Criterion::INNER_JOIN, $using = null)
+	public function joinOn($table, $on, $type = Criterion::JOIN)
 	{
 		$this->joinSql = null;
 		$this->joins[$table] = array(
 			'table' => $table,
 			'type' => $type,
 			'on' => $on,
-			'using' => $using,
+			'using' => null,
 		);
 		return $this;
 	}
 
 	/**
 	 *
-	 * @return QueryBuilder
+	 * @param string $table
+	 * @param string $usingColumn
+	 * @param string $type
+	 */
+	public function joinUsing($table, $usingColumn, $type = Criterion::JOIN)
+	{
+		$this->joinSql = null;
+		$this->joins[$table] = array(
+			'table' => $table,
+			'type' => $type,
+			'using' => $usingColumn,
+		);
+		return $this;
+	}
+
+	/**
+	 *
+	 * @param string $table
+	 * @param string $on
+	 */
+	public function innerJoinOn($table, $on){
+		return $this->joinOn($table, $on, Criterion::INNER_JOIN);
+	}
+
+	/**
+	 *
+	 * @param string $table
+	 * @param string $on
+	 */
+	public function innerJoinUsing($table, $usingColumn){
+		return $this->joinUsing($table, $usingColumn, Criterion::INNER_JOIN);
+	}
+
+	/**
+	 *
+	 * @param string $table
+	 * @param string $on
+	 */
+	public function leftJoinOn($table, $on){
+		return $this->joinOn($table, $on, Criterion::LEFT_JOIN);
+	}
+
+	/**
+	 *
+	 * @param string $table
+	 * @param string $on
+	 */
+	public function leftJoinUsing($table, $usingColumn){
+		return $this->joinUsing($table, $usingColumn, Criterion::LEFT_JOIN);
+	}
+
+	/**
+	 *
+	 * @param string $table
+	 * @param string $on
+	 */
+	public function rightJoinOn($table, $on){
+		return $this->joinOn($table, $on, Criterion::RIGHT_JOIN);
+	}
+
+	/**
+	 *
+	 * @param string $table
+	 * @param string $on
+	 */
+	public function rightJoinUsing($table, $usingColumn){
+		return $this->joinUsing($table, $usingColumn, Criterion::RIGHT_JOIN);
+	}
+
+	/**
+	 *
+	 * @return Query
 	 */
 	public function removeJoins()
 	{
@@ -188,7 +260,7 @@ class Query implements SelectCriterion
 	 *
 	 * Enter description here ...
 	 * @param unknown_type $table
-	 * @return QueryBuilder
+	 * @return Query
 	 */
 	public function removeJoin($table)
 	{
@@ -217,8 +289,26 @@ class Query implements SelectCriterion
 
 	/**
 	 *
+	 * @param string $from
+	 * @return Query
+	 */
+	public function removeFrom($from = null)
+	{
+		$this->fromSql = null;
+		if( $from ){
+			$k = array_search($from, $this->from);
+			if( $k !== false ) unset($this->from[$k]);
+		}
+		else {
+			$this->from = array();
+		}
+		return $this;
+	}
+
+	/**
+	 *
 	 * @param string $column
-	 * @return QueryBuilder
+	 * @return Query
 	 */
 	public function removeColumn($column = null)
 	{
@@ -237,7 +327,7 @@ class Query implements SelectCriterion
 	 *
 	 * @param string $column
 	 * @param string $alias
-	 * @return QueryBuilder
+	 * @return Query
 	 */
 	public function addColumn($column, $alias = null)
 	{
@@ -257,7 +347,7 @@ class Query implements SelectCriterion
 	 * @param string $comparison
 	 * @param string $mutatorColumn
 	 * @param string $mutatorValue
-	 * @return QueryBuilder
+	 * @return Query
 	 */
 	public function add($column, $value, $comparison = Criterion::AUTO, $mutatorColumn = null, $mutatorValue = null)
 	{
@@ -269,7 +359,7 @@ class Query implements SelectCriterion
 
 	/**
 	 *
-	 * @return QueryBuilder
+	 * @return Query
 	 */
 	public function setAND()
 	{
@@ -286,7 +376,7 @@ class Query implements SelectCriterion
 
 	/**
 	 *
-	 * @return QueryBuilder
+	 * @return Query
 	 */
 	public function setOR()
 	{
@@ -302,7 +392,7 @@ class Query implements SelectCriterion
 
 	/**
 	 *
-	 * @return QueryBuilder
+	 * @return Query
 	 */
 	public function end()
 	{
@@ -360,8 +450,13 @@ class Query implements SelectCriterion
 			return $this->fromSql;
 		}
 
-		$sql = 'FROM ';
 		$tables = count($this->from);
+
+		if( 0 === $tables){
+			throw new Exception("No se ha definido ninguna tabla en la parte sql del FROM");
+		}
+
+		$sql = 'FROM ';
 		$i = 1;
 		foreach ($this->from as $alias => $table){
 			$alias = is_string($alias) ? ' as '.$this->quoteStrategy->quoteTable($alias) : '';
@@ -378,6 +473,7 @@ class Query implements SelectCriterion
 	 */
 	public function createJoinSql()
 	{
+		//TODO ON condition
 		if( null !== $this->joinSql ){
 			return $this->joinSql;
 		}
@@ -385,12 +481,16 @@ class Query implements SelectCriterion
 		$sql = '';
 		foreach ($this->joins as $join){
 			$sql .= $join['type'].' '.  $this->quoteStrategy->quoteTable($join['table']);
-			if( $join['using'] )
-				$sql .= " USING ({$join['using']})";
-			else
-				$sql .= " ON ({$join['on']})";
+			if( $join['using'] ){
+				$field = $this->quoteStrategy->quoteColumn($join['using']);
+				$sql .= " USING( {$field} ) ";
+			}
+			else{
+				$sql .= " ON( {$join['on']} ) ";
+			}
+
 		}
-		$this->joinSql = $sql;
+		$this->joinSql = trim($sql);
 		return $this->joinSql;
 	}
 
@@ -540,7 +640,7 @@ class Query implements SelectCriterion
 	/**
 	 * GUarda una columna para ordenar los resultados
 	 * @param string $groupBy
-	 * @return QueryBuilder
+	 * @return Query
 	 */
 	public function addGroupByColumn($groupBy)
 	{
@@ -560,7 +660,7 @@ class Query implements SelectCriterion
 	 * Agrega una columna para ordenar de forma ascendente
 	 *
 	 * @param string $name El nombde de la columna.
-	 * @return  QueryBuilder
+	 * @return  Query
 	 */
 	public function addAscendingOrderByColumn($name)
 	{
@@ -573,7 +673,7 @@ class Query implements SelectCriterion
 	 * Agrega una columna para ordenar de forma descendente
 	 *
 	 * @param string $name El nombre de la columna
-	 * @return QueryBuilder
+	 * @return Query
 	 */
 	public function addDescendingOrderByColumn($name)
 	{

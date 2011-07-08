@@ -32,6 +32,7 @@ interface Criterion
       const TRIM = 'TRIM(%s)';
 
       //JOINS
+      const JOIN = 'JOIN';
       const INNER_JOIN = 'INNER JOIN';
       const LEFT_JOIN = 'LEFT JOIN';
       const RIGHT_JOIN = 'RIGHT JOIN';
