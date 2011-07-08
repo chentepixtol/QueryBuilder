@@ -15,7 +15,7 @@ require_once 'AutoConditionalCriterion.php';
  * @author chente
  *
  */
-class QueryBuilder implements SelectCriterion
+class Query implements SelectCriterion
 {
 
 	/**
@@ -219,7 +219,7 @@ class QueryBuilder implements SelectCriterion
 		$this->selectSql = null;
 		if( $column ){
 			$k = array_search($column, $this->columns);
-			if( $k ) unset($this->columns[$k]);
+			if( $k !== false ) unset($this->columns[$k]);
 		}
 		else {
 			$this->columns = array();
@@ -326,17 +326,17 @@ class QueryBuilder implements SelectCriterion
 			return $this->selectSql;
 		}
 
-		$sql = 'SELECT ';
+		$sql = 'SELECT';
 
-		if(empty($this->columns)) $sql .= '* ';
+		if(empty($this->columns)) $sql .= ' *';
 
 		$n = count($this->columns);
 		$i = 0;
 		foreach ($this->columns as $alias => $column){
-			$sql .= $this->quoteStrategy->quoteColumn($column);
+			$sql .= ' ' . $this->quoteStrategy->quoteColumn($column);
 			if( is_string($alias) ) $sql.= ' as '. $this->quoteStrategy->quoteColumn($alias);
 			$i++;
-			if( $i != $n ) $sql.= ', ';
+			if( $i != $n ) $sql.= ',';
 		}
 
 		$this->selectSql = $sql;
@@ -374,6 +374,7 @@ class QueryBuilder implements SelectCriterion
 			return $this->joinSql;
 		}
 
+		$sql = '';
 		foreach ($this->joins as $join){
 			$sql .= $join['type'].' '.  $this->quoteStrategy->quoteTable($join['table']);
 			if( $join['using'] )
