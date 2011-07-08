@@ -28,11 +28,13 @@ class SimpleQuoteStrategy implements QuoteStrategy
 		$this->separator = '`';
 		$this->implodeGlue = '.';
 		if( is_array($value) ){
-			return $this->_quote($value);
+			$column = $this->_quote($value);
 		}
 		else{
-			return $this->_quote(explode('.', $value));
+			$column = $this->_quote(explode('.', $value));
 		}
+		$column = str_replace('`*`', '*', $column);
+		return $column;
 	}
 
 	/* (non-PHPdoc)

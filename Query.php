@@ -20,6 +20,12 @@ class Query implements SelectCriterion
 
 	/**
 	 *
+	 * @var string
+	 */
+	const ALL_COLUMNS = '*';
+
+	/**
+	 *
 	 * Construct
 	 * @param QuoteStrategy $quoteStrategy
 	 */
@@ -328,7 +334,9 @@ class Query implements SelectCriterion
 
 		$sql = 'SELECT';
 
-		if(empty($this->columns)) $sql .= ' *';
+		if(empty($this->columns)){
+			$sql .= ' '.self::ALL_COLUMNS;
+		}
 
 		$n = count($this->columns);
 		$i = 0;

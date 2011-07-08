@@ -1,6 +1,6 @@
 <?php
 
-require_once 'QueryBuilder.php';
+require_once 'Query.php';
 
 /**
  *

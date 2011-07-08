@@ -39,7 +39,9 @@ class ZendDbQuoteStrategy implements QuoteStrategy
 	 * @param mixed $value
 	 */
     public function quoteColumn($value){
-    	return $this->db->quoteColumnAs($value, null);
+    	$column = $this->db->quoteColumnAs($value, null);
+    	$column = str_replace('`*`', '*', $column);
+    	return $column;
     }
 
 }
