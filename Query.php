@@ -8,6 +8,7 @@ require_once 'QuoteStrategy.php';
 require_once 'SimpleQuoteStrategy.php';
 require_once 'SelectCriterion.php';
 require_once 'AutoConditionalCriterion.php';
+require_once 'Criteria.php';
 
 /**
  *
@@ -23,20 +24,6 @@ class Query implements SelectCriterion
 	 * @var string
 	 */
 	const ALL_COLUMNS = '*';
-
-	/**
-	 *
-	 * Construct
-	 * @param QuoteStrategy $quoteStrategy
-	 */
-	public function __construct(QuoteStrategy $quoteStrategy = null)
-	{
-		$this->currentWhereComposite = $this->whereComposite = new ConditionalComposite();
-		if( null == $quoteStrategy ){
-			$quoteStrategy = new SimpleQuoteStrategy();
-		}
-		$this->setQuoteStrategy($quoteStrategy);
-	}
 
 	/**
 	 *
@@ -86,17 +73,15 @@ class Query implements SelectCriterion
 
 	/**
 	 *
-	 * Enter description here ...
-	 * @var ConditionalComposite
+	 * @var Criteria
 	 */
-	protected $whereComposite;
+	protected $whereCriteria;
 
 	/**
 	 *
-	 * Enter description here ...
-	 * @var ConditionalComposite
+	 * @var Criteria
 	 */
-	protected $currentWhereComposite;
+	protected $havingCriteria;
 
 	/**
 	 *
@@ -124,21 +109,7 @@ class Query implements SelectCriterion
 	 * Lazy Load
 	 * @var string
 	 */
-	protected $whereSql;
-
-	/**
-	 *
-	 * Lazy Load
-	 * @var string
-	 */
 	protected $groupSql;
-
-	/**
-	 *
-	 * Lazy Load
-	 * @var string
-	 */
-	protected $havingSql;
 
 	/**
 	 *
@@ -153,6 +124,18 @@ class Query implements SelectCriterion
 	 * @var string
 	 */
 	protected $limitSql;
+
+	/**
+	 *
+	 * Construct
+	 * @param QuoteStrategy $quoteStrategy
+	 */
+	public function __construct(QuoteStrategy $quoteStrategy = null)
+	{
+		$this->whereCriteria = new Criteria($this);
+		$this->havingCriteria = new Criteria($this);
+		$this->setQuoteStrategy($quoteStrategy ? $quoteStrategy : new SimpleQuoteStrategy());
+	}
 
 	/**
 	 *
@@ -341,63 +324,10 @@ class Query implements SelectCriterion
 
 	/**
 	 *
-	 * Enter description here ...
-	 * @param string $column
-	 * @param mixed $value
-	 * @param string $comparison
-	 * @param string $mutatorColumn
-	 * @param string $mutatorValue
-	 * @return Query
+	 * @return Criteria
 	 */
-	public function add($column, $value, $comparison = Criterion::AUTO, $mutatorColumn = null, $mutatorValue = null)
-	{
-		$this->whereSql = null;
-		$criterion = ConditionalCriterion::factory($column, $value, $comparison, $mutatorColumn, $mutatorValue);
-		$this->currentWhereComposite->addCriterion($criterion);
-		return $this;
-	}
-
-	/**
-	 *
-	 * @return Query
-	 */
-	public function setAND()
-	{
-		if( $this->currentWhereComposite->isEmpty() )
-			$this->currentWhereComposite->setOperatorLogic(CriterionComposite::LOGICAL_AND);
-		elseif( $this->currentWhereComposite->isLogicalOR() ){
-			$composite = new ConditionalComposite();
-			$this->currentWhereComposite->addCriterion($composite);
-			$this->currentWhereComposite = $composite;
-		}
-
-		return $this;
-	}
-
-	/**
-	 *
-	 * @return Query
-	 */
-	public function setOR()
-	{
-		if( $this->currentWhereComposite->isEmpty() )
-			$this->currentWhereComposite->setOperatorLogic(CriterionComposite::LOGICAL_OR);
-		elseif( $this->currentWhereComposite->isLogicalAND() ){
-			$composite = new ConditionalComposite(CriterionComposite::LOGICAL_OR);
-			$this->currentWhereComposite->addCriterion($composite);
-			$this->currentWhereComposite = $composite;
-		}
-		return $this;
-	}
-
-	/**
-	 *
-	 * @return Query
-	 */
-	public function end()
-	{
-		$this->currentWhereComposite = $this->currentWhereComposite->getParent();
-		return $this;
+	public function where(){
+		return $this->whereCriteria;
 	}
 
 	/**
@@ -406,12 +336,17 @@ class Query implements SelectCriterion
 	 */
 	public function createWhereSql()
 	{
-		if( null !== $this->whereSql ){
-			return $this->whereSql;
-		}
-		$this->whereSql = 'WHERE '.$this->whereComposite->createSql();
-		return $this->whereSql;
+		return 'WHERE '.$this->whereCriteria->createSql();
 	}
+
+	/**
+	 *
+	 * @return Criteria
+	 */
+	public function having(){
+		return $this->havingCriteria;
+	}
+
 
 	/* (non-PHPdoc)
 	 * @see SelectCriterion::createSelectSql()
@@ -516,8 +451,12 @@ class Query implements SelectCriterion
 	/* (non-PHPdoc)
 	 * @see SelectCriterion::createHavingSql()
 	 */
-	public function createHavingSql() {
-		// TODO Auto-generated method stub
+	public function createHavingSql()
+	{
+		if( $this->havingCriteria->isEmpty() ){
+			return '';
+		}
+		return "HAVING ".$this->havingCriteria->createSql();
 	}
 
 	/* (non-PHPdoc)
@@ -591,8 +530,8 @@ class Query implements SelectCriterion
 	public function setQuoteStrategy(QuoteStrategy $quoteStrategy)
 	{
 		$this->quoteStrategy = $quoteStrategy;
-		$this->currentWhereComposite->setQuoteStrategy($quoteStrategy);
-		$this->whereComposite->setQuoteStrategy($quoteStrategy);
+		$this->whereCriteria->setQuoteStrategy($quoteStrategy);
+		$this->havingCriteria->setQuoteStrategy($quoteStrategy);
 		return $this;
 	}
 
