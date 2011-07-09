@@ -6,11 +6,16 @@ echo '<pre>';
 
 
 
-$qb = new Query();
-$qb->addColumn('myColumn', 'alias1')
+$query = new Query();
+$query->addColumn('myColumn', 'alias1')
 	->addColumn('myColumn2')
 	->from('mytable')
-	->innerJoinOn('mytabl2', 'mytable.id = mytabl2.id_2')
+	->innerJoinOn('mytabl2')
+		->add('mytable.id', 'mytabl2.id_2', Criterion::EQUAL, null, Criterion::AS_FIELD)
+	->endJoin()
+	->leftJoinOn('person')
+		->add('person.id', 'user.id_person', Criterion::EQUAL, null, Criterion::AS_FIELD)
+	->endJoin()
 	->where()
 		->add('nivel', '1')
 	   	->add('nivel', '1')
@@ -29,13 +34,12 @@ $qb->addColumn('myColumn', 'alias1')
 		->add('nivel', '1')
 	->endWhere()
 	->addGroupByColumn('alias1')
-	/*->having()
+	->having()
 		->add('groupcolumn', '123')
 		->add('group2', '45')
-	->endHaving()*/
+	->endHaving()
 	->setLimit(1)
 	->addDescendingOrderByColumn('myColumn2')
 ;
 
-
-echo $qb->createSql();
+echo $query->createBeautySql();

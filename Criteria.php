@@ -31,13 +31,6 @@ class Criteria implements Criterion
 
 	/**
 	 *
-	 * Lazy Load
-	 * @var string
-	 */
-	protected $whereSql;
-
-	/**
-	 *
 	 * @var Query
 	 */
 	protected $query;
@@ -63,7 +56,6 @@ class Criteria implements Criterion
 	 */
 	public function add($column, $value, $comparison = Criterion::AUTO, $mutatorColumn = null, $mutatorValue = null)
 	{
-		$this->whereSql = null;
 		$criterion = ConditionalCriterion::factory($column, $value, $comparison, $mutatorColumn, $mutatorValue);
 		$this->currentComposite->addCriterion($criterion);
 		return $this;
@@ -162,6 +154,14 @@ class Criteria implements Criterion
 	 * @return Query
 	 */
 	public function endHaving(){
+		return $this->getQuery();
+	}
+
+	/**
+	 *
+	 * @return Query
+	 */
+	public function endJoin(){
 		return $this->getQuery();
 	}
 }

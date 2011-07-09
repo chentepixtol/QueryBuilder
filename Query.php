@@ -141,12 +141,13 @@ class Query implements SelectCriterion
 	 *
 	 *
 	 * @param string $table
-	 * @param string $on
 	 * @param strinf $type
-	 * @return Query
+	 * @return Criteria
 	 */
-	public function joinOn($table, $on, $type = Criterion::JOIN)
+	public function joinOn($table, $type = Criterion::JOIN)
 	{
+		$on = new Criteria($this);
+		$on->setQuoteStrategy($this->quoteStrategy);
 		$this->joinSql = null;
 		$this->joins[$table] = array(
 			'table' => $table,
@@ -154,7 +155,7 @@ class Query implements SelectCriterion
 			'on' => $on,
 			'using' => null,
 		);
-		return $this;
+		return $on;
 	}
 
 	/**
@@ -177,10 +178,10 @@ class Query implements SelectCriterion
 	/**
 	 *
 	 * @param string $table
-	 * @param string $on
+	 * @return Criteria
 	 */
-	public function innerJoinOn($table, $on){
-		return $this->joinOn($table, $on, Criterion::INNER_JOIN);
+	public function innerJoinOn($table){
+		return $this->joinOn($table, Criterion::INNER_JOIN);
 	}
 
 	/**
@@ -195,10 +196,10 @@ class Query implements SelectCriterion
 	/**
 	 *
 	 * @param string $table
-	 * @param string $on
+	 * @return Criteria
 	 */
-	public function leftJoinOn($table, $on){
-		return $this->joinOn($table, $on, Criterion::LEFT_JOIN);
+	public function leftJoinOn($table){
+		return $this->joinOn($table, Criterion::LEFT_JOIN);
 	}
 
 	/**
@@ -213,10 +214,10 @@ class Query implements SelectCriterion
 	/**
 	 *
 	 * @param string $table
-	 * @param string $on
+	 * @return Criteria
 	 */
-	public function rightJoinOn($table, $on){
-		return $this->joinOn($table, $on, Criterion::RIGHT_JOIN);
+	public function rightJoinOn($table){
+		return $this->joinOn($table, Criterion::RIGHT_JOIN);
 	}
 
 	/**
@@ -408,7 +409,6 @@ class Query implements SelectCriterion
 	 */
 	public function createJoinSql()
 	{
-		//TODO ON condition
 		if( null !== $this->joinSql ){
 			return $this->joinSql;
 		}
@@ -421,7 +421,11 @@ class Query implements SelectCriterion
 				$sql .= " USING( {$field} ) ";
 			}
 			else{
-				$sql .= " ON( {$join['on']} ) ";
+				if( $join['on'] instanceof Criteria ){
+					$sql .= " ON{$join['on']->createSql()}";
+				}else{
+					$sql .= " ON( {$join['on']} ) ";
+				}
 			}
 
 		}
@@ -521,6 +525,16 @@ class Query implements SelectCriterion
 			$this->createHavingSql().' '.
 			$this->createOrderSql().' '.
 			$this->createLimitSql();
+	}
+
+	/**
+	 *
+	 * @return string
+	 */
+	public function createBeautySql(){
+		$find = array('FROM', 'INNER JOIN', 'LEFT JOIN', 'RIGHT JOIN', 'WHERE', 'GROUP', 'HAVING', 'ORDER', 'LIMIT');
+		$replace = array("\nFROM", "\nINNER JOIN", "\nLEFT JOIN", "\nRIGHT JOIN", "\nWHERE", "\nGROUP", "\nHAVING", "\nORDER", "\nLIMIT");
+		return str_replace($find, $replace, $this->createSql());
 	}
 
 	/* (non-PHPdoc)

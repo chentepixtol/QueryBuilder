@@ -30,6 +30,7 @@ interface Criterion
       const MONTH = 'MONTH(%s)';
       const YEAR = 'YEAR(%s)';
       const TRIM = 'TRIM(%s)';
+      const AS_FIELD = 'AS_FIELD';
 
       //JOINS
       const JOIN = 'JOIN';

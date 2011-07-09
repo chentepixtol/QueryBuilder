@@ -129,7 +129,14 @@ class ConditionalCriterion implements Criterion
     		$append = ')';
     		$prepend = '(';
     	}
-        $value = $prepend.$this->quoteStrategy->quote($value).$append;
+    	if( Criterion::AS_FIELD == $mutatorValue ){
+    		$value = $this->quoteStrategy->quoteColumn($value);
+    		$mutatorValue = '%s';
+    	}
+    	else{
+    		$value = $prepend.$this->quoteStrategy->quote($value).$append;
+    	}
+
         $part3 = $mutatorValue ? sprintf($mutatorValue, $value) : $value;
 
         if( Criterion::BETWEEN == $comparision ){
