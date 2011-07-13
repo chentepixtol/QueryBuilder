@@ -145,6 +145,65 @@ class QueryTest extends BaseTest
 
 	/**
 	 *
+	 * @test
+	 * @dataProvider getStrategyQuote
+	 */
+	public function group($strategyQuote)
+	{
+		$query = new Query($strategyQuote);
+		$query->addGroupByColumn('month');
+
+		$this->assertEquals("GROUP BY `month`", $query->createGroupSql());
+
+		$query = new Query($strategyQuote);
+		$query->addGroupByColumn('sales.month');
+
+		$this->assertEquals("GROUP BY `sales`.`month`", $query->createGroupSql());
+
+		$query->addGroupByColumn('sales.year');
+		$this->assertTrue($query->createGroupSql() === $query->createGroupSql());
+		$this->assertEquals("GROUP BY `sales`.`month`, `sales`.`year`", $query->createGroupSql());
+
+		$this->assertEquals(array('sales.month', 'sales.year'), $query->getGroupByColumns());
+	}
+
+	/**
+	 *
+	 * @test
+	 * @dataProvider getStrategyQuote
+	 */
+	public function order($strategyQuote)
+	{
+		$query = new Query($strategyQuote);
+		$query->addAscendingOrderByColumn('Person.birthdate');
+
+		$this->assertEquals('ORDER BY `Person`.`birthdate` ASC', $query->createOrderSql());
+
+		$query->addDescendingOrderByColumn('Person.name');
+		$this->assertTrue($query->createOrderSql() === $query->createOrderSql());
+		$this->assertEquals('ORDER BY `Person`.`birthdate` ASC, `Person`.`name` DESC', $query->createOrderSql());
+	}
+
+	/**
+	 *
+	 * @test
+	 * @dataProvider getStrategyQuote
+	 */
+	public function limit($strategyQuote)
+	{
+		$query = new Query($strategyQuote);
+		$query->setLimit(10);
+		$this->assertTrue($query->createLimitSql() === $query->createLimitSql());
+		$this->assertEquals('LIMIT 10', $query->createLimitSql());
+		$this->assertEquals(10, $query->getLimit());
+
+		$query->setOffset(20);
+		$this->assertEquals('LIMIT 10 OFFSET 20', $query->createLimitSql());
+		$this->assertEquals(20, $query->getOffset());
+	}
+
+	/**
+	 *
 	 * @return array
 	 */
 	public function getStrategyQuote(){

@@ -444,9 +444,9 @@ class Query implements SelectCriterion
 
 		$sql = '';
 		if (count ( $this->groupByColumns )) {
-			$sql .= "GROUP BY  ";
+			$sql .= "GROUP BY ";
 			$columns = array_map(array($this->quoteStrategy, 'quoteColumn'), $this->groupByColumns);
-			$sql .= implode ( ',', $columns);
+			$sql .= implode(', ', $columns);
 		}
 		$this->groupSql = $sql;
 		return $this->groupSql;
@@ -474,9 +474,9 @@ class Query implements SelectCriterion
 
 		$sql = '';
 		if ( count ($this->orderByColumns ) ) {
-			$sql = "ORDER BY  ";
+			$sql = "ORDER BY ";
 			$columns = array_map(array($this, '_quoteOrder'), $this->orderByColumns);
-			$sql .= implode ( ',',  $columns);
+			$sql .= implode(', ',  $columns);
 		}
 		$this->orderSql = $sql;
 		return $this->orderSql;

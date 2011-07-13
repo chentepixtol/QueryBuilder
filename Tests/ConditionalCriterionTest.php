@@ -1,6 +1,22 @@
 <?php
 require_once 'BaseTest.php';
-class ConditionalCriterionTest extends BaseTest{
+class ConditionalCriterionTest extends BaseTest
+{
+
+	/**
+	 *
+	 * @test
+	 */
+	public function factory()
+	{
+		$criterion = ConditionalCriterion::factory('column', 'value', Criterion::EQUAL);
+		$this->assertTrue($criterion instanceof ConditionalCriterion);
+		$this->assertFalse($criterion instanceof AutoConditionalCriterion);
+
+		$criterion = ConditionalCriterion::factory('column', 'value', Criterion::AUTO);
+		$this->assertTrue($criterion instanceof ConditionalCriterion);
+		$this->assertTrue($criterion instanceof AutoConditionalCriterion);
+	}
 
 	/**
 	 *
