@@ -423,8 +423,6 @@ class Query implements SelectCriterion
 			else{
 				if( $join['on'] instanceof Criteria ){
 					$sql .= " ON{$join['on']->createSql()}";
-				}else{
-					$sql .= " ON( {$join['on']} ) ";
 				}
 			}
 
@@ -521,7 +519,7 @@ class Query implements SelectCriterion
 			$this->createFromSql().' '.
 			$this->createJoinSql().' '.
 			$this->createWhereSql().' '.
-			$this->createGroupSql().' '.
+			$this->createGroupSql().
 			$this->createHavingSql().' '.
 			$this->createOrderSql().' '.
 			$this->createLimitSql();

@@ -8,6 +8,17 @@ class QueryTest extends BaseTest
 	 * @test
 	 * @dataProvider getStrategyQuote
 	 */
+	public function quote($strategyQuote)
+	{
+		$query = new Query($strategyQuote);
+		$this->assertEquals($strategyQuote, $query->getQuoteStrategy());
+	}
+
+	/**
+	 *
+	 * @test
+	 * @dataProvider getStrategyQuote
+	 */
 	public function selectPart($strategyQuote)
 	{
 		$query = new Query($strategyQuote);
@@ -100,7 +111,7 @@ class QueryTest extends BaseTest
 	 * @test
 	 * @dataProvider getStrategyQuote
 	 */
-	public function joinPart($strategyQuote)
+	public function joinUsingPart($strategyQuote)
 	{
 		$query = new Query($strategyQuote);
 
@@ -122,6 +133,33 @@ class QueryTest extends BaseTest
 		$query->rightJoinUsing('users', 'id_user');
 		$this->assertEquals("RIGHT JOIN `users` USING( `id_user` )", $query->createJoinSql());
 		$query->removeJoin('users');
+	}
+
+	/**
+	 *
+	 * @test
+	 * @dataProvider getStrategyQuote
+	 */
+	public function joinOnPart($strategyQuote)
+	{
+		$query = new Query($strategyQuote);
+
+		$this->assertEquals('', $query->createJoinSql());
+
+		$query->innerJoinOn('User')->add('Person.id_person', 'User.id_person', Criterion::EQUAL, null, Criterion::AS_FIELD);
+		$this->assertTrue($query->createJoinSql() == $query->createJoinSql());
+		$this->assertEquals('INNER JOIN `User` ON( `Person`.`id_person` = `User`.`id_person` )', $query->createJoinSql());
+		$query->removeJoin('User');
+
+		$query->leftJoinOn('User')->add('Person.id_person', 'User.id_person', Criterion::EQUAL, null, Criterion::AS_FIELD);
+		$this->assertTrue($query->createJoinSql() == $query->createJoinSql());
+		$this->assertEquals('LEFT JOIN `User` ON( `Person`.`id_person` = `User`.`id_person` )', $query->createJoinSql());
+		$query->removeJoin('User');
+
+		$query->rightJoinOn('User')->add('Person.id_person', 'User.id_person', Criterion::EQUAL, null, Criterion::AS_FIELD);
+		$this->assertTrue($query->createJoinSql() == $query->createJoinSql());
+		$this->assertEquals('RIGHT JOIN `User` ON( `Person`.`id_person` = `User`.`id_person` )', $query->createJoinSql());
+		$query->removeJoin('User');
 	}
 
 	/**
@@ -200,6 +238,67 @@ class QueryTest extends BaseTest
 		$query->setOffset(20);
 		$this->assertEquals('LIMIT 10 OFFSET 20', $query->createLimitSql());
 		$this->assertEquals(20, $query->getOffset());
+	}
+
+	/**
+	 *
+	 * @test
+	 * @dataProvider getStrategyQuote
+	 */
+	public function wherePart($strategyQuote)
+	{
+		$query = new Query($strategyQuote);
+
+		$this->assertTrue($query->where() instanceof Criteria);
+		$this->assertTrue($query->where()->isEmpty());
+		$this->assertEquals('WHERE ( 1 )', $query->createWhereSql());
+
+		$query->where()->add('mycol', 'myvalue', Criterion::EQUAL);
+		$this->assertEquals('WHERE ( `mycol` = \'myvalue\' )', $query->createWhereSql());
+	}
+
+	/**
+	 *
+	 * @test
+	 * @dataProvider getStrategyQuote
+	 */
+	public function havingPart($strategyQuote)
+	{
+		$query = new Query($strategyQuote);
+
+		$this->assertTrue($query->having() instanceof Criteria);
+		$this->assertTrue($query->having()->isEmpty());
+		$this->assertEquals('', $query->createHavingSql());
+
+		$query->having()->add('mycol', 'myvalue', Criterion::EQUAL);
+		$this->assertEquals('HAVING ( `mycol` = \'myvalue\' )', $query->createHavingSql());
+	}
+
+	/**
+	 *
+	 * @test
+	 * @dataProvider getStrategyQuote
+	 */
+	public function all($strategyQuote)
+	{
+		$query = new Query($strategyQuote);
+
+		$query->addColumn('User.*')
+			->from('users', 'User')
+			->innerJoinOn('Person')
+				->add('User.id_person', 'Person.id_person', Criterion::EQUAL, null, Criterion::AS_FIELD)
+			->endJoin()
+			->where()
+				->add('User.status', 'active')
+				->add('Person.name', 'Vicente', Criteria::LEFT_LIKE)
+			->endWhere()
+			->addGroupByColumn('User.group')
+			->addAscendingOrderByColumn('Person.age')
+			->setLimit(10)
+		;
+
+		$this->assertTrue($query->createBeautySql() == $query->createBeautySql());
+		$this->assertEquals("SELECT `User`.* FROM `users` as `User` INNER JOIN `Person` ON( `User`.`id_person` = `Person`.`id_person` ) WHERE ( `User`.`status` LIKE 'active' AND `Person`.`name` LIKE '%Vicente' ) GROUP BY `User`.`group` ORDER BY `Person`.`age` ASC LIMIT 10", $query->createSql());
 	}
 
 	/**
