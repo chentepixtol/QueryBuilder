@@ -122,6 +122,13 @@ class ConditionalCriterion implements Criterion
     		$value = str_replace(array('NOT LIKE','LIKE'), $value, $aux);
         }
 
+    	if( $this->comparison == Criterion::RANGE ){
+    		$comparision = Criterion::IN;
+    		$range = new Range();
+    		$range->fromString($value);
+    		$value = $range->toArray();
+    	}
+
         $part1 = $this->mutatorColumn ? sprintf($this->mutatorColumn, $column) : $column;
 
     	$append = $prepend = '';

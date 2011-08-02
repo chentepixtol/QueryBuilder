@@ -1,6 +1,20 @@
 <?php
 
-require_once 'Query.php';
+require_once 'Application/Query/Criterion.php';
+require_once 'Application/Query/CriterionComposite.php';
+require_once 'Application/Query/SelectCriterion.php';
+require_once 'Application/Query/QuoteStrategy.php';
+
+require_once 'Application/Query/Range.php';
+require_once 'Application/Query/ConditionalCriterion.php';
+require_once 'Application/Query/AutoConditionalCriterion.php';
+require_once 'Application/Query/ConditionalComposite.php';
+
+require_once 'Application/Query/Criteria.php';
+require_once 'Application/Query/SimpleQuoteStrategy.php';
+require_once 'Application/Query/ZendDbQuoteStrategy.php';
+require_once 'Application/Query/Query.php';
+
 
 echo '<pre>';
 

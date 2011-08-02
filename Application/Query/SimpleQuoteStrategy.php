@@ -18,8 +18,6 @@ class SimpleQuoteStrategy implements QuoteStrategy
         return $this->_quote($value);
     }
 
-
-
     /* (non-PHPdoc)
 	 * @see QuoteStrategy::quoteColumn()
 	 */
@@ -54,7 +52,14 @@ class SimpleQuoteStrategy implements QuoteStrategy
      */
     protected function _quote($value)
     {
-    	return is_array($value) ? implode($this->implodeGlue, array_map(array($this, '_quote'), $value)) : "{$this->separator}{$value}{$this->separator}";
+    	$oldSeparator = $this->separator;
+    	if( is_int($value) || is_float($value) ){
+    		$this->separator = null;
+    	}
+
+    	$return = is_array($value) ? implode($this->implodeGlue, array_map(array($this, '_quote'), $value)) : "{$this->separator}{$value}{$this->separator}";
+    	$this->separator = $oldSeparator;
+    	return $return;
     }
 
 

@@ -96,7 +96,12 @@ class ConditionalCriterionTest extends BaseTest
 			array(32, 'date', array('2011-01-01', '20011-01-31'), Criterion::BETWEEN),
 			//IDS
 			array(33, 'id', 5115, Criterion::EQUAL),
-			array(34, 'User.id_person', 'Person.id_person', Criteria::EQUAL, null, Criterion::AS_FIELD)
+			array(34, 'User.id_person', 'Person.id_person', Criteria::EQUAL, null, Criterion::AS_FIELD),
+			//RANGE
+			array(35, 'User.role', '1-2,3,5-8', Criteria::RANGE),
+			// IN
+			array(36, 'numbers', array(1,2,3,4), Criterion::IN),
+			array(37, 'numbers', array('1','2','3','4'), Criterion::IN),
 		);
 	}
 
@@ -153,6 +158,11 @@ class ConditionalCriterionTest extends BaseTest
 			32 => "`date` BETWEEN '2011-01-01' AND '20011-01-31'",
 			33 => "`id` = 5115",
 			34 => '`User`.`id_person` = `Person`.`id_person`',
+			// RANGE
+			35 => "`User`.`role` IN (1, 2, 3, 5, 6, 7, 8)",
+			// IN
+			36 => "`numbers` IN (1, 2, 3, 4)",
+			37 => "`numbers` IN ('1', '2', '3', '4')",
 		);
 		return $expected[$i];
 	}

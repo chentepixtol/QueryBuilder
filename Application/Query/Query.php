@@ -1,15 +1,4 @@
 <?php
-
-require_once 'Criterion.php';
-require_once 'CriterionComposite.php';
-require_once 'ConditionalComposite.php';
-require_once 'ConditionalCriterion.php';
-require_once 'QuoteStrategy.php';
-require_once 'SimpleQuoteStrategy.php';
-require_once 'SelectCriterion.php';
-require_once 'AutoConditionalCriterion.php';
-require_once 'Criteria.php';
-
 /**
  *
  * Query
