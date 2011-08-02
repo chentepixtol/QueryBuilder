@@ -1,9 +1,17 @@
 <?php
 
-require_once 'QuoteStrategy.php';
-
+/**
+ *
+ * ZendDbQuoteStrategy
+ *
+ * @package Query
+ * @copyright (c) Vicente Mendoza <chentepixtol@gmail.com>
+ * @author chentepixtol
+ *
+ */
 class ZendDbQuoteStrategy implements QuoteStrategy
 {
+
 	/**
 	 *
 	 *
@@ -11,6 +19,11 @@ class ZendDbQuoteStrategy implements QuoteStrategy
 	 */
 	private $db;
 
+	/**
+	 *
+	 * constructor
+	 * @param Zend_Db_Adapter_Abstract $db
+	 */
 	public function __construct(Zend_Db_Adapter_Abstract $db){
 		$this->db = $db;
 	}

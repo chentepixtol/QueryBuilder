@@ -1,10 +1,29 @@
 <?php
 
-
+/**
+ *
+ * SimpleQuoteStrategy
+ *
+ * @package Query
+ * @copyright (c) Vicente Mendoza <chentepixtol@gmail.com>
+ * @author chentepixtol
+ *
+ */
 class SimpleQuoteStrategy implements QuoteStrategy
 {
 
+	/**
+	 *
+	 * separator
+	 * @var string
+	 */
 	private $separator = "'";
+
+	/**
+	 *
+	 * separator glue
+	 * @var string
+	 */
 	private $implodeGlue = ',';
 
 	/**
@@ -61,7 +80,5 @@ class SimpleQuoteStrategy implements QuoteStrategy
     	$this->separator = $oldSeparator;
     	return $return;
     }
-
-
 
 }

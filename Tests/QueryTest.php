@@ -189,16 +189,16 @@ class QueryTest extends BaseTest
 	public function group($strategyQuote)
 	{
 		$query = new Query($strategyQuote);
-		$query->addGroupByColumn('month');
+		$query->addGroupBy('month');
 
 		$this->assertEquals("GROUP BY `month`", $query->createGroupSql());
 
 		$query = new Query($strategyQuote);
-		$query->addGroupByColumn('sales.month');
+		$query->addGroupBy('sales.month');
 
 		$this->assertEquals("GROUP BY `sales`.`month`", $query->createGroupSql());
 
-		$query->addGroupByColumn('sales.year');
+		$query->addGroupBy('sales.year');
 		$this->assertTrue($query->createGroupSql() === $query->createGroupSql());
 		$this->assertEquals("GROUP BY `sales`.`month`, `sales`.`year`", $query->createGroupSql());
 
@@ -213,11 +213,16 @@ class QueryTest extends BaseTest
 	public function order($strategyQuote)
 	{
 		$query = new Query($strategyQuote);
-		$query->addAscendingOrderByColumn('Person.birthdate');
+		$query->orderBy('Person.birthdate', Query::ASC);
 
 		$this->assertEquals('ORDER BY `Person`.`birthdate` ASC', $query->createOrderSql());
 
-		$query->addDescendingOrderByColumn('Person.name');
+		$query = new Query($strategyQuote);
+		$query->addAscendingOrderBy('Person.birthdate');
+
+		$this->assertEquals('ORDER BY `Person`.`birthdate` ASC', $query->createOrderSql());
+
+		$query->addDescendingOrderBy('Person.name');
 		$this->assertTrue($query->createOrderSql() === $query->createOrderSql());
 		$this->assertEquals('ORDER BY `Person`.`birthdate` ASC, `Person`.`name` DESC', $query->createOrderSql());
 	}
@@ -248,13 +253,19 @@ class QueryTest extends BaseTest
 	public function wherePart($strategyQuote)
 	{
 		$query = new Query($strategyQuote);
+		$query2 = new Query($strategyQuote);
 
 		$this->assertTrue($query->where() instanceof Criteria);
 		$this->assertTrue($query->where()->isEmpty());
 		$this->assertEquals('WHERE ( 1 )', $query->createWhereSql());
 
 		$query->where()->add('mycol', 'myvalue', Criterion::EQUAL);
-		$this->assertEquals('WHERE ( `mycol` = \'myvalue\' )', $query->createWhereSql());
+		$this->assertEquals("WHERE ( `mycol` = 'myvalue' )", $query->createWhereSql());
+
+		$query2->whereAdd('mycol', 'myvalue', Criterion::EQUAL);
+		$this->assertEquals("WHERE ( `mycol` = 'myvalue' )", $query->createWhereSql());
+
+		$this->assertEquals($query->createWhereSql(), $query2->createWhereSql());
 	}
 
 	/**
@@ -292,8 +303,8 @@ class QueryTest extends BaseTest
 				->add('User.status', 'active')
 				->add('Person.name', 'Vicente', Criteria::LEFT_LIKE)
 			->endWhere()
-			->addGroupByColumn('User.group')
-			->addAscendingOrderByColumn('Person.age')
+			->addGroupBy('User.group')
+			->addAscendingOrderBy('Person.age')
 			->setLimit(10)
 		;
 

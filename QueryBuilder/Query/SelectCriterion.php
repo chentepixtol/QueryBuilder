@@ -1,5 +1,14 @@
 <?php
 
+/**
+ *
+ * SelectCriterion
+ *
+ * @package Query
+ * @copyright (c) Vicente Mendoza <chentepixtol@gmail.com>
+ * @author chentepixtol
+ *
+ */
 interface SelectCriterion extends Criterion
 {
 

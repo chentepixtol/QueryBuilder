@@ -1,6 +1,16 @@
 <?php
 
-interface CriterionComposite extends Criterion{
+/**
+ *
+ * CriterionComposite
+ *
+ * @package Query
+ * @copyright (c) Vicente Mendoza <chentepixtol@gmail.com>
+ * @author chentepixtol
+ *
+ */
+interface CriterionComposite extends Criterion
+{
 
     const LOGICAL_AND = 'AND';
     const LOGICAL_OR = 'OR';

@@ -2,8 +2,11 @@
 
 /**
  *
+ * Range
  *
- * @author chente
+ * @package Query
+ * @copyright (c) Vicente Mendoza <chentepixtol@gmail.com>
+ * @author chentepixtol
  *
  */
 class Range

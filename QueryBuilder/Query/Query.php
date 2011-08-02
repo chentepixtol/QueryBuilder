@@ -1,8 +1,12 @@
 <?php
+
 /**
  *
  * Query
- * @author chente
+ *
+ * @package Query
+ * @copyright (c) Vicente Mendoza <chentepixtol@gmail.com>
+ * @author chentepixtol
  *
  */
 class Query implements SelectCriterion
@@ -13,6 +17,8 @@ class Query implements SelectCriterion
 	 * @var string
 	 */
 	const ALL_COLUMNS = '*';
+	const ASC = 'ASC';
+	const DESC = 'DESC';
 
 	/**
 	 *
@@ -124,6 +130,16 @@ class Query implements SelectCriterion
 		$this->whereCriteria = new Criteria($this);
 		$this->havingCriteria = new Criteria($this);
 		$this->setQuoteStrategy($quoteStrategy ? $quoteStrategy : new SimpleQuoteStrategy());
+	}
+
+	/**
+	 *
+	 * Factory
+	 * @param QuoteStrategy $quoteStrategy
+	 * @return Query
+	 */
+	public static function create(QuoteStrategy $quoteStrategy = null){
+		return new static($quoteStrategy);
 	}
 
 	/**
@@ -318,6 +334,20 @@ class Query implements SelectCriterion
 	 */
 	public function where(){
 		return $this->whereCriteria;
+	}
+
+	/**
+	 *
+	 * @param string $column
+	 * @param mixed $value
+	 * @param string $comparison
+	 * @param string $mutatorColumn
+	 * @param string $mutatorValue
+	 * @return Query
+	 */
+	public function whereAdd($column, $value, $comparison = Criterion::AUTO, $mutatorColumn = null, $mutatorValue = null){
+		$this->whereCriteria->add($column, $value, $comparison, $mutatorColumn, $mutatorValue);
+		return $this;
 	}
 
 	/**
@@ -582,7 +612,7 @@ class Query implements SelectCriterion
 	 * @param string $groupBy
 	 * @return Query
 	 */
-	public function addGroupByColumn($groupBy)
+	public function addGroupBy($groupBy)
 	{
 		$this->groupSql = null;
 		$this->groupByColumns [] = $groupBy;
@@ -597,16 +627,27 @@ class Query implements SelectCriterion
 	}
 
 	/**
+	 *
+	 * order by
+	 * @param string $name
+	 * @param string $type
+	 * @return Query
+	 */
+	public function orderBy($name, $type = Query::ASC)
+	{
+		$this->orderSql = null;
+		$this->orderByColumns [] = array('column' => $name, 'type' => $type);
+		return $this;
+	}
+
+	/**
 	 * Agrega una columna para ordenar de forma ascendente
 	 *
 	 * @param string $name El nombde de la columna.
 	 * @return  Query
 	 */
-	public function addAscendingOrderByColumn($name)
-	{
-		$this->orderSql = null;
-		$this->orderByColumns [] = array('column' => $name, 'type' => 'ASC');
-		return $this;
+	public function addAscendingOrderBy($name){
+		return $this->orderBy($name, Query::ASC);
 	}
 
 	/**
@@ -615,11 +656,8 @@ class Query implements SelectCriterion
 	 * @param string $name El nombre de la columna
 	 * @return Query
 	 */
-	public function addDescendingOrderByColumn($name)
-	{
-		$this->orderSql = null;
-		$this->orderByColumns [] = array('column' => $name, 'type' => 'DESC');
-		return $this;
+	public function addDescendingOrderBy($name){
+		return $this->orderBy($name, Query::DESC);
 	}
 
 

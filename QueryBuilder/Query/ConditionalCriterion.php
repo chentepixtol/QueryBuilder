@@ -1,5 +1,14 @@
 <?php
 
+/**
+ *
+ * ConditionalCriterion
+ *
+ * @package Query
+ * @copyright (c) Vicente Mendoza <chentepixtol@gmail.com>
+ * @author chentepixtol
+ *
+ */
 class ConditionalCriterion implements Criterion
 {
 

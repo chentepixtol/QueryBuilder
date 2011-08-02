@@ -1,27 +1,24 @@
 <?php
 
-require_once 'Application/Query/Criterion.php';
-require_once 'Application/Query/CriterionComposite.php';
-require_once 'Application/Query/SelectCriterion.php';
-require_once 'Application/Query/QuoteStrategy.php';
+require_once 'QueryBuilder/Query/Criterion.php';
+require_once 'QueryBuilder/Query/CriterionComposite.php';
+require_once 'QueryBuilder/Query/SelectCriterion.php';
+require_once 'QueryBuilder/Query/QuoteStrategy.php';
 
-require_once 'Application/Query/Range.php';
-require_once 'Application/Query/ConditionalCriterion.php';
-require_once 'Application/Query/AutoConditionalCriterion.php';
-require_once 'Application/Query/ConditionalComposite.php';
+require_once 'QueryBuilder/Query/Range.php';
+require_once 'QueryBuilder/Query/ConditionalCriterion.php';
+require_once 'QueryBuilder/Query/AutoConditionalCriterion.php';
+require_once 'QueryBuilder/Query/ConditionalComposite.php';
 
-require_once 'Application/Query/Criteria.php';
-require_once 'Application/Query/SimpleQuoteStrategy.php';
-require_once 'Application/Query/ZendDbQuoteStrategy.php';
-require_once 'Application/Query/Query.php';
+require_once 'QueryBuilder/Query/Criteria.php';
+require_once 'QueryBuilder/Query/SimpleQuoteStrategy.php';
+require_once 'QueryBuilder/Query/ZendDbQuoteStrategy.php';
+require_once 'QueryBuilder/Query/Query.php';
 
 
 echo '<pre>';
 
-
-
-$query = new Query();
-$query->addColumn('myColumn', 'alias1')
+$query = Query::create()->addColumn('myColumn', 'alias1')
 	->addColumn('myColumn2')
 	->from('mytable')
 	->innerJoinOn('mytabl2')
@@ -47,13 +44,15 @@ $query->addColumn('myColumn', 'alias1')
 		->add('nivel', '1')
 		->add('nivel', '1')
 	->endWhere()
-	->addGroupByColumn('alias1')
+	->addGroupBy('alias1')
 	->having()
 		->add('groupcolumn', '123')
 		->add('group2', '45')
 	->endHaving()
 	->setLimit(1)
-	->addDescendingOrderByColumn('myColumn2')
+	->addDescendingOrderBy('myColumn2')
 ;
 
 echo $query->createBeautySql();
+
+

@@ -1,6 +1,14 @@
 <?php
 
-
+/**
+ *
+ * QuoteStrategy
+ *
+ * @package Query
+ * @copyright (c) Vicente Mendoza <chentepixtol@gmail.com>
+ * @author chentepixtol
+ *
+ */
 interface QuoteStrategy
 {
 
