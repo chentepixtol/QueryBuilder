@@ -1,4 +1,6 @@
 <?php
+use Query\Range;
+
 require_once 'BaseTest.php';
 
 /**

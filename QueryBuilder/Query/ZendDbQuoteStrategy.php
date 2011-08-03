@@ -1,5 +1,7 @@
 <?php
 
+namespace Query;
+
 /**
  *
  * ZendDbQuoteStrategy
@@ -24,7 +26,7 @@ class ZendDbQuoteStrategy implements QuoteStrategy
 	 * constructor
 	 * @param Zend_Db_Adapter_Abstract $db
 	 */
-	public function __construct(Zend_Db_Adapter_Abstract $db){
+	public function __construct(\Zend_Db_Adapter_Abstract $db){
 		$this->db = $db;
 	}
 

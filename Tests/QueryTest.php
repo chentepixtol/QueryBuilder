@@ -1,5 +1,13 @@
 <?php
+
+use Query\Criteria;
+use Query\Criterion;
+use Query\Query;
+use Query\SimpleQuoteStrategy;
+
+
 require_once 'BaseTest.php';
+
 class QueryTest extends BaseTest
 {
 

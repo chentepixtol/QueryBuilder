@@ -1,5 +1,8 @@
 <?php
 
+use Query\Criterion;
+use Query\Query;
+
 require_once 'QueryBuilder/Query/Criterion.php';
 require_once 'QueryBuilder/Query/CriterionComposite.php';
 require_once 'QueryBuilder/Query/SelectCriterion.php';
@@ -14,6 +17,7 @@ require_once 'QueryBuilder/Query/Criteria.php';
 require_once 'QueryBuilder/Query/SimpleQuoteStrategy.php';
 require_once 'QueryBuilder/Query/ZendDbQuoteStrategy.php';
 require_once 'QueryBuilder/Query/Query.php';
+require_once 'QueryBuilder/Query/Exception.php';
 
 
 echo '<pre>';

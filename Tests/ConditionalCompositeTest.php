@@ -1,5 +1,12 @@
 <?php
+
+use Query\ConditionalCriterion;
+use Query\CriterionComposite;
+use Query\ConditionalComposite;
+
+
 require_once 'BaseTest.php';
+
 class ConditionalCompositeTest extends BaseTest
 {
 

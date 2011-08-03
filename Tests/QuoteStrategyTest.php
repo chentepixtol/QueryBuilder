@@ -1,4 +1,7 @@
 <?php
+use Query\SimpleQuoteStrategy;
+use Query\QuoteStrategy;
+
 require_once 'BaseTest.php';
 class QuoteStrategyTest extends BaseTest
 {

@@ -1,6 +1,13 @@
 <?php
+use Query\SimpleQuoteStrategy;
+use Query\AutoConditionalCriterion;
+use Query\Criterion;
+
+
 require_once 'BaseTest.php';
-class AutoConditionalCriterionTest extends BaseTest{
+
+class AutoConditionalCriterionTest extends BaseTest
+{
 
 	/**
 	 *
