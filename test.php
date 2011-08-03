@@ -1,26 +1,17 @@
 <?php
 
+use Symfony\Component\ClassLoader\UniversalClassLoader;
 use Query\Criterion;
 use Query\Query;
 
-require_once 'QueryBuilder/Query/Criterion.php';
-require_once 'QueryBuilder/Query/CriterionComposite.php';
-require_once 'QueryBuilder/Query/SelectCriterion.php';
-require_once 'QueryBuilder/Query/QuoteStrategy.php';
+require_once 'vendor/Symfony/Component/ClassLoader/UniversalClassLoader.php';
 
-require_once 'QueryBuilder/Query/Range.php';
-require_once 'QueryBuilder/Query/ConditionalCriterion.php';
-require_once 'QueryBuilder/Query/AutoConditionalCriterion.php';
-require_once 'QueryBuilder/Query/ConditionalComposite.php';
+$loader = new UniversalClassLoader();
+$loader->registerNamespaces(array(
+	'Query' => 'QueryBuilder/',
+));
+$loader->register();
 
-require_once 'QueryBuilder/Query/Criteria.php';
-require_once 'QueryBuilder/Query/SimpleQuoteStrategy.php';
-require_once 'QueryBuilder/Query/ZendDbQuoteStrategy.php';
-require_once 'QueryBuilder/Query/Query.php';
-require_once 'QueryBuilder/Query/Exception.php';
-
-
-echo '<pre>';
 
 $query = Query::create()->addColumn('myColumn', 'alias1')
 	->addColumn('myColumn2')
@@ -57,6 +48,7 @@ $query = Query::create()->addColumn('myColumn', 'alias1')
 	->addDescendingOrderBy('myColumn2')
 ;
 
+echo '<pre>';
 echo $query->createBeautySql();
 
 

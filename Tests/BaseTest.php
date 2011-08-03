@@ -1,22 +1,15 @@
 <?php
 
 use Query\ZendDbQuoteStrategy;
+use Symfony\Component\ClassLoader\UniversalClassLoader;
 
-require_once 'QueryBuilder/Query/Criterion.php';
-require_once 'QueryBuilder/Query/CriterionComposite.php';
-require_once 'QueryBuilder/Query/SelectCriterion.php';
-require_once 'QueryBuilder/Query/QuoteStrategy.php';
+require_once 'vendor/Symfony/Component/ClassLoader/UniversalClassLoader.php';
 
-require_once 'QueryBuilder/Query/Range.php';
-require_once 'QueryBuilder/Query/ConditionalCriterion.php';
-require_once 'QueryBuilder/Query/AutoConditionalCriterion.php';
-require_once 'QueryBuilder/Query/ConditionalComposite.php';
-
-require_once 'QueryBuilder/Query/Criteria.php';
-require_once 'QueryBuilder/Query/SimpleQuoteStrategy.php';
-require_once 'QueryBuilder/Query/ZendDbQuoteStrategy.php';
-require_once 'QueryBuilder/Query/Query.php';
-require_once 'QueryBuilder/Query/Exception.php';
+$loader = new UniversalClassLoader();
+$loader->registerNamespaces(array(
+	'Query'     => 'QueryBuilder/',
+));
+$loader->register();
 
 
 /**
