@@ -129,8 +129,8 @@ class Query implements SelectCriterion
 	 */
 	public function __construct(QuoteStrategy $quoteStrategy = null)
 	{
-		$this->whereCriteria = new Criteria($this);
-		$this->havingCriteria = new Criteria($this);
+		$this->whereCriteria = $this->createCriteria();
+		$this->havingCriteria = $this->createCriteria();
 		$this->setQuoteStrategy($quoteStrategy ? $quoteStrategy : new SimpleQuoteStrategy());
 	}
 
@@ -145,6 +145,14 @@ class Query implements SelectCriterion
 	}
 
 	/**
+	 * Factory Method for Criteria
+	 * @return Criteria
+	 */
+	protected function createCriteria(){
+		return new Criteria($this);
+	}
+
+	/**
 	 *
 	 *
 	 * @param string $table
@@ -153,7 +161,7 @@ class Query implements SelectCriterion
 	 */
 	public function joinOn($table, $type = Criterion::JOIN)
 	{
-		$on = new Criteria($this);
+		$on = $this->createCriteria();
 		$on->setQuoteStrategy($this->quoteStrategy);
 		$this->joinSql = null;
 		$this->joins[$table] = array(
@@ -170,6 +178,7 @@ class Query implements SelectCriterion
 	 * @param string $table
 	 * @param string $usingColumn
 	 * @param string $type
+	 * @return Query
 	 */
 	public function joinUsing($table, $usingColumn, $type = Criterion::JOIN)
 	{
@@ -195,6 +204,7 @@ class Query implements SelectCriterion
 	 *
 	 * @param string $table
 	 * @param string $on
+	 * @return Query
 	 */
 	public function innerJoinUsing($table, $usingColumn){
 		return $this->joinUsing($table, $usingColumn, Criterion::INNER_JOIN);
@@ -213,6 +223,7 @@ class Query implements SelectCriterion
 	 *
 	 * @param string $table
 	 * @param string $on
+	 * @return Query
 	 */
 	public function leftJoinUsing($table, $usingColumn){
 		return $this->joinUsing($table, $usingColumn, Criterion::LEFT_JOIN);
@@ -231,6 +242,7 @@ class Query implements SelectCriterion
 	 *
 	 * @param string $table
 	 * @param string $on
+	 * @return Query
 	 */
 	public function rightJoinUsing($table, $usingColumn){
 		return $this->joinUsing($table, $usingColumn, Criterion::RIGHT_JOIN);
@@ -249,7 +261,7 @@ class Query implements SelectCriterion
 
 	/**
 	 *
-	 * Enter description here ...
+	 *
 	 * @param unknown_type $table
 	 * @return Query
 	 */
@@ -263,8 +275,9 @@ class Query implements SelectCriterion
 
 	/**
 	 *
-	 * Enter description here ...
-	 * @param unknown_type $table
+	 *
+	 * @param string $table
+	 * @return Query
 	 */
 	public function from($table, $alias = null)
 	{
@@ -503,7 +516,7 @@ class Query implements SelectCriterion
 
 	/**
 	 *
-	 * Enter description here ...
+	 *
 	 * @param array $orderArray
 	 * @return string
 	 */
@@ -591,6 +604,7 @@ class Query implements SelectCriterion
 
 	/**
 	 * @param int $limit
+	 * @return Query
 	 */
 	public function setLimit($limit)
 	{
@@ -601,6 +615,7 @@ class Query implements SelectCriterion
 
 	/**
 	 * @param int $offset
+	 * @return Query
 	 */
 	public function setOffset($offset)
 	{
