@@ -35,7 +35,14 @@ class ZendDbQuoteStrategy implements QuoteStrategy
 	 *
 	 * @param mixed $value
 	 */
-    public function quote($value){
+    public function quote($value)
+    {
+    	if( $value instanceof Criterion ){
+    		$value = new Expression('( '.$value->createSql().' )');
+    	}
+    	if( $value instanceof Expression ){
+    		return $value->toString();
+    	}
     	return $this->db->quote($value);
     }
 
@@ -44,7 +51,14 @@ class ZendDbQuoteStrategy implements QuoteStrategy
 	 *
 	 * @param mixed $value
 	 */
-    public function quoteTable($value){
+    public function quoteTable($value)
+    {
+    	if( $value instanceof Criterion ){
+    		$value = new Expression('( '.$value->createSql().' )');
+    	}
+    	if( $value instanceof Expression ){
+    		return $value->toString();
+    	}
     	return $this->db->quoteIdentifier($value);
     }
 
@@ -53,7 +67,14 @@ class ZendDbQuoteStrategy implements QuoteStrategy
 	 *
 	 * @param mixed $value
 	 */
-    public function quoteColumn($value){
+    public function quoteColumn($value)
+    {
+    	if( $value instanceof Criterion ){
+    		$value = new Expression('( '.$value->createSql().' )');
+    	}
+    	if( $value instanceof Expression ){
+    		return $value->toString();
+    	}
     	$column = $this->db->quoteColumnAs($value, null);
     	$column = str_replace('`*`', '*', $column);
     	return $column;

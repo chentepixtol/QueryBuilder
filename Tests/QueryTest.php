@@ -1,5 +1,6 @@
 <?php
 
+use Query\Expression;
 use Query\Criteria;
 use Query\Criterion;
 use Query\Query;
@@ -64,6 +65,10 @@ class QueryTest extends BaseTest
 
 		$query->addColumn('User.*');
 		$this->assertEquals('SELECT `User`.*', $query->createSelectSql());
+		$query->removeColumn();
+
+		$query->addColumn(new Expression("IF(user.role == 'admin' AND user.username LIKE '%root%')"), 'isSuperAdmin');
+		$this->assertEquals("SELECT IF(user.role == 'admin' AND user.username LIKE '%root%') as `isSuperAdmin`", $query->createSelectSql());
 		$query->removeColumn();
 	}
 
@@ -265,7 +270,7 @@ class QueryTest extends BaseTest
 
 		$this->assertTrue($query->where() instanceof Criteria);
 		$this->assertTrue($query->where()->isEmpty());
-		$this->assertEquals('WHERE ( 1 )', $query->createWhereSql());
+		$this->assertEquals('', $query->createWhereSql());
 
 		$query->where()->add('mycol', 'myvalue', Criterion::EQUAL);
 		$this->assertEquals("WHERE ( `mycol` = 'myvalue' )", $query->createWhereSql());

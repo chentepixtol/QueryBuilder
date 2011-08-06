@@ -371,6 +371,9 @@ class Query implements SelectCriterion
 	 */
 	public function createWhereSql()
 	{
+		if( $this->whereCriteria->isEmpty() ){
+			return '';
+		}
 		return 'WHERE '.$this->whereCriteria->createSql();
 	}
 
@@ -549,14 +552,19 @@ class Query implements SelectCriterion
 	 * @see Criterion::createSql()
 	 */
 	public function createSql() {
-		return $this->createSelectSql().' '.
-			$this->createFromSql().' '.
-			$this->createJoinSql().' '.
-			$this->createWhereSql().' '.
-			$this->createGroupSql().
-			$this->createHavingSql().' '.
-			$this->createOrderSql().' '.
-			$this->createLimitSql();
+
+		$parts = array();
+
+		if( $this->createSelectSql() != '' ) $parts[] = $this->createSelectSql();
+		if( $this->createFromSql() != '' ) $parts[] = $this->createFromSql();
+		if( $this->createJoinSql() != '' ) $parts[] = $this->createJoinSql();
+		if( $this->createWhereSql() != '' ) $parts[] = $this->createWhereSql();
+		if( $this->createGroupSql() != '' ) $parts[] = $this->createGroupSql();
+		if( $this->createHavingSql() != '' ) $parts[] = $this->createHavingSql();
+		if( $this->createOrderSql() != '' ) $parts[] = $this->createOrderSql();
+		if( $this->createLimitSql() != '' ) $parts[] = $this->createLimitSql();
+
+		return implode(' ', $parts);
 	}
 
 	/**

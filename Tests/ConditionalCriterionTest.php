@@ -1,5 +1,6 @@
 <?php
 
+use Query\Expression;
 use Query\AutoConditionalCriterion;
 use Query\SimpleQuoteStrategy;
 use Query\ConditionalCriterion;
@@ -112,6 +113,9 @@ class ConditionalCriterionTest extends BaseTest
 			// IN
 			array(36, 'numbers', array(1,2,3,4), Criterion::IN),
 			array(37, 'numbers', array('1','2','3','4'), Criterion::IN),
+			// Expression
+			array(38, 'status', new Expression('CONCAT(role, status)'), Criterion::EQUAL),
+			array(39, new Expression('IF(status, status, 5)'), 5, Criterion::NOT_EQUAL),
 		);
 	}
 
@@ -173,6 +177,9 @@ class ConditionalCriterionTest extends BaseTest
 			// IN
 			36 => "`numbers` IN (1, 2, 3, 4)",
 			37 => "`numbers` IN ('1', '2', '3', '4')",
+			//Expression
+			38 => "`status` = CONCAT(role, status)",
+			39 => "IF(status, status, 5) != 5",
 		);
 		return $expected[$i];
 	}

@@ -121,7 +121,8 @@ class ConditionalCriterion implements Criterion
     	if( null !== $this->sql )
     		return $this->sql;
 
-    	$column =  $this->quoteStrategy->quoteColumn(str_replace('`', '', $this->column));
+    	$column = is_string($this->column) ? str_replace('`', '', $this->column) : $this->column;
+    	$column = $this->quoteStrategy->quoteColumn($column);
     	$mutatorValue = $this->mutatorValue;
     	$value = $this->value;
     	$comparision = $this->comparison;

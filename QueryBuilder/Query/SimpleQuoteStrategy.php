@@ -34,6 +34,12 @@ class SimpleQuoteStrategy implements QuoteStrategy
 	 */
     public function quote($value)
     {
+    	if( $value instanceof Criterion ){
+    		$value = new Expression('( '.$value->createSql().' )');
+    	}
+    	if( $value instanceof Expression ){
+    		return $value->toString();
+    	}
     	$this->separator = ( is_int($value) || is_float($value) )? null : "'";
     	$this->implodeGlue = ', ';
         return $this->_quote($value);
@@ -44,6 +50,12 @@ class SimpleQuoteStrategy implements QuoteStrategy
 	 */
 	public function quoteColumn($value)
 	{
+		if( $value instanceof Criterion ){
+    		$value = new Expression('( '.$value->createSql().' )');
+    	}
+		if( $value instanceof Expression ){
+    		return $value->toString();
+    	}
 		$this->separator = '`';
 		$this->implodeGlue = '.';
 		if( is_array($value) ){
@@ -59,7 +71,14 @@ class SimpleQuoteStrategy implements QuoteStrategy
 	/* (non-PHPdoc)
 	 * @see QuoteStrategy::quoteTable()
 	 */
-	public function quoteTable($value) {
+	public function quoteTable($value)
+	{
+		if( $value instanceof Criterion ){
+    		$value = new Expression('( '.$value->createSql().' )');
+    	}
+		if( $value instanceof Expression ){
+    		return $value->toString();
+    	}
 		$this->separator = '`';
 		$this->implodeGlue = '.';
 		return $this->_quote(explode('.', $value));
