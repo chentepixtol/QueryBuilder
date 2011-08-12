@@ -27,6 +27,9 @@ class ExtensibleTest extends BaseTest
 
 		$criteriaJoin = MockQuery::create()->joinOn('my_table');
 		$this->assertTrue($criteriaJoin instanceof MockCriteria);
+
+		$select  = MockQuery::create()->createSelectSql();
+		$this->assertEquals("SELECT `MockTable`.*", $select);
 	}
 
 }

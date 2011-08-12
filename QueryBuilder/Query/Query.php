@@ -124,6 +124,12 @@ class Query implements SelectCriterion
 
 	/**
 	 *
+	 * @var string
+	 */
+	protected $defaultColumn = '*';
+
+	/**
+	 *
 	 * Construct
 	 * @param QuoteStrategy $quoteStrategy
 	 */
@@ -132,7 +138,14 @@ class Query implements SelectCriterion
 		$this->whereCriteria = $this->createCriteria();
 		$this->havingCriteria = $this->createCriteria();
 		$this->setQuoteStrategy($quoteStrategy ? $quoteStrategy : new SimpleQuoteStrategy());
+		$this->init();
 	}
+
+	/**
+	 *
+	 * int subclasses
+	 */
+	protected function init(){}
 
 	/**
 	 *
@@ -397,8 +410,8 @@ class Query implements SelectCriterion
 
 		$sql = 'SELECT';
 
-		if(empty($this->columns)){
-			$sql .= ' '.self::ALL_COLUMNS;
+		if( empty($this->columns) ){
+			$sql .= ' '.$this->quoteStrategy->quoteColumn($this->getDefaultColumn());
 		}
 
 		$n = count($this->columns);
@@ -685,6 +698,23 @@ class Query implements SelectCriterion
 		return $this->orderBy($name, Query::DESC);
 	}
 
+	/**
+	 *
+	 * @return string
+	 */
+	protected function getDefaultColumn(){
+		return $this->defaultColumn;
+	}
 
+	/**
+	 *
+	 * @param string $defaultColumn
+	 * @return Query
+	 */
+	protected function setDefaultColumn($defaultColumn)
+	{
+		$this->defaultColumn = $defaultColumn;
+		return $this;
+	}
 
 }
