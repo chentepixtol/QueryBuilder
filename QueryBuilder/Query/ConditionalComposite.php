@@ -97,6 +97,9 @@ class ConditionalComposite implements CriterionComposite
      */
     public function setQuoteStrategy(QuoteStrategy $quoteStrategy){
         $this->quoteStrategy = $quoteStrategy;
+        foreach ($this->getChildrens() as $children){
+        	$children->setQuoteStrategy($quoteStrategy);
+        }
     }
 
 	/**

@@ -47,6 +47,7 @@ class Criteria implements Criterion
 	public function __construct(Query $query = null){
 		$this->query = $query;
 		$this->currentComposite = $this->mainComposite = new ConditionalComposite();
+		$this->setQuoteStrategy(new NullQuoteStrategy());
 	}
 
 	/**
