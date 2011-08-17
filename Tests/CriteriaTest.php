@@ -104,4 +104,27 @@ class CriteriaTest extends BaseTest
 		$this->assertEquals('( `col1` = 1 OR `col2` = 2 OR ( `col3` = 3 AND `col4` = 4 ) )', $criteria->createSql());
 	}
 
+	/**
+	 *
+	 * @test
+	 */
+	public function merge()
+	{
+		$criteria1 = new Criteria();
+		$criteria1->setQuoteStrategy(new SimpleQuoteStrategy());
+		$criteria1->setAND()
+			->add('name', 'chente')
+			->add('nick', 'chentepixtol');
+
+		$criteria2 = new Criteria();
+		$criteria2->setQuoteStrategy(new SimpleQuoteStrategy());
+		$criteria2->setOR()
+			->add('mail', 'yahoo')
+			->add('mail', 'hotmail');
+
+		$criteria1->merge($criteria2);
+
+		$this->assertEquals("( `name` LIKE 'chente' AND `nick` LIKE 'chentepixtol' AND ( `mail` LIKE 'yahoo' OR `mail` LIKE 'hotmail' ) )", $criteria1->createSql());
+	}
+
 }

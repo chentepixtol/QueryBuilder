@@ -70,6 +70,14 @@ class QueryTest extends BaseTest
 		$query->addColumn(new Expression("IF(user.role == 'admin' AND user.username LIKE '%root%')"), 'isSuperAdmin');
 		$this->assertEquals("SELECT IF(user.role == 'admin' AND user.username LIKE '%root%') as `isSuperAdmin`", $query->createSelectSql());
 		$query->removeColumn();
+
+		$query->addColumns(array('column1', 'column2'));
+		$this->assertEquals("SELECT `column1`, `column2`", $query->createSelectSql());
+		$query->removeColumn();
+
+		$query->addColumns(array('alias1'=>'column1', 'alias2'=>'column2'));
+		$this->assertEquals("SELECT `column1` as `alias1`, `column2` as `alias2`", $query->createSelectSql());
+		$query->removeColumn();
 	}
 
 	/**
@@ -214,7 +222,11 @@ class QueryTest extends BaseTest
 		$query->addGroupBy('sales.year');
 		$this->assertTrue($query->createGroupSql() === $query->createGroupSql());
 		$this->assertEquals("GROUP BY `sales`.`month`, `sales`.`year`", $query->createGroupSql());
+		$this->assertEquals(array('sales.month', 'sales.year'), $query->getGroupByColumns());
 
+		$query = new Query($strategyQuote);
+		$query->addGroupBy(array('sales.month', 'sales.year'));
+		$this->assertEquals("GROUP BY `sales`.`month`, `sales`.`year`", $query->createGroupSql());
 		$this->assertEquals(array('sales.month', 'sales.year'), $query->getGroupByColumns());
 	}
 

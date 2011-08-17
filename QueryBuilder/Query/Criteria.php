@@ -62,7 +62,7 @@ class Criteria implements Criterion
 	public function add($column, $value, $comparison = Criterion::AUTO, $mutatorColumn = null, $mutatorValue = null)
 	{
 		$criterion = ConditionalCriterion::factory($column, $value, $comparison, $mutatorColumn, $mutatorValue);
-		$this->currentComposite->addCriterion($criterion);
+		$this->addCriterion($criterion);
 		return $this;
 	}
 
@@ -168,5 +168,46 @@ class Criteria implements Criterion
 	 */
 	public function endJoin(){
 		return $this->getQuery();
+	}
+
+	/**
+	 *
+	 * @return Query\ConditionalComposite
+	 */
+	public function getComposite(){
+		return $this->mainComposite;
+	}
+
+	/**
+	 *
+	 * Merge two criterias
+	 * @param Criteria $criteria
+	 * @return Criteria
+	 */
+	public function merge(Criteria $criteria)
+	{
+		$composite = $criteria->getComposite();
+		$composite->isLogicalOR() ? $this->setOR() : $this->setAND();
+
+		foreach ( $composite->getChildrens() as $children ){
+			if( $children instanceof ConditionalComposite ){
+				$children->isLogicalOR() ? $this->setOR() : $this->setAND();
+			}
+			else{
+				$this->addCriterion($children);
+			}
+		}
+		return $this;
+	}
+
+	/**
+	 *
+	 *
+	 * @param Criterion $criterion
+	 * @return Criteria
+	 */
+	public function addCriterion(Criterion $criterion){
+		$this->currentComposite->addCriterion($criterion);
+		return $this;
 	}
 }

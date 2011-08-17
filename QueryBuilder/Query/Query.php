@@ -342,6 +342,20 @@ class Query implements SelectCriterion
 
 	/**
 	 *
+	 * addColumns
+	 * @param array $columns
+	 * @return Query
+	 */
+	public function addColumns($columns)
+	{
+		foreach ($columns as $alias => $column){
+			$this->addColumn($column, $alias);
+		}
+		return $this;
+	}
+
+	/**
+	 *
 	 * @param string $column
 	 * @param string $alias
 	 * @return Query
@@ -653,7 +667,13 @@ class Query implements SelectCriterion
 	public function addGroupBy($groupBy)
 	{
 		$this->groupSql = null;
-		$this->groupByColumns [] = $groupBy;
+		if( is_array($groupBy) ){
+			foreach ($groupBy as $group){
+				$this->groupByColumns [] = $group;
+			}
+		}else{
+			$this->groupByColumns [] = $groupBy;
+		}
 		return $this;
 	}
 
