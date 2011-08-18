@@ -127,4 +127,58 @@ class CriteriaTest extends BaseTest
 		$this->assertEquals("( `name` LIKE 'chente' AND `nick` LIKE 'chentepixtol' AND ( `mail` LIKE 'yahoo' OR `mail` LIKE 'hotmail' ) )", $criteria1->createSql());
 	}
 
+	/**
+	 *
+	 * @test
+	 */
+	public function deepMerge()
+	{
+		$criteria1 = new Criteria();
+		$criteria1->setQuoteStrategy(new SimpleQuoteStrategy());
+		$criteria1->setAND()
+			->add('name', 'chente')
+			->add('nick', 'chentepixtol');
+
+		$criteria2 = new Criteria();
+		$criteria2->setQuoteStrategy(new SimpleQuoteStrategy());
+		$criteria2->setOR()
+			->add('mail', 'yahoo')
+			->add('mail', 'hotmail')
+			->setAND()
+				->add('domain', 'mx')
+				->add('country', 'mexico')
+			->end();
+
+		$criteria1->merge($criteria2);
+
+		$this->assertEquals("( `name` LIKE 'chente' AND `nick` LIKE 'chentepixtol' AND ( `mail` LIKE 'yahoo' OR `mail` LIKE 'hotmail' OR ( `domain` LIKE 'mx' AND `country` LIKE 'mexico' ) ) )", $criteria1->createSql());
+	}
+
+	/**
+	 *
+	 * @test
+	 */
+	public function add()
+	{
+		$criteria = new Criteria();
+		$criteria->setQuoteStrategy(new SimpleQuoteStrategy());
+		$this->assertEquals(0, $criteria->count());
+
+		$criteria->add('column1', 'value1');
+		$this->assertEquals(1, $criteria->count());
+
+
+		$criteria = new Criteria();
+		$criteria->setQuoteStrategy(new SimpleQuoteStrategy());
+		$this->assertEquals(0, $criteria->count());
+
+		$criteria->multipleAdd(
+		array(
+			array('column1', 'value1'),
+			array('column2', 'value2'),
+		));
+		$this->assertEquals("( `column1`  'value1' AND `column2`  'value2' )", $criteria->createSql());
+		$this->assertEquals(2, $criteria->count());
+	}
+
 }

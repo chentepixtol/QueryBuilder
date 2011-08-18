@@ -68,6 +68,24 @@ class Criteria implements Criterion
 	}
 
 	/**
+	 * multipleAdd
+	 * @param array $adds
+	 * @return Criteria
+	 */
+	public function multipleAdd($adds)
+	{
+		foreach ($adds as $add){
+			$column = isset($add[0]) ? $add[0] : null;
+			$value = isset($add[1]) ? $add[1] : null;
+			$comparison = isset($add[2]) ? $add[2] : null;
+			$mutatorColumn = isset($add[3]) ? $add[3] : null;
+			$mutatorValue = isset($add[4]) ? $add[4] : null;
+			$this->add($column, $value, $comparison, $mutatorColumn, $mutatorValue);
+		}
+		return $this;
+	}
+
+	/**
 	 *
 	 * @return Criteria
 	 */
@@ -124,6 +142,14 @@ class Criteria implements Criterion
 	 */
 	public function isEmpty(){
 		return $this->mainComposite->isEmpty();
+	}
+
+	/**
+	 *
+	 * @return int
+	 */
+	public function count(){
+		return $this->mainComposite->count();
 	}
 
 	/**
@@ -191,12 +217,7 @@ class Criteria implements Criterion
 		$composite->isLogicalOR() ? $this->setOR() : $this->setAND();
 
 		foreach ( $composite->getChildrens() as $children ){
-			if( $children instanceof ConditionalComposite ){
-				$children->isLogicalOR() ? $this->setOR() : $this->setAND();
-			}
-			else{
-				$this->addCriterion($children);
-			}
+			$this->addCriterion($children);
 		}
 		return $this;
 	}
