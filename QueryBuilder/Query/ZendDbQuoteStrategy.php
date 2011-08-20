@@ -38,7 +38,7 @@ class ZendDbQuoteStrategy implements QuoteStrategy
     public function quote($value)
     {
     	if( $value instanceof Criterion ){
-    		$value = new Expression('( '.$value->createSql().' )');
+    		$value = new Expression(' '.$value->createSql().' ');
     	}
     	if( $value instanceof Expression ){
     		return $value->toString();

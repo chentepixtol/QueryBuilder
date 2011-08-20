@@ -127,6 +127,10 @@ class ConditionalCriterion implements Criterion
     	$value = $this->value;
     	$comparision = $this->comparison;
 
+    	if( is_string($value) && preg_match('/^\:[a-z0-9\-\_]+$/i', $value) ){
+    		$value = new Expression($value);
+    	}
+
     	if( in_array($this->comparison, self::$Likes) ){
     		$aux = str_replace(' ','%', $comparision);
     		$comparision = str_replace('_',' ', $comparision);
@@ -144,7 +148,7 @@ class ConditionalCriterion implements Criterion
         $part1 = $this->mutatorColumn ? sprintf($this->mutatorColumn, $column) : $column;
 
     	$append = $prepend = '';
-    	if( is_array($value) ){
+    	if( is_array($value) || $comparision == Criterion::IN ){
     		$append = ')';
     		$prepend = '(';
     	}

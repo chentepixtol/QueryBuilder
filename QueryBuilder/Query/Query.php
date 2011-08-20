@@ -117,6 +117,12 @@ class Query implements SelectCriterion
 
 	/**
 	 *
+	 * @var array
+	 */
+	protected $parameters = array();
+
+	/**
+	 *
 	 * Construct
 	 * @param QuoteStrategy $quoteStrategy
 	 */
@@ -530,6 +536,17 @@ class Query implements SelectCriterion
 		return $this->limitSql;
 	}
 
+	/**
+	 *
+	 * Bind the values to the query
+	 * @param array $parameters
+	 * @return Query
+	 */
+	public function bind($parameters){
+		$this->parameters = $parameters;
+		return $this;
+	}
+
 	/* (non-PHPdoc)
 	 * @see Criterion::createSql()
 	 */
@@ -545,8 +562,15 @@ class Query implements SelectCriterion
 		if( $this->createHavingSql() != '' ) $parts[] = $this->createHavingSql();
 		if( $this->createOrderSql() != '' ) $parts[] = $this->createOrderSql();
 		if( $this->createLimitSql() != '' ) $parts[] = $this->createLimitSql();
+		$sql = implode(' ', $parts);
 
-		return implode(' ', $parts);
+		foreach ($this->parameters as $alias => $parameter){
+			if( preg_match('/^\:[a-z0-9\-\_]+$/i', $alias) ){
+				$sql = str_replace($alias, $this->getQuoteStrategy()->quote($parameter), $sql);
+			}
+		}
+
+		return $sql;
 	}
 
 	/**
