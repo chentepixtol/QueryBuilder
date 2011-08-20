@@ -12,6 +12,60 @@ require_once 'BaseTest.php';
 
 class BindTest extends BaseTest
 {
+/**
+	 *
+	 * @test
+	 * @dataProvider getStrategyQuote
+	 */
+	public function bindIntegers($strategyQuote)
+	{
+		$query = new Query($strategyQuote);
+		$query->from('users')
+			->where()->add('user_id', '?', Criterion::EQUAL);
+
+		$ids = array(1, 2, 3);
+		foreach ($ids as $id){
+			$query->bind(array($id));
+			$this->assertEquals("SELECT * FROM `users` WHERE ( `user_id` = {$id} )", $query->createSql());
+		}
+	}
+
+	/**
+	 *
+	 * @test
+	 * @dataProvider getStrategyQuote
+	 */
+	public function bindStrings($strategyQuote)
+	{
+		$query = new Query($strategyQuote);
+		$query->from('systems')
+			->where()->add('name', '?', Criterion::EQUAL)->add('bits', '?', Criterion::EQUAL);
+
+		$sos = array('linux', 'mac', 'win');
+		foreach ($sos as $so){
+			$query->bind(array($so, '64 bits'));
+			$this->assertEquals("SELECT * FROM `systems` WHERE ( `name` = '{$so}' AND `bits` = '64 bits' )", $query->createSql());
+		}
+	}
+
+	/**
+	 *
+	 * @test
+	 * @dataProvider getStrategyQuote
+	 */
+	public function bindArrays(QuoteStrategy $strategyQuote)
+	{
+		$query = new Query($strategyQuote);
+		$query->from('systems')
+			->where()->add('name', '?', Criterion::IN);
+
+		$sos = array(array('linux', 'mac'), array(1, 2), array('win', 'linux'), array(1, 'string'));
+		foreach ($sos as $so){
+			$query->bind(array($so));
+			$value = $strategyQuote->quote($so);
+			$this->assertEquals("SELECT * FROM `systems` WHERE ( `name` IN ({$value}) )", $query->createSql());
+		}
+	}
 
 	/**
 	 *

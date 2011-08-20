@@ -11,6 +11,8 @@ namespace Query;
  * @author chentepixtol
  *
  */
+use Symfony\Component\Console\Helper\DialogHelper;
+
 class Query implements SelectCriterion
 {
 
@@ -565,8 +567,12 @@ class Query implements SelectCriterion
 		$sql = implode(' ', $parts);
 
 		foreach ($this->parameters as $alias => $parameter){
-			if( preg_match('/^\:[a-z0-9\-\_]+$/i', $alias) ){
-				$sql = str_replace($alias, $this->getQuoteStrategy()->quote($parameter), $sql);
+			if( is_string($alias) ){
+				if( preg_match('/^\:[a-z0-9\-\_]+$/i', $alias) ){
+					$sql = str_replace($alias, $this->getQuoteStrategy()->quote($parameter), $sql);
+				}
+			}else{
+				$sql = preg_replace('/\?{1}/', $this->getQuoteStrategy()->quote($parameter), $sql, 1);
 			}
 		}
 

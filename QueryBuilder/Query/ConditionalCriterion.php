@@ -127,7 +127,7 @@ class ConditionalCriterion implements Criterion
     	$value = $this->value;
     	$comparision = $this->comparison;
 
-    	if( is_string($value) && preg_match('/^\:[a-z0-9\-\_]+$/i', $value) ){
+    	if( is_string($value) && preg_match('/^\:[a-z0-9\-\_]+$/i', $value) || $value == '?'){
     		$value = new Expression($value);
     	}
 
