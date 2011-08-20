@@ -11,8 +11,6 @@ namespace Query;
  * @author chentepixtol
  *
  */
-use Symfony\Component\Console\Helper\DialogHelper;
-
 class Query implements SelectCriterion
 {
 

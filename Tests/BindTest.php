@@ -21,12 +21,13 @@ class BindTest extends BaseTest
 	{
 		$query = new Query($strategyQuote);
 		$query->from('users')
-			->where()->add('user_id', '?', Criterion::EQUAL);
+			->where()->add('user_id', '?', Criterion::EQUAL)
+			->add('id_role', '?', Criterion::EQUAL);
 
 		$ids = array(1, 2, 3);
 		foreach ($ids as $id){
-			$query->bind(array($id));
-			$this->assertEquals("SELECT * FROM `users` WHERE ( `user_id` = {$id} )", $query->createSql());
+			$query->bind(array($id, 100));
+			$this->assertEquals("SELECT * FROM `users` WHERE ( `user_id` = {$id} AND `id_role` = 100 )", $query->createSql());
 		}
 	}
 
@@ -39,7 +40,8 @@ class BindTest extends BaseTest
 	{
 		$query = new Query($strategyQuote);
 		$query->from('systems')
-			->where()->add('name', '?', Criterion::EQUAL)->add('bits', '?', Criterion::EQUAL);
+			->where()->add('name', '?', Criterion::EQUAL)
+			->add('bits', '?', Criterion::EQUAL);
 
 		$sos = array('linux', 'mac', 'win');
 		foreach ($sos as $so){
@@ -57,13 +59,14 @@ class BindTest extends BaseTest
 	{
 		$query = new Query($strategyQuote);
 		$query->from('systems')
-			->where()->add('name', '?', Criterion::IN);
+			->where()->add('name', '?', Criterion::IN)
+			->add('bits', '?', Criterion::IN);
 
 		$sos = array(array('linux', 'mac'), array(1, 2), array('win', 'linux'), array(1, 'string'));
 		foreach ($sos as $so){
-			$query->bind(array($so));
+			$query->bind(array($so, array(32, 64)));
 			$value = $strategyQuote->quote($so);
-			$this->assertEquals("SELECT * FROM `systems` WHERE ( `name` IN ({$value}) )", $query->createSql());
+			$this->assertEquals("SELECT * FROM `systems` WHERE ( `name` IN ({$value}) AND `bits` IN (32, 64) )", $query->createSql());
 		}
 	}
 
