@@ -34,7 +34,7 @@ class Query implements SelectCriterion
 	protected $from = array();
 
 	/**
-	 * @var array
+	 * @var Columns
 	 */
 	protected $columns = array();
 
@@ -85,13 +85,6 @@ class Query implements SelectCriterion
 	 * Lazy Load
 	 * @var string
 	 */
-	protected $selectSql;
-
-	/**
-	 *
-	 * Lazy Load
-	 * @var string
-	 */
 	protected $fromSql;
 
 	/**
@@ -124,12 +117,6 @@ class Query implements SelectCriterion
 
 	/**
 	 *
-	 * @var string
-	 */
-	protected $defaultColumn = '*';
-
-	/**
-	 *
 	 * Construct
 	 * @param QuoteStrategy $quoteStrategy
 	 */
@@ -137,6 +124,7 @@ class Query implements SelectCriterion
 	{
 		$this->whereCriteria = $this->createCriteria();
 		$this->havingCriteria = $this->createCriteria();
+		$this->columns = new Columns();
 		$this->setQuoteStrategy($quoteStrategy ? $quoteStrategy : new SimpleQuoteStrategy());
 		$this->init();
 	}
@@ -329,14 +317,7 @@ class Query implements SelectCriterion
 	 */
 	public function removeColumn($column = null)
 	{
-		$this->selectSql = null;
-		if( $column ){
-			$k = array_search($column, $this->columns);
-			if( $k !== false ) unset($this->columns[$k]);
-		}
-		else {
-			$this->columns = array();
-		}
+		$this->columns->removeColumn($column);
 		return $this;
 	}
 
@@ -348,9 +329,7 @@ class Query implements SelectCriterion
 	 */
 	public function addColumns($columns)
 	{
-		foreach ($columns as $alias => $column){
-			$this->addColumn($column, $alias);
-		}
+		$this->columns->addColumns($columns);
 		return $this;
 	}
 
@@ -362,11 +341,7 @@ class Query implements SelectCriterion
 	 */
 	public function addColumn($column, $alias = null)
 	{
-		$this->selectSql = null;
-		if( is_string($alias) )
-			$this->columns[$alias] = $column;
-		else
-			$this->columns[] = $column;
+		$this->columns->addColumn($column, $alias);
 		return $this;
 	}
 
@@ -418,27 +393,7 @@ class Query implements SelectCriterion
 	 */
 	public function createSelectSql()
 	{
-		if( null !== $this->selectSql ){
-			return $this->selectSql;
-		}
-
-		$sql = 'SELECT';
-
-		if( empty($this->columns) ){
-			$sql .= ' '.$this->quoteStrategy->quoteColumn($this->getDefaultColumn());
-		}
-
-		$n = count($this->columns);
-		$i = 0;
-		foreach ($this->columns as $alias => $column){
-			$sql .= ' ' . $this->quoteStrategy->quoteColumn($column);
-			if( is_string($alias) ) $sql.= ' as '. $this->quoteStrategy->quoteColumn($alias);
-			$i++;
-			if( $i != $n ) $sql.= ',';
-		}
-
-		$this->selectSql = $sql;
-		return $this->selectSql;
+		return 'SELECT'.$this->columns->createSql();
 	}
 
 	/* (non-PHPdoc)
@@ -613,6 +568,7 @@ class Query implements SelectCriterion
 		$this->quoteStrategy = $quoteStrategy;
 		$this->whereCriteria->setQuoteStrategy($quoteStrategy);
 		$this->havingCriteria->setQuoteStrategy($quoteStrategy);
+		$this->columns->setQuoteStrategy($quoteStrategy);
 		return $this;
 	}
 
@@ -723,7 +679,7 @@ class Query implements SelectCriterion
 	 * @return string
 	 */
 	protected function getDefaultColumn(){
-		return $this->defaultColumn;
+		return $this->columns->getDefaultColumn();
 	}
 
 	/**
@@ -733,7 +689,7 @@ class Query implements SelectCriterion
 	 */
 	protected function setDefaultColumn($defaultColumn)
 	{
-		$this->defaultColumn = $defaultColumn;
+		$this->columns->setDefaultColumn($defaultColumn);
 		return $this;
 	}
 
