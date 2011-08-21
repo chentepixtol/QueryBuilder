@@ -57,8 +57,7 @@ Y tambien Descendente
 
 
 Limitar el numero de registros
-------------
-
+------------------------------
 
     Query::create()
         ->from('jos_content')
@@ -66,8 +65,7 @@ Limitar el numero de registros
     SELECT * FROM jos_content LIMIT 0, 10
 
 Operadores Logicos
------------------
-
+------------------
 
     Query::create()
         ->from('jos_content')
@@ -100,24 +98,29 @@ Puedes definir OR muy facilmente
 
 ---------
 
+Existen diferentes comparaciones disponibles, una de esas es LIKE
+
+    Query::create()
+        ->from('jos_users')
+        ->where()->add('username', 'a', Criterion::LEFT_LIKE);
 
     SELECT *
     FROM jos_users
     WHERE username LIKE 'a%'
 
+    Query::create()
+        ->from('jos_users')
+        ->where()->add('username', 'a', Criterion::RIGHT_LIKE);
 
     SELECT id,email,usertype
     FROM jos_users
     WHERE username LIKE '%n'
 
 
-    SELECT *
-    FROM jos_users
-    WHERE username LIKE '%m_n'
-
 FUNCTIONS
 ---------
 
+    
 
     SELECT AVG(hits) FROM jos_content
     
@@ -128,42 +131,65 @@ FUNCTIONS
     SELECT SUM(hits) FROM jos_content
 
 
-GROUP
+Grupos
 ----- 
 
+Podemos agrupar por columnas
+
+    Query::create()
+        ->addColumn('sectionid')
+        ->addColumn(new Expression("SUM(hits)"))
+        ->from('jos_content')
+        ->addGroupBy('sectionid');
 
     SELECT sectionid, SUM(hits)
-    FROM jos_content
-    GROUP BY sectionid
+        FROM jos_content
+        GROUP BY sectionid
 
+Podemos agregar condiciones a la Clausula HAVING
+
+    Query::create()
+        ->addColumn('sectionid')
+        ->addColumn(new Expression("SUM(hits)"))
+        ->from('jos_content')
+        ->addGroupBy('sectionid')
+        ->having()->add(new Expression("SUM(hits)"), 5000, Criterion::GREATHER_THAN);
 
     SELECT sectionid, SUM(hits)
-    FROM jos_content
-    GROUP BY sectionid
-    HAVING SUM(hits)>5000
+        FROM jos_content
+        GROUP BY sectionid
+        HAVING SUM(hits)>5000
 
-NESTING
+Subconsultas
 -------
 
-Let's complicate things a bit more, SQL supports nesting. Suppose you want the rows from a table that have an attribute that is defined in another table, what would you do? For example, after you check the jos_content_frontpage table, how would you select all articles that are not presented in the front page? The IN clause is used to define a set of records.
+Podemos definir consultas dentro de otras consultas
+
+    $subquery = Query::create()
+        ->from('jos_content_frontpage');
+    Query::create()
+        ->from('jos_content')
+        ->where()->add('id', $subquery, Criterion::NOT_IN);
 
     SELECT *
-    FROM jos_content
-    WHERE id NOT IN (SELECT content_id FROM jos_content_frontpage)
+        FROM jos_content
+        WHERE id NOT IN (
+            SELECT content_id FROM jos_content_frontpage
+        )
 
-JOIN
+JOINS
 ----
 
+Podemos definir cruces entre tablas mediante Joins.
+
+    Query::create()
+        ->addColumn('jos_categories.title')
+        ->addColumn('jos_content.title')
+        ->from('jos_content')
+            ->joinOn('jos_categories')
+                ->add('jos_content.catid', 'jos_categories.id', Criterion::EQUAL, null, Criterion::AS_FIELD);
 
     SELECT jos_categories.title, jos_content.title
-    FROM jos_content
+        FROM jos_content
     JOIN jos_categories ON jos_content.catid = jos_categories.id
-    ORDER BY jos_categories.id
-
-
-    SELECT jos_categories.title, jos_content.title, jos_users.username
-    FROM jos_content
-    JOIN jos_categories ON jos_content.catid = jos_categories.id
-    JOIN jos_users ON jos_content.created_by = jos_users.id
-    ORDER BY jos_categories.id
 
