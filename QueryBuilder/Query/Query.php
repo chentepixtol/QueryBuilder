@@ -653,10 +653,14 @@ class Query implements SelectCriterion
 		$this->groupSql = null;
 		if( is_array($groupBy) ){
 			foreach ($groupBy as $group){
-				$this->groupByColumns [] = $group;
+				if( $group ){
+					$this->groupByColumns[] = $group;
+				}
 			}
 		}else{
-			$this->groupByColumns [] = $groupBy;
+			if( $group ){
+				$this->groupByColumns[] = $groupBy;
+			}
 		}
 		return $this;
 	}
@@ -677,8 +681,10 @@ class Query implements SelectCriterion
 	 */
 	public function orderBy($name, $type = Query::ASC)
 	{
-		$this->orderSql = null;
-		$this->orderByColumns [] = array('column' => $name, 'type' => $type);
+		if( $name ){
+			$this->orderSql = null;
+			$this->orderByColumns[] = array('column' => $name, 'type' => $type);
+		}
 		return $this;
 	}
 

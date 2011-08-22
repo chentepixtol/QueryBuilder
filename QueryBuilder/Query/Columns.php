@@ -80,11 +80,14 @@ class Columns implements Criterion
 	 */
 	public function addColumn($column, $alias = null)
 	{
-		$this->sql = null;
-		if( is_string($alias) )
-			$this->columns[$alias] = $column;
-		else
-			$this->columns[] = $column;
+		if( $column ){
+			$this->sql = null;
+			if( is_string($alias) ){
+				$this->columns[$alias] = $column;
+			}else{
+				$this->columns[] = $column;
+			}
+		}
 		return $this;
 	}
 
