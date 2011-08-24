@@ -658,7 +658,7 @@ class Query implements SelectCriterion
 				}
 			}
 		}else{
-			if( $group ){
+			if( $groupBy ){
 				$this->groupByColumns[] = $groupBy;
 			}
 		}
