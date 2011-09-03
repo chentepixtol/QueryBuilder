@@ -68,6 +68,130 @@ class Criteria implements Criterion
 	}
 
 	/**
+	 *
+	 *
+	 * @param string $column
+	 * @param mixed $value
+	 * @param string $mutatorColumn
+	 * @param string $mutatorValue
+	 * @return Criteria
+	 */
+	public function equal($column, $value, $mutatorColumn = null, $mutatorValue = null){
+		$this->add($column, $value, Criterion::EQUAL, $mutatorColumn, $mutatorValue);
+		return $this;
+	}
+
+	/**
+	 *
+	 *
+	 * @param string $column
+	 * @param mixed $value
+	 * @param string $mutatorColumn
+	 * @param string $mutatorValue
+	 * @return Criteria
+	 */
+	public function notEqual($column, $value, $mutatorColumn = null, $mutatorValue = null){
+		$this->add($column, $value, Criterion::NOT_EQUAL, $mutatorColumn, $mutatorValue);
+		return $this;
+	}
+
+	/**
+	 *
+	 *
+	 * @param string $column
+	 * @param mixed $value
+	 * @param string $mutatorColumn
+	 * @param string $mutatorValue
+	 * @return Criteria
+	 */
+	public function justlike($column, $value, $mutatorColumn = null, $mutatorValue = null){
+		$this->add($column, $value, Criterion::JUST_LIKE, $mutatorColumn, $mutatorValue);
+		return $this;
+	}
+
+	/**
+	 *
+	 *
+	 * @param string $column
+	 * @param mixed $value
+	 * @param string $mutatorColumn
+	 * @param string $mutatorValue
+	 * @return Criteria
+	 */
+	public function like($column, $value, $mutatorColumn = null, $mutatorValue = null){
+		$this->add($column, $value, Criterion::LIKE, $mutatorColumn, $mutatorValue);
+		return $this;
+	}
+
+	/**
+	 *
+	 *
+	 * @param string $column
+	 * @param mixed $value
+	 * @param string $mutatorColumn
+	 * @param string $mutatorValue
+	 * @return Criteria
+	 */
+	public function in($column, $value, $mutatorColumn = null, $mutatorValue = null){
+		$this->add($column, $value, Criterion::IN, $mutatorColumn, $mutatorValue);
+		return $this;
+	}
+
+	/**
+	 *
+	 *
+	 * @param string $column
+	 * @param mixed $value
+	 * @param string $mutatorColumn
+	 * @param string $mutatorValue
+	 * @return Criteria
+	 */
+	public function range($column, $value, $mutatorColumn = null, $mutatorValue = null){
+		$this->add($column, $value, Criterion::RANGE, $mutatorColumn, $mutatorValue);
+		return $this;
+	}
+
+	/**
+	 *
+	 *
+	 * @param string $column
+	 * @param mixed $value
+	 * @param string $mutatorColumn
+	 * @param string $mutatorValue
+	 * @return Criteria
+	 */
+	public function notIn($column, $value, $mutatorColumn = null, $mutatorValue = null){
+		$this->add($column, $value, Criterion::NOT_IN, $mutatorColumn, $mutatorValue);
+		return $this;
+	}
+
+	/**
+	 *
+	 *
+	 * @param string $column
+	 * @param string $mutatorColumn
+	 * @param string $mutatorValue
+	 * @return Criteria
+	 */
+	public function isNull($column, $mutatorColumn = null, $mutatorValue = null){
+		$this->add($column, null, Criterion::IS_NULL, $mutatorColumn, $mutatorValue);
+		return $this;
+	}
+
+	/**
+	 *
+	 *
+	 * @param string $column
+	 * @param string $mutatorColumn
+	 * @param string $mutatorValue
+	 * @return Criteria
+	 */
+	public function isNotNull($column, $mutatorColumn = null, $mutatorValue = null){
+		$this->add($column, null, Criterion::IS_NOT_NULL, $mutatorColumn, $mutatorValue);
+		return $this;
+	}
+
+	/**
 	 * multipleAdd
 	 * @param array $adds
 	 * @return Criteria
@@ -77,7 +201,7 @@ class Criteria implements Criterion
 		foreach ($adds as $add){
 			$column = isset($add[0]) ? $add[0] : null;
 			$value = isset($add[1]) ? $add[1] : null;
-			$comparison = isset($add[2]) ? $add[2] : null;
+			$comparison = isset($add[2]) ? $add[2] : Criterion::AUTO;
 			$mutatorColumn = isset($add[3]) ? $add[3] : null;
 			$mutatorValue = isset($add[4]) ? $add[4] : null;
 			$this->add($column, $value, $comparison, $mutatorColumn, $mutatorValue);

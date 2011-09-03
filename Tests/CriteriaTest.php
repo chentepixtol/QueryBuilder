@@ -14,8 +14,7 @@ class CriteriaTest extends BaseTest
 	 */
 	public function basicAnd()
 	{
-		$criteria = new Criteria();
-		$criteria->setQuoteStrategy(new SimpleQuoteStrategy());
+		$criteria = $this->createCriteria();
 
 		$this->assertTrue($criteria->isEmpty());
 		$this->assertNull($criteria->getQuery());
@@ -35,8 +34,7 @@ class CriteriaTest extends BaseTest
 	 */
 	public function basicOr()
 	{
-		$criteria = new Criteria();
-		$criteria->setQuoteStrategy(new SimpleQuoteStrategy());
+		$criteria = $this->createCriteria();
 
 		$this->assertTrue($criteria->isEmpty());
 		$this->assertNull($criteria->getQuery());
@@ -57,8 +55,7 @@ class CriteriaTest extends BaseTest
 	 */
 	public function complexAnd()
 	{
-		$criteria = new Criteria();
-		$criteria->setQuoteStrategy(new SimpleQuoteStrategy());
+		$criteria = $this->createCriteria();
 
 		$this->assertTrue($criteria->isEmpty());
 		$this->assertNull($criteria->getQuery());
@@ -83,8 +80,7 @@ class CriteriaTest extends BaseTest
 	 */
 	public function complexOr()
 	{
-		$criteria = new Criteria();
-		$criteria->setQuoteStrategy(new SimpleQuoteStrategy());
+		$criteria = $this->createCriteria();
 
 		$this->assertTrue($criteria->isEmpty());
 		$this->assertNull($criteria->getQuery());
@@ -110,14 +106,12 @@ class CriteriaTest extends BaseTest
 	 */
 	public function merge()
 	{
-		$criteria1 = new Criteria();
-		$criteria1->setQuoteStrategy(new SimpleQuoteStrategy());
+		$criteria1 = $this->createCriteria();
 		$criteria1->setAND()
 			->add('name', 'chente')
 			->add('nick', 'chentepixtol');
 
-		$criteria2 = new Criteria();
-		$criteria2->setQuoteStrategy(new SimpleQuoteStrategy());
+		$criteria2 = $this->createCriteria();
 		$criteria2->setOR()
 			->add('mail', 'yahoo')
 			->add('mail', 'hotmail');
@@ -133,14 +127,12 @@ class CriteriaTest extends BaseTest
 	 */
 	public function deepMerge()
 	{
-		$criteria1 = new Criteria();
-		$criteria1->setQuoteStrategy(new SimpleQuoteStrategy());
+		$criteria1 = $this->createCriteria();
 		$criteria1->setAND()
 			->add('name', 'chente')
 			->add('nick', 'chentepixtol');
 
-		$criteria2 = new Criteria();
-		$criteria2->setQuoteStrategy(new SimpleQuoteStrategy());
+		$criteria2 = $this->createCriteria();
 		$criteria2->setOR()
 			->add('mail', 'yahoo')
 			->add('mail', 'hotmail')
@@ -160,16 +152,14 @@ class CriteriaTest extends BaseTest
 	 */
 	public function add()
 	{
-		$criteria = new Criteria();
-		$criteria->setQuoteStrategy(new SimpleQuoteStrategy());
+		$criteria = $this->createCriteria();
 		$this->assertEquals(0, $criteria->count());
 
 		$criteria->add('column1', 'value1');
 		$this->assertEquals(1, $criteria->count());
 
 
-		$criteria = new Criteria();
-		$criteria->setQuoteStrategy(new SimpleQuoteStrategy());
+		$criteria = $this->createCriteria();
 		$this->assertEquals(0, $criteria->count());
 
 		$criteria->multipleAdd(
@@ -177,8 +167,63 @@ class CriteriaTest extends BaseTest
 			array('column1', 'value1'),
 			array('column2', 'value2'),
 		));
-		$this->assertEquals("( `column1`  'value1' AND `column2`  'value2' )", $criteria->createSql());
+		$this->assertEquals("( `column1` LIKE 'value1' AND `column2` LIKE 'value2' )", $criteria->createSql());
 		$this->assertEquals(2, $criteria->count());
 	}
+
+	/**
+	 *
+	 * @test
+	 */
+	public function alias()
+	{
+		$criteria = $this->createCriteria();
+		$criteria->equal('username', 'chentepixtol');
+		$this->assertEquals("( `username` = 'chentepixtol' )", $criteria->createSql());
+
+		$criteria = $this->createCriteria();
+		$criteria->notEqual('username', 'chentepixtol');
+		$this->assertEquals("( `username` != 'chentepixtol' )", $criteria->createSql());
+
+		$criteria = $this->createCriteria();
+		$criteria->like('username', 'chentepixtol');
+		$this->assertEquals("( `username` LIKE '%chentepixtol%' )", $criteria->createSql());
+
+		$criteria = $this->createCriteria();
+		$criteria->justlike('username', 'chentepixtol');
+		$this->assertEquals("( `username` LIKE 'chentepixtol' )", $criteria->createSql());
+
+		$criteria = $this->createCriteria();
+		$criteria->in('username', array('chentepixtol', 'vicentemmor'));
+		$this->assertEquals("( `username` IN ('chentepixtol', 'vicentemmor') )", $criteria->createSql());
+
+		$criteria = $this->createCriteria();
+		$criteria->notIn('username', array('chentepixtol', 'vicentemmor'));
+		$this->assertEquals("( `username` NOT IN ('chentepixtol', 'vicentemmor') )", $criteria->createSql());
+
+		$criteria = $this->createCriteria();
+		$criteria->isNull('username');
+		$this->assertEquals("( `username` IS NULL )", $criteria->createSql());
+
+		$criteria = $this->createCriteria();
+		$criteria->isNotNull('username');
+		$this->assertEquals("( `username` IS NOT NULL )", $criteria->createSql());
+
+		$criteria = $this->createCriteria();
+		$criteria->range('points', '10,20,30-35');
+		$this->assertEquals("( `points` IN (10, 20, 30, 31, 32, 33, 34, 35) )", $criteria->createSql());
+	}
+
+	/**
+	 *
+	 * @return Criteria
+	 */
+	protected function createCriteria()
+	{
+		$criteria = new Criteria();
+		$criteria->setQuoteStrategy(new SimpleQuoteStrategy());
+		return $criteria;
+	}
+
 
 }
