@@ -4,8 +4,8 @@ QueryBuilder
 QueryBuilder es un libreria con la cual puedes construir sentencias complejas de SQL de una manera facil.
 
 
-BASIC COMMANDS
---------------
+Comandos Basicos
+----------------
 
 
 Select basico.
@@ -26,14 +26,45 @@ con la condicion !=
         ->from('jos_users')
         ->where()->add('username', 'admin', Criterion::NOT_EQUAL);
     SELECT * FROM `jos_users` WHERE `username` != 'admin'
+    
+    
+O usando los alias
+
+    Query::create()
+        ->from('jos_users')
+        ->where()->notEqual('username', 'admin');
+    SELECT * FROM `jos_users` WHERE `username` != 'admin'
+
 
 Podemos especificar las columnas a Seleccionar
 
     Query::create()
         ->addColumn('name')
         ->addColumn('email')
-    ->from('jos_users');
+        ->from('jos_users');
     SELECT `name`, `email` FROM `jos_users`
+
+
+Podemos agregar varias columnas al mismo tiempo
+
+    Query::create()
+        ->addColumns(array('name', 'email'))
+        ->from('jos_users');
+    SELECT `name`, `email` FROM `jos_users`
+    
+Podemos usar alias en las columnas
+
+    Query::create()
+        ->addColumn('created_at', 'my_date')
+        ->from('jos_users');
+    SELECT `created_at` as `my_date` FROM `jos_users`
+
+Tambien se pueden usar funciones
+
+    Query::create()
+        ->addColumn('created_at', 'month', Criterion::MONTH)
+        ->from('jos_users');
+    SELECT MONTH(`created_at`) as `month` FROM `jos_users`
 
 
 Ordernar datos
@@ -62,7 +93,7 @@ Limitar el numero de registros
     Query::create()
         ->from('jos_content')
         ->setLimit(10)->setOffset(0);
-    SELECT * FROM jos_content LIMIT 0, 10
+    SELECT * FROM `jos_content` LIMIT 0, 10
 
 Operadores Logicos
 ------------------
@@ -74,11 +105,11 @@ Operadores Logicos
             ->add('hits', 2000, Criterion::LESS_THAN)
             ->add('created', '2009-08-20 00:00:00', Criterion::LESS_THAN);
 
-    SELECT * FROM jos_content
-    WHERE state = '1' 
-        AND hits > '1000' 
-        AND hits < '2000'
-        AND created < '2009-08-20 00:00:00'
+    SELECT * FROM `jos_content`
+    WHERE `state` = '1' 
+        AND `hits` > '1000' 
+        AND `hits` < '2000'
+        AND `created` < '2009-08-20 00:00:00'
 
 Puedes definir OR muy facilmente
 
@@ -91,9 +122,9 @@ Puedes definir OR muy facilmente
             ->end()
         ->endWhere();
 
-    SELECT * FROM jos_content
-        WHERE created < '2009-08-20 00:00:00'
-        AND (sectionid = '5' OR sectionid = '6')
+    SELECT * FROM `jos_content`
+        WHERE `created` < '2009-08-20 00:00:00'
+        AND (`sectionid` = '5' OR `sectionid` = '6')
 
 
 ---------
@@ -105,30 +136,32 @@ Existen diferentes comparaciones disponibles, una de esas es LIKE
         ->where()->add('username', 'a', Criterion::LEFT_LIKE);
 
     SELECT *
-    FROM jos_users
-    WHERE username LIKE 'a%'
+    FROM `jos_users`
+    WHERE `username` LIKE 'a%'
 
     Query::create()
         ->from('jos_users')
         ->where()->add('username', 'a', Criterion::RIGHT_LIKE);
 
-    SELECT id,email,usertype
-    FROM jos_users
-    WHERE username LIKE '%n'
+    SELECT *
+    FROM `jos_users`
+    WHERE `username` LIKE '%a'
 
 
-FUNCTIONS
+Funciones Mysql
 ---------
 
+    Query::create()->from('jos_content')->addColumn('hits', 'average', Criterion::AVG);
+    SELECT AVG(`hits`) as `average` FROM `jos_content`
     
-
-    SELECT AVG(hits) FROM jos_content
+    Query::create()->from('jos_content')->addColumn('*', 'count', Criterion::COUNT);
+    SELECT COUNT(*) as count FROM jos_content
     
-    SELECT COUNT(*) FROM jos_content
+    Query::create()->from('jos_content')->addColumn('hits', 'max', Criterion::COUNT);
+    SELECT MAX(`hits`) as `max` FROM `jos_content`
     
-    SELECT MAX(hits) FROM jos_content
-    
-    SELECT SUM(hits) FROM jos_content
+    Query::create()->from('jos_content')->addColumn('hits', 'max', Criterion::SUM);
+    SELECT SUM(`hits`) FROM `jos_content`
 
 
 Grupos
@@ -138,27 +171,27 @@ Podemos agrupar por columnas
 
     Query::create()
         ->addColumn('sectionid')
-        ->addColumn(new Expression("SUM(hits)"))
+        ->addColumn('hits', 'sum', Criterion::SUM)
         ->from('jos_content')
         ->addGroupBy('sectionid');
 
-    SELECT sectionid, SUM(hits)
-        FROM jos_content
-        GROUP BY sectionid
+    SELECT `sectionid`, SUM(`hits`) as sum
+        FROM `jos_content`
+        GROUP BY `sectionid`
 
 Podemos agregar condiciones a la Clausula HAVING
 
     Query::create()
         ->addColumn('sectionid')
-        ->addColumn(new Expression("SUM(hits)"))
+        ->addColumn('hits', 'sum', Criterion::SUM)
         ->from('jos_content')
         ->addGroupBy('sectionid')
-        ->having()->add(new Expression("SUM(hits)"), 5000, Criterion::GREATHER_THAN);
+        ->having()->add('sum', 5000, Criterion::GREATHER_THAN);
 
-    SELECT sectionid, SUM(hits)
-        FROM jos_content
-        GROUP BY sectionid
-        HAVING SUM(hits)>5000
+    SELECT `sectionid`, SUM(`hits`) as `sum`
+        FROM `jos_content`
+        GROUP BY `sectionid`
+        HAVING `sum` > 5000
 
 Subconsultas
 -------
@@ -172,9 +205,9 @@ Podemos definir consultas dentro de otras consultas
         ->where()->add('id', $subquery, Criterion::NOT_IN);
 
     SELECT *
-        FROM jos_content
-        WHERE id NOT IN (
-            SELECT content_id FROM jos_content_frontpage
+        FROM `jos_content`
+        WHERE `id` NOT IN (
+            SELECT `content_id` FROM jos_content_frontpage
         )
 
 JOINS
@@ -186,10 +219,38 @@ Podemos definir cruces entre tablas mediante Joins.
         ->addColumn('jos_categories.title')
         ->addColumn('jos_content.title')
         ->from('jos_content')
-            ->joinOn('jos_categories')
-                ->add('jos_content.catid', 'jos_categories.id', Criterion::EQUAL, null, Criterion::AS_FIELD);
+        ->joinOn('jos_categories')
+            ->add('jos_content.catid', 'jos_categories.id', Criterion::EQUAL, null, Criterion::AS_FIELD);
 
-    SELECT jos_categories.title, jos_content.title
-        FROM jos_content
-    JOIN jos_categories ON jos_content.catid = jos_categories.id
+    SELECT `jos_categories.title`, `jos_content.title`
+        FROM `jos_content`
+    JOIN `jos_categories` ON `jos_content`.`catid` = `jos_categories`.`id`
+    
+Podemos tener consultas preparadas y luego proporcionar los valores.
+
+Con el comodin ':'
+
+    Query::create()
+        ->from('users')
+        ->where()->add('id', ':idUser')
+        ->bind(array('idUser'=> 1));
+        
+    SELECT * FROM `users` WHERE `id` = 1;
+        
+Con el comodin '?'
+    
+    Query::create()
+        ->from('users')
+        ->where()->add('id', '?')
+        ->bind(array(1));    
+
+    SELECT * FROM `users` WHERE `id` = 1;
+
+
+
+
+
+
+
+
 
