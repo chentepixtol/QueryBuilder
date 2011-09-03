@@ -343,11 +343,12 @@ class Query implements SelectCriterion
 	 *
 	 * @param string $column
 	 * @param string $alias
+	 * @param string $mutator
 	 * @return Query
 	 */
-	public function addColumn($column, $alias = null)
+	public function addColumn($column, $alias = null, $mutator = null)
 	{
-		$this->columns->addColumn($column, $alias);
+		$this->columns->addColumn($column, $alias, $mutator);
 		return $this;
 	}
 

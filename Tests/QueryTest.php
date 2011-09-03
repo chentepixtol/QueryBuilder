@@ -71,6 +71,14 @@ class QueryTest extends BaseTest
 		$this->assertEquals("SELECT IF(user.role == 'admin' AND user.username LIKE '%root%') as `isSuperAdmin`", $query->createSelectSql());
 		$query->removeColumn();
 
+		$query->addColumn("IF(user.role == 'admin' AND user.username LIKE '%root%')", 'isSuperAdmin', Criterion::AS_EXPRESSION);
+		$this->assertEquals("SELECT IF(user.role == 'admin' AND user.username LIKE '%root%') as `isSuperAdmin`", $query->createSelectSql());
+		$query->removeColumn();
+
+		$query->addColumn("created_at", 'month', Criterion::MONTH);
+		$this->assertEquals("SELECT MONTH(`created_at`) as `month`", $query->createSelectSql());
+		$query->removeColumn();
+
 		$query->addColumns(array('column1', 'column2'));
 		$this->assertEquals("SELECT `column1`, `column2`", $query->createSelectSql());
 		$query->removeColumn();

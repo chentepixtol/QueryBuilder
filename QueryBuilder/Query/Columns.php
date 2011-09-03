@@ -30,6 +30,13 @@ class Columns implements Criterion
 
 	/**
 	 *
+	 * Mutators
+	 * @var array
+	 */
+	protected $mutators = array();
+
+	/**
+	 *
 	 * @var QuoteStrategy
 	 */
 	protected $quoteStrategy;
@@ -50,7 +57,10 @@ class Columns implements Criterion
 		$this->sql = null;
 		if( $column ){
 			$k = array_search($column, $this->columns);
-			if( $k !== false ) unset($this->columns[$k]);
+			if( $k !== false ){
+				unset($this->mutators[$k]);
+				unset($this->columns[$k]);
+			}
 		}
 		else {
 			$this->columns = array();
@@ -76,16 +86,19 @@ class Columns implements Criterion
 	 *
 	 * @param string $column
 	 * @param string $alias
+	 * @param string $mutator
 	 * @return Columns
 	 */
-	public function addColumn($column, $alias = null)
+	public function addColumn($column, $alias = null, $mutator = null)
 	{
 		if( $column ){
 			$this->sql = null;
 			if( is_string($alias) ){
+				$this->mutators[$alias] = $mutator;
 				$this->columns[$alias] = $column;
 			}else{
 				$this->columns[] = $column;
+				$this->mutators[] = $mutator;
 			}
 		}
 		return $this;
@@ -107,9 +120,19 @@ class Columns implements Criterion
 
 		$n = count($this->columns);
 		$i = 0;
-		foreach ($this->columns as $alias => $column){
-			$sql .= ' ' . $this->quoteStrategy->quoteColumn($column);
-			if( is_string($alias) ) $sql.= ' as '. $this->quoteStrategy->quoteColumn($alias);
+		foreach ($this->columns as $alias => $column)
+		{
+			$mutator = isset($this->mutators[$alias]) ? $this->mutators[$alias] : null;
+			if( $mutator == Criterion::AS_EXPRESSION){
+				$column = new Expression($column);
+				$mutator = null;
+			}
+			$column = $this->quoteStrategy->quoteColumn($column);
+			$column = $mutator ? sprintf($mutator, $column) : $column;
+			$sql .= ' ' . $column;
+			if( is_string($alias) ){
+				$sql.= ' as '. $this->quoteStrategy->quoteColumn($alias);
+			}
 			$i++;
 			if( $i != $n ) $sql.= ',';
 		}
