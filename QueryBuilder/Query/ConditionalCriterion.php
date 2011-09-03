@@ -122,11 +122,22 @@ class ConditionalCriterion implements Criterion
     		return $this->sql;
 
     	$column = is_string($this->column) ? str_replace('`', '', $this->column) : $this->column;
-    	$column = $this->quoteStrategy->quoteColumn($column);
     	$mutatorValue = $this->mutatorValue;
+    	$mutatorColumn = $this->mutatorColumn;
     	$value = $this->value;
     	$comparision = $this->comparison;
 
+    	if( $mutatorValue == Criterion::AS_EXPRESSION ){
+    		$value = new Expression($value);
+    		$mutatorValue = null;
+    	}
+
+    	if( $mutatorColumn == Criterion::AS_EXPRESSION ){
+    		$column = new Expression($column);
+    		$mutatorColumn = null;
+    	}
+
+    	$column = $this->quoteStrategy->quoteColumn($column);
     	if( is_string($value) && preg_match('/^\:[a-z0-9\-\_]+$/i', $value) || $value == '?'){
     		$value = new Expression($value);
     	}
@@ -145,7 +156,7 @@ class ConditionalCriterion implements Criterion
     		$value = $range->toArray();
     	}
 
-        $part1 = $this->mutatorColumn ? sprintf($this->mutatorColumn, $column) : $column;
+        $part1 = $mutatorColumn ? sprintf($mutatorColumn, $column) : $column;
 
     	$append = $prepend = '';
     	if( is_array($value) || $comparision == Criterion::IN ){

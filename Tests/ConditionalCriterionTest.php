@@ -116,6 +116,9 @@ class ConditionalCriterionTest extends BaseTest
 			// Expression
 			array(38, 'status', new Expression('CONCAT(role, status)'), Criterion::EQUAL),
 			array(39, new Expression('IF(status, status, 5)'), 5, Criterion::NOT_EQUAL),
+			array(40, 'MONTH(created_at)', 5, Criterion::EQUAL, Criterion::AS_EXPRESSION),
+			array(41, 'created_at', 'MONTH(updated_at)', Criterion::EQUAL, null, Criterion::AS_EXPRESSION),
+			array(42, 'MONTH(created_at)', 'MONTH(updated_at)', Criterion::EQUAL, Criterion::AS_EXPRESSION, Criterion::AS_EXPRESSION),
 		);
 	}
 
@@ -180,6 +183,9 @@ class ConditionalCriterionTest extends BaseTest
 			//Expression
 			38 => "`status` = CONCAT(role, status)",
 			39 => "IF(status, status, 5) != 5",
+			40 => "MONTH(created_at) = 5",
+			41 => "`created_at` = MONTH(updated_at)",
+			42 => "MONTH(created_at) = MONTH(updated_at)",
 		);
 		return $expected[$i];
 	}

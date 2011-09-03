@@ -43,6 +43,8 @@ interface Criterion
       const YEAR = 'YEAR(%s)';
       const TRIM = 'TRIM(%s)';
       const AS_FIELD = 'AS_FIELD';
+      const AS_EXPRESSION = 'AS_EXPRESSION';
+
 
       //JOINS
       const JOIN = 'JOIN';
