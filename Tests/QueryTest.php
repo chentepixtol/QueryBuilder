@@ -95,6 +95,12 @@ class QueryTest extends BaseTest
 		$query->addColumns(array('alias1'=>'column1', 'alias2'=>'column2'));
 		$this->assertEquals("SELECT `column1` as `alias1`, `column2` as `alias2`", $query->createSelectSql());
 		$query->removeColumn();
+
+		$query->select('name');
+		$this->assertEquals("SELECT `name`", $query->createSelectSql());
+
+		$query->select('email', 'age');
+		$this->assertEquals("SELECT `name`, `email`, `age`", $query->createSelectSql());
 	}
 
 

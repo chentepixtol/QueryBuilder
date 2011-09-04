@@ -339,6 +339,16 @@ class Query implements SelectCriterion
 
 	/**
 	 *
+	 * @param mixed $column
+	 * @return Query
+	 */
+	public function select($column){
+		$this->columns->addColumns(func_get_args());
+		return $this;
+	}
+
+	/**
+	 *
 	 * addColumns
 	 * @param array $columns
 	 * @return Query
