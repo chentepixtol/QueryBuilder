@@ -81,6 +81,22 @@ class ConditionalComposite implements CriterionComposite
 		return false;
 	}
 
+	/**
+	 *
+	 * Cloning
+	 */
+	public function __clone()
+	{
+		$copyCriterions = array();
+		foreach ($this->criterions as $key => $criterion) {
+			$copyCriterions[$key] = clone $criterion;
+			if( $copyCriterions[$key] instanceof CriterionComposite ){
+				$copyCriterions[$key]->setParent($this);
+			}
+		}
+		$this->criterions = $copyCriterions;
+	}
+
     /**
      * (non-PHPdoc)
      * @see Criterion::createSql()

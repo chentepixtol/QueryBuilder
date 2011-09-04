@@ -45,9 +45,20 @@ class Criteria implements Criterion
 	 *
 	 */
 	public function __construct(Query $query = null){
-		$this->query = $query;
+		$this->setQuery($query);
 		$this->currentComposite = $this->mainComposite = new ConditionalComposite();
 		$this->setQuoteStrategy(new NullQuoteStrategy());
+	}
+
+
+	/**
+	 *
+	 * Cloning
+	 */
+	public function __clone()
+	{
+		$this->mainComposite = clone $this->mainComposite;
+		$this->root();
 	}
 
 	/**
@@ -403,5 +414,15 @@ class Criteria implements Criterion
 		$this->mainComposite->refresh();
 		$this->currentComposite->addCriterion($criterion);
 		return $this;
+	}
+
+	/**
+	 *
+	 *
+	 * @param Query $query
+	 * @return Criteria
+	 */
+	public function setQuery(Query $query = null){
+		$this->query = $query;
 	}
 }

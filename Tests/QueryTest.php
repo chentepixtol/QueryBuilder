@@ -388,6 +388,69 @@ class QueryTest extends BaseTest
 
 	/**
 	 *
+	 * @test
+	 * @dataProvider getStrategyQuote
+	 */
+	public function cloning($strategyQuote)
+	{
+		$query = new Query($strategyQuote);
+		$query->select('username', 'name', 'email')
+			->from('users', 'user')
+			->innerJoinUsing('persons', 'id_person')
+			->where()
+				->add('username', 'chentepixtol')
+				->setOR()
+					->add('email', 'vicentemmor%')
+					->add('email', 'chentepixtol%')
+				->end()
+			->endWhere()
+			->addAscendingOrderBy('user.id_user');
+		$sql = "SELECT `username`, `name`, `email` FROM `users` as `user` INNER JOIN `persons` USING( `id_person` ) WHERE ( `username` LIKE 'chentepixtol' AND ( `email` LIKE 'vicentemmor%' OR `email` LIKE 'chentepixtol%' ) ) ORDER BY `user`.`id_user` ASC";
+		$this->assertEquals($sql, $query->createSql());
+
+		$query2 = clone $query;
+		$query2->distinct()->select('age')->from('administrators')
+			->innerJoinUsing('emails', 'id_person')
+				->where()->add('age', 18, Criterion::GREATER_OR_EQUAL)->endWhere()
+			->addAscendingOrderBy('age')
+			->addGroupBy('id_person')
+			->having()->add('age', 18, Criterion::GREATER_OR_EQUAL)->endHaving()
+			->setLimit(100)->setOffset(20);
+
+		$this->assertEquals($sql, $query->createSql());
+	}
+
+
+	/**
+	 *
+	 * @test
+	 * @dataProvider getStrategyQuote
+	 */
+	public function cloning2($strategyQuote)
+	{
+		$query = new Query($strategyQuote);
+		$query->select('username')
+			->from('users', 'user')
+			->where()
+				->add('username', 'chentepixtol')
+				->setOR()
+					->add('email', 'vicentemmor%')
+					->add('email', 'chentepixtol%')
+				->end()
+			->endWhere();
+		$sql = "SELECT `username` FROM `users` as `user` WHERE ( `username` LIKE 'chentepixtol' AND ( `email` LIKE 'vicentemmor%' OR `email` LIKE 'chentepixtol%' ) )";
+		$this->assertEquals($sql, $query->createSql());
+
+		$query2 = clone $query;
+		$query2->where()->add('id_company', 1);
+
+		$this->assertEquals($sql, $query->createSql());
+		$sql = "SELECT `username` FROM `users` as `user` WHERE ( `username` LIKE 'chentepixtol' AND ( `email` LIKE 'vicentemmor%' OR `email` LIKE 'chentepixtol%' ) AND `id_company` = 1 )";
+		$this->assertEquals($sql, $query2->createSql());
+	}
+
+	/**
+	 *
 	 * @return array
 	 */
 	public function getStrategyQuote(){

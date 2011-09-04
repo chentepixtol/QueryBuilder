@@ -36,7 +36,7 @@ class Query implements SelectCriterion
 	/**
 	 * @var Columns
 	 */
-	protected $columns = array();
+	protected $columns;
 
 	/**
 	 * @var array
@@ -133,6 +133,19 @@ class Query implements SelectCriterion
 		$this->columns = new Columns();
 		$this->setQuoteStrategy($quoteStrategy ? $quoteStrategy : new SimpleQuoteStrategy());
 		$this->init();
+	}
+
+	/**
+	 *
+	 * Cloning
+	 */
+	public function __clone()
+	{
+		$this->havingCriteria = clone $this->havingCriteria;
+		$this->havingCriteria->setQuery($this);
+		$this->whereCriteria = clone $this->whereCriteria;
+		$this->whereCriteria->setQuery($this);
+		$this->columns = clone $this->columns;
 	}
 
 	/**
