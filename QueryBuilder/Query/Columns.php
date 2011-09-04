@@ -104,6 +104,14 @@ class Columns implements Criterion
 		return $this;
 	}
 
+	/**
+	 * (non-PHPdoc)
+	 * @see Query.Criterion::contains()
+	 */
+	public function contains($element){
+		return in_array($element, $this->columns);
+	}
+
 	/* (non-PHPdoc)
 	 * @see Criterion::createSql()
 	 */

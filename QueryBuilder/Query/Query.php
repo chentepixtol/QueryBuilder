@@ -354,6 +354,16 @@ class Query implements SelectCriterion
 
 	/**
 	 *
+	 *
+	 * @param string $column
+	 * @return boolean
+	 */
+	public function hasColumn($column){
+		return $this->columns->contains($column);
+	}
+
+	/**
+	 *
 	 * @return Criteria
 	 */
 	public function where(){
@@ -384,6 +394,14 @@ class Query implements SelectCriterion
 			return '';
 		}
 		return 'WHERE '.$this->whereCriteria->createSql();
+	}
+
+	/**
+	 * (non-PHPdoc)
+	 * @see Query.Criterion::contains()
+	 */
+	public function contains($element){
+		return $this->whereCriteria->contains($element);
 	}
 
 	/**

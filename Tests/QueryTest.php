@@ -35,6 +35,8 @@ class QueryTest extends BaseTest
 		$this->assertEquals('SELECT *', $query->createSelectSql());
 
 		$query->addColumn('name');
+		$this->assertFalse($query->hasColumn('email'));
+		$this->assertTrue($query->hasColumn('name'));
 		$this->assertEquals('SELECT `name`', $query->createSelectSql());
 
 		$query->removeColumn('name');
@@ -293,6 +295,7 @@ class QueryTest extends BaseTest
 		$this->assertEquals('', $query->createWhereSql());
 
 		$query->where()->add('mycol', 'myvalue', Criterion::EQUAL);
+		$this->assertTrue($query->contains('mycol'));
 		$this->assertEquals("WHERE ( `mycol` = 'myvalue' )", $query->createWhereSql());
 
 		$query2->whereAdd('mycol', 'myvalue', Criterion::EQUAL);

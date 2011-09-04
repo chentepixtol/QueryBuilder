@@ -30,6 +30,16 @@ class ConditionalCriterionTest extends BaseTest
 	}
 
 	/**
+	 * @test
+	 */
+	public function containsTest()
+	{
+		$criterion = ConditionalCriterion::factory('username', 'chentepixtol', Criterion::EQUAL);
+		$this->assertFalse($criterion->contains('email'));
+		$this->assertTrue($criterion->contains('username'));
+	}
+
+	/**
 	 *
 	 * @dataProvider getArgs
 	 * @test

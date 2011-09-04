@@ -68,6 +68,14 @@ class Criteria implements Criterion
 	}
 
 	/**
+	 * (non-PHPdoc)
+	 * @see Query.Criterion::contains()
+	 */
+	public function contains($element){
+		return $this->mainComposite->contains($element);
+	}
+
+	/**
 	 *
 	 *
 	 * @param string $column

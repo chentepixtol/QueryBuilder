@@ -10,6 +10,16 @@ require_once 'BaseTest.php';
 class ConditionalCompositeTest extends BaseTest
 {
 
+	/**
+	 *
+	 * @test
+	 */
+	public function containsTest(){
+		$composite = $this->getlogicalAnd();
+		$this->assertFalse($composite->contains('username'));
+		$this->assertTrue($composite->contains('col1'));
+		$this->assertTrue($composite->contains('col2'));
+	}
 
 	/**
 	 *

@@ -64,5 +64,12 @@ interface Criterion
        */
       public function setQuoteStrategy(QuoteStrategy $quoteStrategy);
 
+      /**
+       *
+       * @param mixed $element
+       * @return $boolean
+       */
+      public function contains($element);
+
 }
 

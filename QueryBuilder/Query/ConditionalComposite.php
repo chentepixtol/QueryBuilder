@@ -67,6 +67,20 @@ class ConditionalComposite implements CriterionComposite
         return $this;
     }
 
+	/**
+	 * (non-PHPdoc)
+	 * @see Query.Criterion::contains()
+	 */
+	public function contains($element)
+	{
+		foreach ($this->getChildrens() as $child){
+			if( $child->contains($element) ){
+				return true;
+			}
+		}
+		return false;
+	}
+
     /**
      * (non-PHPdoc)
      * @see Criterion::createSql()

@@ -216,6 +216,22 @@ class CriteriaTest extends BaseTest
 
 	/**
 	 *
+	 * @test
+	 */
+	public function containsTest(){
+		$criteria = $this->createCriteria();
+		$criteria->add('stage1', 1)
+			->setOR()
+				->add('stage2', 2)
+				->add('stage3', 3);
+		$this->assertFalse($criteria->contains('username'));
+		$this->assertTrue($criteria->contains('stage1'));
+		$this->assertTrue($criteria->contains('stage2'));
+		$this->assertTrue($criteria->contains('stage3'));
+	}
+
+	/**
+	 *
 	 * @return Criteria
 	 */
 	protected function createCriteria()

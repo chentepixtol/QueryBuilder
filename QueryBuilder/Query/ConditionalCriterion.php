@@ -112,6 +112,14 @@ class ConditionalCriterion implements Criterion
 		return $criterion;
     }
 
+	/**
+	 * (non-PHPdoc)
+	 * @see Query.Criterion::contains()
+	 */
+	public function contains($element){
+		return $this->column == $element;
+	}
+
     /**
      * (non-PHPdoc)
      * @see Criterion::createSql()
