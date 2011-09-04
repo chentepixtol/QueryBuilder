@@ -190,6 +190,26 @@ class ConditionalComposite implements CriterionComposite
 	}
 
 	/**
+	 * (non-PHPdoc)
+	 * @see Query.CriterionComposite::repace()
+	 */
+	public function replace($element, Criterion $criterion)
+	{
+		foreach ($this->getChildrens() as $key => $child){
+			if( $child->contains($element) ){
+				$this->refresh();
+				if( $child instanceof CriterionComposite ){
+					$child->replace($element, $criterion);
+				}else{
+					$criterion->setQuoteStrategy($this->quoteStrategy);
+					$this->criterions[$key] = $criterion;
+				}
+			}
+		}
+		return $this;
+	}
+
+	/**
      *
      * @return string
      */

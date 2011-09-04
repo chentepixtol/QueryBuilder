@@ -1,4 +1,6 @@
 <?php
+use Query\Criterion;
+use Query\Expression;
 use Query\SimpleQuoteStrategy;
 use Query\Criteria;
 
@@ -264,8 +266,32 @@ class CriteriaTest extends BaseTest
 		$this->assertFalse($criteria->contains('stage3'));
 		$this->assertEquals("( 1 )", $criteria->createSql());
 
-		$criteria->add('temp', 1);
-		$this->assertEquals("( `temp` = 1 )", $criteria->createSql());
+		$criteria->add(new Expression('temp'), 1);
+		$this->assertEquals("( temp = 1 )", $criteria->createSql());
+
+		$criteria->remove(new Expression('temp'));
+		$this->assertEquals("( 1 )", $criteria->createSql());
+	}
+
+	/**
+	 *
+	 * @test
+	 */
+	public function replace()
+	{
+		$criteria = $this->createCriteria();
+		$criteria->add('username', 'chentepixtol');
+		$criteria->replace('username', 'vicentemmor');
+		$this->assertEquals("( `username` LIKE 'vicentemmor' )", $criteria->createSql());
+
+		$criteria->replace('username', 'chente_pixtol', Criterion::EQUAL);
+		$this->assertEquals("( `username` = 'chente_pixtol' )", $criteria->createSql());
+
+		$criteria->setOR()->add('email', 'gmail')->add('domain', 'com');
+		$this->assertEquals("( `username` = 'chente_pixtol' AND ( `email` LIKE 'gmail' OR `domain` LIKE 'com' ) )", $criteria->createSql());
+
+		$criteria->replace('domain', 'com.mx');
+		$this->assertEquals("( `username` = 'chente_pixtol' AND ( `email` LIKE 'gmail' OR `domain` LIKE 'com.mx' ) )", $criteria->createSql());
 	}
 
 	/**

@@ -64,5 +64,13 @@ interface CriterionComposite extends Criterion
      */
     public function remove($element);
 
+    /**
+     *
+     * @param string $element
+     * @param Criterion $criterion
+     * @return Criterion
+     */
+    public function replace($element, Criterion $criterion);
+
 }
 

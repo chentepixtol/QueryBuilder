@@ -91,6 +91,24 @@ class Criteria implements Criterion
 	 *
 	 * @param string $column
 	 * @param mixed $value
+	 * @param string $comparison
+	 * @param string $mutatorColumn
+	 * @param string $mutatorValue
+	 * @return Criteria
+	 */
+	public function replace($column, $value, $comparison = Criterion::AUTO, $mutatorColumn = null, $mutatorValue = null)
+	{
+		$criterion = ConditionalCriterion::factory($column, $value, $comparison, $mutatorColumn, $mutatorValue);
+		$this->mainComposite->replace($column, $criterion);
+		$this->root();
+		return $this;
+	}
+
+	/**
+	 *
+	 *
+	 * @param string $column
+	 * @param mixed $value
 	 * @param string $mutatorColumn
 	 * @param string $mutatorValue
 	 * @return Criteria
