@@ -59,7 +59,7 @@ class ConditionalComposite implements CriterionComposite
      */
     public function addCriterion(Criterion $criterion)
     {
-    	$this->sql = null;
+    	$this->refresh();
         $this->criterions[] = $criterion;
         $criterion->setQuoteStrategy($this->quoteStrategy);
         if( $criterion instanceof CriterionComposite )
@@ -97,9 +97,11 @@ class ConditionalComposite implements CriterionComposite
 
         $sql = '';
         $total = $this->count();
-        foreach( $this->getChildrens() as $i => $criterion ){
+        $i = 0;
+        foreach( $this->getChildrens() as $criterion ){
+        	$i++;
             $sql .= $criterion->createSql();
-            if( $total != $i + 1 ) $sql .= ' '. $this->getOperatorLogic() . ' ';
+            if( $total != $i ) $sql .= ' '. $this->getOperatorLogic() . ' ';
         }
         $this->sql = '( ' . $sql . ' )';
         return $this->sql;
@@ -155,6 +157,36 @@ class ConditionalComposite implements CriterionComposite
 	 */
 	public function isEmpty(){
 		return $this->count() == 0;
+	}
+
+	/**
+	 *
+	 * @return CriterionComposite
+	 */
+	public function refresh(){
+		$this->sql = null;
+	}
+
+	/**
+	 * (non-PHPdoc)
+	 * @see Query.CriterionComposite::remove()
+	 */
+	public function remove($element)
+	{
+		foreach ($this->getChildrens() as $key => $child){
+			if( $child->contains($element) ){
+				$this->refresh();
+				if( $child instanceof CriterionComposite ){
+					$child->remove($element);
+					if( $child->count() == 0 ){
+						unset($this->criterions[$key]);
+					}
+				}else{
+					unset($this->criterions[$key]);
+				}
+			}
+		}
+		return $this;
 	}
 
 	/**

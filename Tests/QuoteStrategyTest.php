@@ -1,4 +1,5 @@
 <?php
+use Query\NullQuoteStrategy;
 use Query\SimpleQuoteStrategy;
 use Query\QuoteStrategy;
 
@@ -14,6 +15,18 @@ class QuoteStrategyTest extends BaseTest
 	public function simpleQuote($i, $value){
 		$simple = new SimpleQuoteStrategy();
 		$this->assertEquals($this->getExpected($i), $simple->quote($value));
+	}
+
+	/**
+	 *
+	 * @test
+	 */
+	public function nullStrategyQuote()
+	{
+		$null = new NullQuoteStrategy();
+		$this->assertEquals('1', $null->quote('1'));
+		$this->assertEquals('1', $null->quoteColumn('1'));
+		$this->assertEquals('1', $null->quoteTable('1'));
 	}
 
 	/**

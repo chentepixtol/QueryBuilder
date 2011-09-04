@@ -731,7 +731,7 @@ class Query implements SelectCriterion
 	 *
 	 * @return string
 	 */
-	protected function getDefaultColumn(){
+	public function getDefaultColumn(){
 		return $this->columns->getDefaultColumn();
 	}
 

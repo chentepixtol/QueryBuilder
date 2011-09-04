@@ -23,6 +23,18 @@ class ConditionalCompositeTest extends BaseTest
 
 	/**
 	 *
+	 * @test
+	 */
+	public function removeTest(){
+		$composite = $this->getlogicalAnd();
+		$composite->remove('col1');
+		$this->assertFalse($composite->contains('col1'));
+		$this->assertTrue($composite->contains('col2'));
+		$this->assertEquals(1, $composite->count());
+	}
+
+	/**
+	 *
 	 */
 	public function getlogicalAnd()
 	{

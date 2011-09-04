@@ -33,6 +33,7 @@ class QueryTest extends BaseTest
 		$query = new Query($strategyQuote);
 		$this->assertTrue($query->createSelectSql() === $query->createSelectSql());
 		$this->assertEquals('SELECT *', $query->createSelectSql());
+		$this->assertEquals('*', $query->getDefaultColumn());
 
 		$query->addColumn('name');
 		$this->assertFalse($query->hasColumn('email'));
@@ -302,6 +303,30 @@ class QueryTest extends BaseTest
 		$this->assertEquals("WHERE ( `mycol` = 'myvalue' )", $query->createWhereSql());
 
 		$this->assertEquals($query->createWhereSql(), $query2->createWhereSql());
+	}
+
+	/**
+	 *
+	 * @test
+	 * @dataProvider getStrategyQuote
+	 */
+	public function criteria($strategyQuote)
+	{
+		$query = new Query($strategyQuote);
+		$query->from('users')
+			->where()->setOR()
+				->add('stage1', 1)
+				->add('stage1', 1)
+					->setAND()
+						->add('stage2', 2)
+						->add('stage2', 2);
+		$this->assertEquals("SELECT * FROM `users` WHERE ( `stage1` = 1 OR `stage1` = 1 OR ( `stage2` = 2 AND `stage2` = 2 ) )", $query->createSql());
+
+		$query->where()->add('stage3', 3);
+		$this->assertEquals("SELECT * FROM `users` WHERE ( `stage1` = 1 OR `stage1` = 1 OR ( `stage2` = 2 AND `stage2` = 2 AND `stage3` = 3 ) )", $query->createSql());
+
+		$query->where()->root()->add('stage1', 1);
+		$this->assertEquals("SELECT * FROM `users` WHERE ( `stage1` = 1 OR `stage1` = 1 OR ( `stage2` = 2 AND `stage2` = 2 AND `stage3` = 3 ) OR `stage1` = 1 )", $query->createSql());
 	}
 
 	/**

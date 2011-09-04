@@ -232,6 +232,44 @@ class CriteriaTest extends BaseTest
 
 	/**
 	 *
+	 * @test
+	 */
+	public function removeTest()
+	{
+		$criteria = $this->createCriteria();
+		$criteria->add('stage1', 1)
+			->setOR()
+				->add('stage2', 2)
+				->add('stage3', 3);
+
+		$criteria->remove('stage2');
+
+		$this->assertFalse($criteria->contains('username'));
+		$this->assertTrue($criteria->contains('stage1'));
+		$this->assertFalse($criteria->contains('stage2'));
+		$this->assertTrue($criteria->contains('stage3'));
+		$this->assertEquals("( `stage1` = 1 AND ( `stage3` = 3 ) )", $criteria->createSql());
+
+		$criteria->remove('stage3');
+		$this->assertFalse($criteria->contains('username'));
+		$this->assertTrue($criteria->contains('stage1'));
+		$this->assertFalse($criteria->contains('stage2'));
+		$this->assertFalse($criteria->contains('stage3'));
+		$this->assertEquals("( `stage1` = 1 )", $criteria->createSql());
+
+		$criteria->remove('stage1');
+		$this->assertFalse($criteria->contains('username'));
+		$this->assertFalse($criteria->contains('stage1'));
+		$this->assertFalse($criteria->contains('stage2'));
+		$this->assertFalse($criteria->contains('stage3'));
+		$this->assertEquals("( 1 )", $criteria->createSql());
+
+		$criteria->add('temp', 1);
+		$this->assertEquals("( `temp` = 1 )", $criteria->createSql());
+	}
+
+	/**
+	 *
 	 * @return Criteria
 	 */
 	protected function createCriteria()

@@ -57,5 +57,12 @@ interface CriterionComposite extends Criterion
      */
     public function getChildrens();
 
+    /**
+     *
+     * @param string $element
+     * @return Criterion
+     */
+    public function remove($element);
+
 }
 

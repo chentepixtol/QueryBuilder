@@ -77,6 +77,17 @@ class Criteria implements Criterion
 
 	/**
 	 *
+	 * @param string $element
+	 * @return Criteria
+	 */
+	public function remove($element){
+		$this->mainComposite->remove($element);
+		$this->root();
+		return $this;
+	}
+
+	/**
+	 *
 	 *
 	 * @param string $column
 	 * @param mixed $value
@@ -356,11 +367,22 @@ class Criteria implements Criterion
 
 	/**
 	 *
+	 * seek to root
+	 * @return Criteria
+	 */
+	public function root(){
+		$this->currentComposite = $this->mainComposite;
+		return $this;
+	}
+
+	/**
+	 *
 	 *
 	 * @param Criterion $criterion
 	 * @return Criteria
 	 */
 	public function addCriterion(Criterion $criterion){
+		$this->mainComposite->refresh();
 		$this->currentComposite->addCriterion($criterion);
 		return $this;
 	}
