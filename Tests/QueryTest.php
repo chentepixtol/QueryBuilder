@@ -41,6 +41,12 @@ class QueryTest extends BaseTest
 		$this->assertEquals('SELECT `name`', $query->createSelectSql());
 
 		$query->removeColumn('name');
+		$query->distinct()->addColumn('name');
+		$this->assertFalse($query->hasColumn('email'));
+		$this->assertTrue($query->hasColumn('name'));
+		$this->assertEquals('SELECT DISTINCT `name`', $query->createSelectSql());
+
+		$query->distinct(false)->removeColumn('name');
 		$this->assertEquals('SELECT *', $query->createSelectSql());
 
 		$query->addColumn('User.name');
@@ -90,6 +96,7 @@ class QueryTest extends BaseTest
 		$this->assertEquals("SELECT `column1` as `alias1`, `column2` as `alias2`", $query->createSelectSql());
 		$query->removeColumn();
 	}
+
 
 	/**
 	 *

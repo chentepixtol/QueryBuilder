@@ -329,6 +329,16 @@ class Query implements SelectCriterion
 
 	/**
 	 *
+	 * @param boolean $flag
+	 * @return Query
+	 */
+	public function distinct($flag = true){
+		$this->columns->distinct($flag);
+		return $this;
+	}
+
+	/**
+	 *
 	 * addColumns
 	 * @param array $columns
 	 * @return Query

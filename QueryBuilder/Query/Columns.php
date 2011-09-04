@@ -49,6 +49,12 @@ class Columns implements Criterion
 
 	/**
 	 *
+	 * @var boolean
+	 */
+	protected $distinct = false;
+
+	/**
+	 *
 	 * @param string $column
 	 * @return Columns
 	 */
@@ -65,6 +71,18 @@ class Columns implements Criterion
 		else {
 			$this->columns = array();
 		}
+		return $this;
+	}
+
+	/**
+	 *
+	 *
+	 * @param boolean $flag
+	 * @return Columns
+	 */
+	public function distinct($flag = true){
+		$this->sql = null;
+		$this->distinct = $flag;
 		return $this;
 	}
 
@@ -122,6 +140,11 @@ class Columns implements Criterion
 		}
 
 		$sql = '';
+
+		if( $this->distinct ){
+			$sql.= ' DISTINCT';
+		}
+
 		if( empty($this->columns) ){
 			$sql .= ' '.$this->quoteStrategy->quoteColumn($this->getDefaultColumn());
 		}
