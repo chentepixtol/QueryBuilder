@@ -253,6 +253,28 @@ class QueryTest extends BaseTest
 	 * @test
 	 * @dataProvider getStrategyQuote
 	 */
+	public function hasJoin($strategyQuote)
+	{
+		$query = new Query($strategyQuote);
+
+		$query->innerJoinOn('system_prefixed_table_users')->add('User.id_person', 'Person.id_person', Criterion::EQUAL, null, Criterion::AS_FIELD);
+
+		$this->assertTrue($query->hasJoin('system_prefixed_table_users'));
+		$this->assertFalse($query->hasJoin('my_table'));
+
+		$query = new Query($strategyQuote);
+
+		$query->innerJoinOn('system_prefixed_table_users', 'User')->add('User.id_person', 'Person.id_person', Criterion::EQUAL, null, Criterion::AS_FIELD);
+
+		$this->assertTrue($query->hasJoin('User'));
+		$this->assertFalse($query->hasJoin('system_prefixed_table_users'));
+	}
+
+	/**
+	 *
+	 * @test
+	 * @dataProvider getStrategyQuote
+	 */
 	public function manyJoins($strategyQuote)
 	{
 		$query = new Query($strategyQuote);

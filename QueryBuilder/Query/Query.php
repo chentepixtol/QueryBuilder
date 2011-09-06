@@ -336,9 +336,19 @@ class Query implements SelectCriterion
 	public function removeJoin($table)
 	{
 		$this->joinSql = null;
-		if( isset($this->joins[$table]) )
+		if( isset($this->joins[$table]) ){
 			unset($this->joins[$table]);
+		}
 		return $this;
+	}
+
+	/**
+	 *
+	 * @param string $table
+	 * @return boolean
+	 */
+	public function hasJoin($table){
+		return isset($this->joins[$table]);
 	}
 
 	/**
