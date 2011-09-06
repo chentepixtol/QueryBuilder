@@ -528,14 +528,14 @@ class Query implements SelectCriterion
 
 		$sql = '';
 		foreach ($this->joins as $join){
-			$sql .= $join['type'].' '.  $this->quoteStrategy->quoteTable($join['table']);
+			$sql .=  $join['type'].' '.  $this->quoteStrategy->quoteTable($join['table']);
 			if( $join['using'] ){
 				$field = $this->quoteStrategy->quoteColumn($join['using']);
 				$sql .= " USING( {$field} ) ";
 			}
 			else{
 				if( $join['on'] instanceof Criteria ){
-					$sql .= " ON{$join['on']->createSql()}";
+					$sql .= " ON{$join['on']->createSql()} ";
 				}
 			}
 

@@ -231,6 +231,19 @@ class QueryTest extends BaseTest
 	 * @test
 	 * @dataProvider getStrategyQuote
 	 */
+	public function manyJoins($strategyQuote)
+	{
+		$query = new Query($strategyQuote);
+		$query->innerJoinOn('users')->add('id_user', 'id_person')->endJoin()
+			->innerJoinOn('emails')->add('id_person', 'id_person')->endJoin();
+		$this->assertEquals("INNER JOIN `users` ON( `id_user` LIKE 'id_person' ) INNER JOIN `emails` ON( `id_person` LIKE 'id_person' )", $query->createJoinSql());
+	}
+
+	/**
+	 *
+	 * @test
+	 * @dataProvider getStrategyQuote
+	 */
 	public function group($strategyQuote)
 	{
 		$query = new Query($strategyQuote);
