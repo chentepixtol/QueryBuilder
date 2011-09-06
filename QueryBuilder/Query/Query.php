@@ -213,18 +213,21 @@ class Query implements SelectCriterion
 	 *
 	 * @param string $table
 	 * @param strinf $type
+	 * @param string $alias
 	 * @return Criteria
 	 */
-	public function joinOn($table, $type = Criterion::JOIN)
+	public function joinOn($table, $type = Criterion::JOIN, $alias = null)
 	{
 		$on = $this->createCriteria();
 		$on->setQuoteStrategy($this->quoteStrategy);
 		$this->joinSql = null;
-		$this->joins[$table] = array(
+		$key = null != $alias ? $alias : $table;
+		$this->joins[$key] = array(
 			'table' => $table,
 			'type' => $type,
 			'on' => $on,
 			'using' => null,
+			'alias' => $alias,
 		);
 		return $on;
 	}
@@ -234,15 +237,18 @@ class Query implements SelectCriterion
 	 * @param string $table
 	 * @param string $usingColumn
 	 * @param string $type
+	 * @param string $alias
 	 * @return Query
 	 */
-	public function joinUsing($table, $usingColumn, $type = Criterion::JOIN)
+	public function joinUsing($table, $usingColumn, $type = Criterion::JOIN, $alias = null)
 	{
 		$this->joinSql = null;
-		$this->joins[$table] = array(
+		$key = ( null != $alias )? $alias : $table;
+		$this->joins[$key] = array(
 			'table' => $table,
 			'type' => $type,
 			'using' => $usingColumn,
+			'alias' => $alias,
 		);
 		return $this;
 	}
@@ -250,58 +256,64 @@ class Query implements SelectCriterion
 	/**
 	 *
 	 * @param string $table
+	 * @param string $alias
 	 * @return Criteria
 	 */
-	public function innerJoinOn($table){
-		return $this->joinOn($table, Criterion::INNER_JOIN);
+	public function innerJoinOn($table, $alias = null){
+		return $this->joinOn($table, Criterion::INNER_JOIN, $alias);
 	}
 
 	/**
 	 *
 	 * @param string $table
 	 * @param string $on
+	 * @param string $alias
 	 * @return Query
 	 */
-	public function innerJoinUsing($table, $usingColumn){
-		return $this->joinUsing($table, $usingColumn, Criterion::INNER_JOIN);
+	public function innerJoinUsing($table, $usingColumn, $alias = null){
+		return $this->joinUsing($table, $usingColumn, Criterion::INNER_JOIN, $alias);
 	}
 
 	/**
 	 *
 	 * @param string $table
+	 * @param string $alias
 	 * @return Criteria
 	 */
-	public function leftJoinOn($table){
-		return $this->joinOn($table, Criterion::LEFT_JOIN);
+	public function leftJoinOn($table, $alias = null){
+		return $this->joinOn($table, Criterion::LEFT_JOIN, $alias);
 	}
 
 	/**
 	 *
 	 * @param string $table
 	 * @param string $on
+	 * @param string $alias
 	 * @return Query
 	 */
-	public function leftJoinUsing($table, $usingColumn){
-		return $this->joinUsing($table, $usingColumn, Criterion::LEFT_JOIN);
+	public function leftJoinUsing($table, $usingColumn, $alias = null){
+		return $this->joinUsing($table, $usingColumn, Criterion::LEFT_JOIN, $alias);
 	}
 
 	/**
 	 *
 	 * @param string $table
+	 * @param string $alias
 	 * @return Criteria
 	 */
-	public function rightJoinOn($table){
-		return $this->joinOn($table, Criterion::RIGHT_JOIN);
+	public function rightJoinOn($table, $alias = null){
+		return $this->joinOn($table, Criterion::RIGHT_JOIN, $alias);
 	}
 
 	/**
 	 *
 	 * @param string $table
 	 * @param string $on
+	 * @param string $alias
 	 * @return Query
 	 */
-	public function rightJoinUsing($table, $usingColumn){
-		return $this->joinUsing($table, $usingColumn, Criterion::RIGHT_JOIN);
+	public function rightJoinUsing($table, $usingColumn, $alias = null){
+		return $this->joinUsing($table, $usingColumn, Criterion::RIGHT_JOIN, $alias);
 	}
 
 	/**
@@ -318,7 +330,7 @@ class Query implements SelectCriterion
 	/**
 	 *
 	 *
-	 * @param unknown_type $table
+	 * @param string $table
 	 * @return Query
 	 */
 	public function removeJoin($table)
@@ -529,6 +541,9 @@ class Query implements SelectCriterion
 		$sql = '';
 		foreach ($this->joins as $join){
 			$sql .=  $join['type'].' '.  $this->quoteStrategy->quoteTable($join['table']);
+			if( $join['alias'] && is_string($join['alias'])  ){
+				$sql.=' as '. $this->quoteStrategy->quoteTable($join['alias']);
+			}
 			if( $join['using'] ){
 				$field = $this->quoteStrategy->quoteColumn($join['using']);
 				$sql .= " USING( {$field} ) ";

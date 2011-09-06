@@ -185,6 +185,28 @@ class QueryTest extends BaseTest
 	 * @test
 	 * @dataProvider getStrategyQuote
 	 */
+	public function aliasInJoins($strategyQuote)
+	{
+		$query = new Query($strategyQuote);
+
+		$query->innerJoinUsing('system_prefixed_table_users', 'id_item', 'User');
+		$this->assertEquals("INNER JOIN `system_prefixed_table_users` as `User` USING( `id_item` )", $query->createJoinSql());
+
+		$query = new Query($strategyQuote);
+
+		$query->innerJoinOn('system_prefixed_table_users', 'User')->add('User.id_person', 'Person.id_person', Criterion::EQUAL, null, Criterion::AS_FIELD);
+		$this->assertEquals("INNER JOIN `system_prefixed_table_users` as `User` ON( `User`.`id_person` = `Person`.`id_person` )", $query->createJoinSql());
+
+		$query->removeJoin('User');
+		$this->assertEquals('', $query->createJoinSql());
+
+	}
+
+	/**
+	 *
+	 * @test
+	 * @dataProvider getStrategyQuote
+	 */
 	public function joinOnPart($strategyQuote)
 	{
 		$query = new Query($strategyQuote);
