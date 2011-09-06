@@ -62,5 +62,11 @@ interface SelectCriterion extends Criterion
 	 */
 	public function createLimitSql();
 
+	/**
+	 *
+	 * @return string
+	 */
+	public function createIntoSql();
+
 }
 

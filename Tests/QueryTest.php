@@ -391,6 +391,18 @@ class QueryTest extends BaseTest
 	 * @test
 	 * @dataProvider getStrategyQuote
 	 */
+	public function intoOutfile($strategyQuote)
+	{
+		$query = new Query($strategyQuote);
+		$query->from('users')->intoOutfile('users.csv');
+		$this->assertEquals("SELECT * FROM `users` INTO OUTFILE 'users.csv' FIELDS TERMINATED BY ',' ENCLOSED BY '\"' ESCAPED BY '\\\\' LINES TERMINATED BY '\\r\\n'", $query->createSql());
+	}
+
+	/**
+	 *
+	 * @test
+	 * @dataProvider getStrategyQuote
+	 */
 	public function cloning($strategyQuote)
 	{
 		$query = new Query($strategyQuote);

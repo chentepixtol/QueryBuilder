@@ -117,6 +117,42 @@ class Query implements SelectCriterion
 
 	/**
 	 *
+	 * @var string
+	 */
+	protected $intoSql;
+
+	/**
+	 *
+	 * @var string
+	 */
+	protected $filename;
+
+	/**
+	 *
+	 * @var string
+	 */
+	protected $terminated;
+
+	/**
+	 *
+	 * @var string
+	 */
+	protected $enclosed;
+
+	/**
+	 *
+	 * @var string
+	 */
+	protected $escaped;
+
+	/**
+	 *
+	 * @var string
+	 */
+	protected $linesTerminated;
+
+	/**
+	 *
 	 * @var array
 	 */
 	protected $parameters = array();
@@ -589,6 +625,36 @@ class Query implements SelectCriterion
 	}
 
 	/**
+	 * (non-PHPdoc)
+	 * @see Query.SelectCriterion::createIntoSql()
+	 */
+	public function createIntoSql()
+	{
+		if( null !== $this->intoSql ){
+			return $this->intoSql;
+		}
+		$sql = '';
+		if( null != $this->filename ){
+			$sql = "INTO OUTFILE '{$this->filename}'";
+			if( $this->terminated ){
+				$sql .= " FIELDS TERMINATED BY '{$this->terminated}'";
+			}
+			if( $this->enclosed ){
+				$sql .= " ENCLOSED BY '{$this->enclosed}'";
+			}
+			if( $this->escaped ){
+				$sql .= " ESCAPED BY '{$this->escaped}'";
+			}
+			if( $this->linesTerminated ){
+				$sql .= " LINES TERMINATED BY '{$this->linesTerminated}'";
+			}
+		}
+
+		$this->intoSql = $sql;
+		return $this->intoSql;
+	}
+
+	/**
 	 *
 	 * Bind the values to the query
 	 * @param array $parameters
@@ -602,8 +668,8 @@ class Query implements SelectCriterion
 	/* (non-PHPdoc)
 	 * @see Criterion::createSql()
 	 */
-	public function createSql() {
-
+	public function createSql()
+	{
 		$parts = array();
 
 		if( $this->createSelectSql() != '' ) $parts[] = $this->createSelectSql();
@@ -614,6 +680,7 @@ class Query implements SelectCriterion
 		if( $this->createHavingSql() != '' ) $parts[] = $this->createHavingSql();
 		if( $this->createOrderSql() != '' ) $parts[] = $this->createOrderSql();
 		if( $this->createLimitSql() != '' ) $parts[] = $this->createLimitSql();
+		if( $this->createIntoSql() != '' ) $parts[] = $this->createIntoSql();
 		$sql = implode(' ', $parts);
 
 		foreach ($this->parameters as $alias => $parameter){
@@ -737,6 +804,27 @@ class Query implements SelectCriterion
 			$this->orderSql = null;
 			$this->orderByColumns[] = array('column' => $name, 'type' => $type);
 		}
+		return $this;
+	}
+
+	/**
+	 *
+	 * into outfile
+	 * @param string $filename
+	 * @param string $terminated
+	 * @param string $enclosed
+	 * @param string $escaped
+	 * @param string $linesTerminated
+	 * @return Query
+	 */
+	public function intoOutfile($filename, $terminated = ',', $enclosed = '"', $escaped = '\\\\', $linesTerminated ='\r\n')
+	{
+		$this->intoSql = null;
+		$this->filename = $filename;
+		$this->terminated = $terminated;
+		$this->enclosed = $enclosed;
+		$this->escaped = $escaped;
+		$this->linesTerminated = $linesTerminated;
 		return $this;
 	}
 
