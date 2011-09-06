@@ -220,6 +220,18 @@ class CriteriaTest extends BaseTest
 	 *
 	 * @test
 	 */
+	public function equalFields()
+	{
+		$criteria = $this->createCriteria();
+		$criteria->equalFields('User.id_person', 'Person.id_person');
+
+		$this->assertEquals("( `User`.`id_person` = `Person`.`id_person` )", $criteria->createSql());
+	}
+
+	/**
+	 *
+	 * @test
+	 */
 	public function containsTest(){
 		$criteria = $this->createCriteria();
 		$criteria->add('stage1', 1)

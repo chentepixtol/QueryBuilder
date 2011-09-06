@@ -118,6 +118,18 @@ class Criteria implements Criterion
 	/**
 	 *
 	 *
+	 * @param string $field1
+	 * @param string $field2
+	 * @return Criteria
+	 */
+	public function equalFields($field1, $field2){
+		$this->add($field1, $field2, Criterion::EQUAL, null, Criterion::AS_FIELD);
+		return $this;
+	}
+
+	/**
+	 *
+	 *
 	 * @param string $column
 	 * @param mixed $value
 	 * @param string $mutatorColumn
