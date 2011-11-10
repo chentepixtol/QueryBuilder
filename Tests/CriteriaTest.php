@@ -308,6 +308,42 @@ class CriteriaTest extends BaseTest
 
 	/**
 	 *
+	 * @test
+	 */
+	public function bug_al_setear_operador_logico(){
+		$criteria = $this->createCriteria();
+		$criteria
+			->setAND()
+				->setOR()
+					->setAND()
+						->add('field0', 0)
+						->add('field-1', -1)
+					->end()
+					->add('field1', 1)
+					->add('field2', 2)
+				->end()
+				->add('field3', 3)
+			->end();
+		$this->assertEquals("( ( ( `field0` = 0 AND `field-1` = -1 ) OR `field1` = 1 OR `field2` = 2 ) AND `field3` = 3 )", $criteria->createSql());
+
+		$criteria = $this->createCriteria();
+		$criteria
+			->setOR()
+				->setAND()
+					->setOR()
+						->add('field0', 0)
+						->add('field-1', -1)
+					->end()
+					->add('field1', 1)
+					->add('field2', 2)
+				->end()
+				->add('field3', 3)
+			->end();
+		$this->assertEquals("( ( ( `field0` = 0 OR `field-1` = -1 ) AND `field1` = 1 AND `field2` = 2 ) OR `field3` = 3 )", $criteria->createSql());
+	}
+
+	/**
+	 *
 	 * @return Criteria
 	 */
 	protected function createCriteria()
@@ -316,6 +352,9 @@ class CriteriaTest extends BaseTest
 		$criteria->setQuoteStrategy(new SimpleQuoteStrategy());
 		return $criteria;
 	}
+
+
+
 
 
 }

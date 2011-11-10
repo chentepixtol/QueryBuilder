@@ -42,6 +42,12 @@ class Criteria implements Criterion
 
 	/**
 	 *
+	 * @var boolean
+	 */
+	protected $logicalSetter;
+
+	/**
+	 *
 	 *
 	 */
 	public function __construct(Query $query = null){
@@ -49,7 +55,6 @@ class Criteria implements Criterion
 		$this->currentComposite = $this->mainComposite = new ConditionalComposite();
 		$this->setQuoteStrategy(new NullQuoteStrategy());
 	}
-
 
 	/**
 	 *
@@ -275,14 +280,14 @@ class Criteria implements Criterion
 	 */
 	public function setAND()
 	{
-		if( $this->currentComposite->isEmpty() )
+		if( $this->currentComposite->isEmpty() && !$this->logicalSetter )
 			$this->currentComposite->setOperatorLogic(CriterionComposite::LOGICAL_AND);
 		elseif( $this->currentComposite->isLogicalOR() ){
 			$composite = new ConditionalComposite();
 			$this->currentComposite->addCriterion($composite);
 			$this->currentComposite = $composite;
 		}
-
+		$this->logicalSetter = true;
 		return $this;
 	}
 
@@ -292,13 +297,14 @@ class Criteria implements Criterion
 	 */
 	public function setOR()
 	{
-		if( $this->currentComposite->isEmpty() )
+		if( $this->currentComposite->isEmpty() && !$this->logicalSetter )
 			$this->currentComposite->setOperatorLogic(CriterionComposite::LOGICAL_OR);
 		elseif( $this->currentComposite->isLogicalAND() ){
 			$composite = new ConditionalComposite(CriterionComposite::LOGICAL_OR);
 			$this->currentComposite->addCriterion($composite);
 			$this->currentComposite = $composite;
 		}
+		$this->logicalSetter = true;
 		return $this;
 	}
 
