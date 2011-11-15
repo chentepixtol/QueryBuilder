@@ -146,30 +146,54 @@ class Columns implements Criterion
 		}
 
 		if( empty($this->columns) ){
-			$sql .= ' '.$this->quoteStrategy->quoteColumn($this->getDefaultColumn());
+			$sql .= ' '.$this->createSqlForColumn($this->getDefaultColumn());
 		}
 
+		$sql .= $this->createSqlColumnList();
+
+		$this->sql = $sql;
+		return $this->sql;
+	}
+
+	/**
+	 *
+	 * @return string
+	 */
+	protected function createSqlColumnList()
+	{
+		$sql = '';
 		$n = count($this->columns);
 		$i = 0;
 		foreach ($this->columns as $alias => $column)
 		{
 			$mutator = isset($this->mutators[$alias]) ? $this->mutators[$alias] : null;
-			if( $mutator == Criterion::AS_EXPRESSION){
-				$column = new Expression($column);
-				$mutator = null;
-			}
-			$column = $this->quoteStrategy->quoteColumn($column);
-			$column = $mutator ? sprintf($mutator, $column) : $column;
-			$sql .= ' ' . $column;
-			if( is_string($alias) ){
-				$sql.= ' as '. $this->quoteStrategy->quoteColumn($alias);
-			}
+			$sql .= ' '. $this->createSqlForColumn($column, $alias, $mutator);
 			$i++;
 			if( $i != $n ) $sql.= ',';
 		}
+		return $sql;
+	}
 
-		$this->sql = $sql;
-		return $this->sql;
+	/**
+	 *
+	 * @param string $column
+	 * @param string $alias
+	 * @param string $mutator
+	 * @return string
+	 */
+	protected function createSqlForColumn($column, $alias = null, $mutator = null)
+	{
+		if( $mutator == Criterion::AS_EXPRESSION){
+			$column = new Expression($column);
+			$mutator = null;
+		}
+		$column = $this->quoteStrategy->quoteColumn($column);
+		$column = $mutator ? sprintf($mutator, $column) : $column;
+		$sql = $column;
+		if( is_string($alias) ){
+			$sql.= ' as '. $this->quoteStrategy->quoteColumn($alias);
+		}
+		return $sql;
 	}
 
 	/**

@@ -264,14 +264,26 @@ class Criteria implements Criterion
 	public function multipleAdd($adds)
 	{
 		foreach ($adds as $add){
-			$column = isset($add[0]) ? $add[0] : null;
-			$value = isset($add[1]) ? $add[1] : null;
-			$comparison = isset($add[2]) ? $add[2] : Criterion::AUTO;
-			$mutatorColumn = isset($add[3]) ? $add[3] : null;
-			$mutatorValue = isset($add[4]) ? $add[4] : null;
+			$column = $this->getByKey($add, 0);
+			$value = $this->getByKey($add, 1);
+			$comparison = $this->getByKey($add, 2, Criterion::AUTO);
+			$mutatorColumn = $this->getByKey($add, 3);
+			$mutatorValue = $this->getByKey($add, 4);
 			$this->add($column, $value, $comparison, $mutatorColumn, $mutatorValue);
 		}
 		return $this;
+	}
+
+	/**
+	 *
+	 * otiene por el indice
+	 * @param array $array
+	 * @param int $key
+	 * @param mixed $default
+	 * @return mixed
+	 */
+	protected function getByKey($array, $key, $default = null){
+		return isset($array[$key]) ? $array[$key] : $default;
 	}
 
 	/**

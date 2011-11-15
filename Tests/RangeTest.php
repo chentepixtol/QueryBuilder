@@ -28,7 +28,7 @@ class RangeTest extends BaseTest
 	 *
 	 * @test
 	 * @dataProvider getInvalidStrings
-	 * @expectedException Exception
+	 * @expectedException Query\Exception
 	 */
 	public function invalidString($argument)
 	{
@@ -187,7 +187,7 @@ class RangeTest extends BaseTest
 	 *
 	 * @test
 	 * @dataProvider getInvalidArrays
-	 * @expectedException Exception
+	 * @expectedException Query\Exception
 	 */
 	public function invalidArray($argument){
 		$range = new Range();

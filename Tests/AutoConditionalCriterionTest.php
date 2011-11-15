@@ -38,7 +38,7 @@ class AutoConditionalCriterionTest extends BaseTest
 	/**
 	 *
 	 * @test
-	 * @expectedException Exception
+	 * @expectedException Query\Exception
 	 */
 	public function badArgument()
 	{

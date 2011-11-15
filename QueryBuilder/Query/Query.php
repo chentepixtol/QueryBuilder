@@ -413,7 +413,7 @@ class Query implements SelectCriterion
 	 * @param mixed $column
 	 * @return Query
 	 */
-	public function select($column){
+	public function select(){
 		$this->columns->addColumns(func_get_args());
 		return $this;
 	}
@@ -695,20 +695,32 @@ class Query implements SelectCriterion
 	 */
 	public function createSql()
 	{
-		$parts = array();
+		$parts = array(
+			$this->createSelectSql(),
+			$this->createFromSql(),
+			$this->createJoinSql(),
+			$this->createWhereSql(),
+			$this->createGroupSql(),
+			$this->createHavingSql(),
+			$this->createOrderSql(),
+			$this->createLimitSql(),
+			$this->createIntoSql()
+		);
 
-		if( $this->createSelectSql() != '' ) $parts[] = $this->createSelectSql();
-		if( $this->createFromSql() != '' ) $parts[] = $this->createFromSql();
-		if( $this->createJoinSql() != '' ) $parts[] = $this->createJoinSql();
-		if( $this->createWhereSql() != '' ) $parts[] = $this->createWhereSql();
-		if( $this->createGroupSql() != '' ) $parts[] = $this->createGroupSql();
-		if( $this->createHavingSql() != '' ) $parts[] = $this->createHavingSql();
-		if( $this->createOrderSql() != '' ) $parts[] = $this->createOrderSql();
-		if( $this->createLimitSql() != '' ) $parts[] = $this->createLimitSql();
-		if( $this->createIntoSql() != '' ) $parts[] = $this->createIntoSql();
-		$sql = implode(' ', $parts);
+		$sql = implode(' ', array_filter($parts));
 
-		foreach ($this->parameters as $alias => $parameter){
+		return $this->replaceParameters($sql);
+	}
+
+	/**
+	 *
+	 *
+	 * @param string $sql
+	 * @return string
+	 */
+	protected function replaceParameters($sql)
+	{
+		foreach( $this->parameters as $alias => $parameter ){
 			if( is_string($alias) ){
 				if( preg_match('/^\:[a-z0-9\-\_]+$/i', $alias) ){
 					$sql = str_replace($alias, $this->getQuoteStrategy()->quote($parameter), $sql);
@@ -717,7 +729,6 @@ class Query implements SelectCriterion
 				$sql = preg_replace('/\?{1}/', $this->getQuoteStrategy()->quote($parameter), $sql, 1);
 			}
 		}
-
 		return $sql;
 	}
 

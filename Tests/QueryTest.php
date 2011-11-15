@@ -129,7 +129,7 @@ class QueryTest extends BaseTest
 	/**
 	 *
 	 * @test
-	 * @expectedException Exception
+	 * @expectedException Query\Exception
 	 */
 	public function removeFromPart()
 	{
@@ -144,7 +144,7 @@ class QueryTest extends BaseTest
 	/**
 	 *
 	 * @test
-	 * @expectedException Exception
+	 * @expectedException Query\Exception
 	 */
 	public function emptyFrom(){
 		$query = new Query();
