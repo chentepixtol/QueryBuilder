@@ -212,6 +212,28 @@ class Query implements SelectCriterion
 	 *
 	 *
 	 * @param string $table
+	 * @param string $alias
+	 * @param string $type
+	 * @param mixed $on
+	 * @param string $using
+	 */
+	protected function join($table, $alias, $type, $on = null, $using = null)
+	{
+		$this->joinSql = null;
+		$key = ( null != $alias )? $alias : $table;
+		$this->joins[$key] = array(
+			'table' => $table,
+			'type' => $type,
+			'on' => $on,
+			'using' => $using,
+			'alias' => $alias,
+		);
+	}
+
+	/**
+	 *
+	 *
+	 * @param string $table
 	 * @param strinf $type
 	 * @param string $alias
 	 * @return Criteria
@@ -220,15 +242,7 @@ class Query implements SelectCriterion
 	{
 		$on = $this->createCriteria();
 		$on->setQuoteStrategy($this->quoteStrategy);
-		$this->joinSql = null;
-		$key = null != $alias ? $alias : $table;
-		$this->joins[$key] = array(
-			'table' => $table,
-			'type' => $type,
-			'on' => $on,
-			'using' => null,
-			'alias' => $alias,
-		);
+		$this->join($table, $alias, $type, $on);
 		return $on;
 	}
 
@@ -242,14 +256,7 @@ class Query implements SelectCriterion
 	 */
 	public function joinUsing($table, $usingColumn, $type = Criterion::JOIN, $alias = null)
 	{
-		$this->joinSql = null;
-		$key = ( null != $alias )? $alias : $table;
-		$this->joins[$key] = array(
-			'table' => $table,
-			'type' => $type,
-			'using' => $usingColumn,
-			'alias' => $alias,
-		);
+		$this->join($table, $alias, $type, null, $usingColumn);
 		return $this;
 	}
 
