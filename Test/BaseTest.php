@@ -7,7 +7,7 @@ require_once 'vendor/Symfony/Component/ClassLoader/UniversalClassLoader.php';
 
 $loader = new UniversalClassLoader();
 $loader->registerNamespaces(array(
-	'Query'     => 'QueryBuilder/',
+	'Query'     => 'src/',
 ));
 $loader->register();
 

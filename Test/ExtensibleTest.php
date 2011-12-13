@@ -4,8 +4,8 @@ use Query\Criteria;
 
 
 require_once 'BaseTest.php';
-require_once 'Tests/Mock/MockQuery.php';
-require_once 'Tests/Mock/MockCriteria.php';
+require_once 'Test/Mock/MockQuery.php';
+require_once 'Test/Mock/MockCriteria.php';
 
 class ExtensibleTest extends BaseTest
 {
