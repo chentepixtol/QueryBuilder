@@ -33,7 +33,7 @@ class QueryTest extends BaseTest
 		$query = new Query($strategyQuote);
 		$this->assertTrue($query->createSelectSql() === $query->createSelectSql());
 		$this->assertEquals('SELECT *', $query->createSelectSql());
-		$this->assertEquals('*', $query->getDefaultColumn());
+		$this->assertEquals(array('*'), $query->getDefaultColumn());
 
 		$query->addColumn('name');
 		$this->assertFalse($query->hasColumn('email'));
@@ -101,6 +101,13 @@ class QueryTest extends BaseTest
 
 		$query->select('email', 'age');
 		$this->assertEquals("SELECT `name`, `email`, `age`", $query->createSelectSql());
+		$query->removeColumn();
+
+		$query->setDefaultColumn(array('*'));;
+		$this->assertEquals("SELECT *", $query->createSelectSql());
+
+		$query->setDefaultColumn(array('User.*', 'Person.*'));
+		$this->assertEquals("SELECT `User`.*, `Person`.*", $query->createSelectSql());
 	}
 
 

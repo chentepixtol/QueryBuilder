@@ -904,9 +904,9 @@ class Query implements SelectCriterion
 	 * @param string $defaultColumn
 	 * @return Query
 	 */
-	protected function setDefaultColumn($defaultColumn)
+	public function setDefaultColumn($defaultColumn)
 	{
-		$this->columns->setDefaultColumn($defaultColumn);
+		$this->columns->setDefaultColumn((array) $defaultColumn);
 		return $this;
 	}
 

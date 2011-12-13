@@ -45,7 +45,7 @@ class Columns implements Criterion
 	 *
 	 * @var string
 	 */
-	protected $defaultColumn = '*';
+	protected $defaultColumn = array('*');
 
 	/**
 	 *
@@ -146,10 +146,10 @@ class Columns implements Criterion
 		}
 
 		if( empty($this->columns) ){
-			$sql .= ' '.$this->createSqlForColumn($this->getDefaultColumn());
+			$sql .= $this->createSqlForColumns($this->getDefaultColumn());
 		}
 
-		$sql .= $this->createSqlColumnList();
+		$sql .= $this->createSqlForColumns($this->columns);
 
 		$this->sql = $sql;
 		return $this->sql;
@@ -159,12 +159,12 @@ class Columns implements Criterion
 	 *
 	 * @return string
 	 */
-	protected function createSqlColumnList()
+	protected function createSqlForColumns(array $columns)
 	{
 		$sql = '';
-		$n = count($this->columns);
+		$n = count($columns);
 		$i = 0;
-		foreach ($this->columns as $alias => $column)
+		foreach ($columns as $alias => $column)
 		{
 			$mutator = isset($this->mutators[$alias]) ? $this->mutators[$alias] : null;
 			$sql .= ' '. $this->createSqlForColumn($column, $alias, $mutator);
@@ -214,11 +214,12 @@ class Columns implements Criterion
 
 	/**
 	 *
-	 * @param string $defaultColumn
+	 * @param array $defaultColumn
 	 * @return Query
 	 */
 	public function setDefaultColumn($defaultColumn)
 	{
+		$this->sql = null;
 		$this->defaultColumn = $defaultColumn;
 		return $this;
 	}
