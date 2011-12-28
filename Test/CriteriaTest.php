@@ -344,6 +344,25 @@ class CriteriaTest extends BaseTest
 
 	/**
 	 *
+	 * @test
+	 */
+	public function prefixInWhere()
+	{
+	    $criteria = $this->createCriteria();
+	    $criteria
+            ->prefix('Person')
+                ->add('name', 'Vicente')
+                ->add('bithdate', 1986, Criterion::EQUAL, Criterion::YEAR)
+            ->prefix('Address')
+                ->add('street', 'vincenes #245')
+                ->add(array('Address', 'zipcode'), '05069')
+            ->endPrefix();
+
+	    $this->assertEquals("( `Person`.`name` LIKE 'Vicente' AND YEAR(`Person`.`bithdate`) = 1986 AND `Address`.`street` LIKE 'vincenes #245' AND `Address`.`zipcode` = '05069' )", $criteria->createSql());
+	}
+
+	/**
+	 *
 	 * @return Criteria
 	 */
 	protected function createCriteria()

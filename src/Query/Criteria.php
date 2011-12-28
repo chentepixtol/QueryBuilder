@@ -48,6 +48,12 @@ class Criteria implements Criterion
 
 	/**
 	 *
+	 * @var string
+	 */
+	protected $prefix;
+
+	/**
+	 *
 	 *
 	 */
 	public function __construct(Query $query = null){
@@ -68,6 +74,26 @@ class Criteria implements Criterion
 
 	/**
 	 *
+	 * @param string $table
+	 * @return Criteria
+	 */
+	public function prefix($alias){
+	    $this->prefix = $alias;
+	    return $this;
+	}
+
+	/**
+	 *
+	 * @param string $table
+	 * @return Criteria
+	 */
+	public function endPrefix(){
+	    $this->prefix = null;
+	    return $this;
+	}
+
+	/**
+	 *
 	 *
 	 * @param string $column
 	 * @param mixed $value
@@ -78,10 +104,13 @@ class Criteria implements Criterion
 	 */
 	public function add($column, $value, $comparison = Criterion::AUTO, $mutatorColumn = null, $mutatorValue = null)
 	{
+	    $column = $this->addPrefix($column);
 		$criterion = ConditionalCriterion::factory($column, $value, $comparison, $mutatorColumn, $mutatorValue);
 		$this->addCriterion($criterion);
 		return $this;
 	}
+
+
 
 	/**
 	 * (non-PHPdoc)
@@ -455,4 +484,18 @@ class Criteria implements Criterion
 	public function setQuery(Query $query = null){
 		$this->query = $query;
 	}
+
+	/**
+	 *
+	 * @param string $column
+	 */
+	protected function addPrefix($column){
+	    if( null != $this->prefix ){
+	        if( is_string($column) ){
+	            $column = $this->prefix . '.' . $column;
+	        }
+	    }
+	    return $column;
+	}
+
 }

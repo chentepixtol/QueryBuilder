@@ -496,7 +496,6 @@ class QueryTest extends BaseTest
 		$this->assertEquals($sql, $query->createSql());
 	}
 
-
 	/**
 	 *
 	 * @test
