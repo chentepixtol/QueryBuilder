@@ -286,6 +286,62 @@ class Criteria implements Criterion
     }
 
     /**
+     *
+     *
+     * @param string $column
+     * @param mixed $value
+     * @param string $mutatorColumn
+     * @param string $mutatorValue
+     * @return Criteria
+     */
+    public function greaterThan($column, $value, $mutatorColumn = null, $mutatorValue = null){
+        $this->add($column, $value, Criterion::GREATER_THAN, $mutatorColumn, $mutatorValue);
+        return $this;
+    }
+
+    /**
+     *
+     *
+     * @param string $column
+     * @param mixed $value
+     * @param string $mutatorColumn
+     * @param string $mutatorValue
+     * @return Criteria
+     */
+    public function lessThan($column, $value, $mutatorColumn = null, $mutatorValue = null){
+        $this->add($column, $value, Criterion::LESS_THAN, $mutatorColumn, $mutatorValue);
+        return $this;
+    }
+
+    /**
+     *
+     *
+     * @param string $column
+     * @param mixed $value
+     * @param string $mutatorColumn
+     * @param string $mutatorValue
+     * @return Criteria
+     */
+    public function greaterOrEqual($column, $value, $mutatorColumn = null, $mutatorValue = null){
+        $this->add($column, $value, Criterion::GREATER_OR_EQUAL, $mutatorColumn, $mutatorValue);
+        return $this;
+    }
+
+    /**
+     *
+     *
+     * @param string $column
+     * @param mixed $value
+     * @param string $mutatorColumn
+     * @param string $mutatorValue
+     * @return Criteria
+     */
+    public function lessOrEqual($column, $value, $mutatorColumn = null, $mutatorValue = null){
+        $this->add($column, $value, Criterion::LESS_OR_EQUAL, $mutatorColumn, $mutatorValue);
+        return $this;
+    }
+
+    /**
      * multipleAdd
      * @param array $adds
      * @return Criteria
