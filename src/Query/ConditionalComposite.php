@@ -14,10 +14,10 @@ namespace Query;
 class ConditionalComposite implements CriterionComposite
 {
 
-	/**
-	 *
-	 * @var array
-	 */
+    /**
+     *
+     * @var array
+     */
     protected $criterions = array();
 
     /**
@@ -59,43 +59,43 @@ class ConditionalComposite implements CriterionComposite
      */
     public function addCriterion(Criterion $criterion)
     {
-    	$this->refresh();
+        $this->refresh();
         $this->criterions[] = $criterion;
         $criterion->setQuoteStrategy($this->quoteStrategy);
         if( $criterion instanceof CriterionComposite )
-        	$criterion->setParent($this);
+            $criterion->setParent($this);
         return $this;
     }
 
-	/**
-	 * (non-PHPdoc)
-	 * @see Query.Criterion::contains()
-	 */
-	public function contains($element)
-	{
-		foreach ($this->getChildrens() as $child){
-			if( $child->contains($element) ){
-				return true;
-			}
-		}
-		return false;
-	}
+    /**
+     * (non-PHPdoc)
+     * @see Query.Criterion::contains()
+     */
+    public function contains($element)
+    {
+        foreach ($this->getChildrens() as $child){
+            if( $child->contains($element) ){
+                return true;
+            }
+        }
+        return false;
+    }
 
-	/**
-	 *
-	 * Cloning
-	 */
-	public function __clone()
-	{
-		$copyCriterions = array();
-		foreach ($this->criterions as $key => $criterion) {
-			$copyCriterions[$key] = clone $criterion;
-			if( $copyCriterions[$key] instanceof CriterionComposite ){
-				$copyCriterions[$key]->setParent($this);
-			}
-		}
-		$this->criterions = $copyCriterions;
-	}
+    /**
+     *
+     * Cloning
+     */
+    public function __clone()
+    {
+        $copyCriterions = array();
+        foreach ($this->criterions as $key => $criterion) {
+            $copyCriterions[$key] = clone $criterion;
+            if( $copyCriterions[$key] instanceof CriterionComposite ){
+                $copyCriterions[$key]->setParent($this);
+            }
+        }
+        $this->criterions = $copyCriterions;
+    }
 
     /**
      * (non-PHPdoc)
@@ -103,19 +103,19 @@ class ConditionalComposite implements CriterionComposite
      */
    public function createSql()
    {
-   		if( null !== $this->sql )
-   			return $this->sql;
+           if( null !== $this->sql )
+               return $this->sql;
 
-   		if( $this->isEmpty() ){
-   			$this->sql = '( 1 )';
-			return $this->sql;
-		}
+           if( $this->isEmpty() ){
+               $this->sql = '( 1 )';
+            return $this->sql;
+        }
 
         $sql = '';
         $total = $this->count();
         $i = 0;
         foreach( $this->getChildrens() as $criterion ){
-        	$i++;
+            $i++;
             $sql .= $criterion->createSql();
             if( $total != $i ) $sql .= ' '. $this->getOperatorLogic() . ' ';
         }
@@ -130,102 +130,102 @@ class ConditionalComposite implements CriterionComposite
     public function setQuoteStrategy(QuoteStrategy $quoteStrategy){
         $this->quoteStrategy = $quoteStrategy;
         foreach ($this->getChildrens() as $children){
-        	$children->setQuoteStrategy($quoteStrategy);
+            $children->setQuoteStrategy($quoteStrategy);
         }
     }
 
-	/**
-	 * (non-PHPdoc)
-	 * @see CriterionComposite::getParent()
-	 */
-	public function getParent() {
-		return $this->parent instanceof CriterionComposite ? $this->parent : $this;
-	}
+    /**
+     * (non-PHPdoc)
+     * @see CriterionComposite::getParent()
+     */
+    public function getParent() {
+        return $this->parent instanceof CriterionComposite ? $this->parent : $this;
+    }
 
-	/**
-	 * (non-PHPdoc)
-	 * @see CriterionComposite::setParent()
-	 */
-	public function setParent(CriterionComposite $parent) {
-		$this->parent = $parent;
-		return $this;
-	}
+    /**
+     * (non-PHPdoc)
+     * @see CriterionComposite::setParent()
+     */
+    public function setParent(CriterionComposite $parent) {
+        $this->parent = $parent;
+        return $this;
+    }
 
-	/**
-	 * (non-PHPdoc)
-	 * @see CriterionComposite::getChildrens()
-	 */
-	public function getChildrens(){
-		return $this->criterions;
-	}
+    /**
+     * (non-PHPdoc)
+     * @see CriterionComposite::getChildrens()
+     */
+    public function getChildrens(){
+        return $this->criterions;
+    }
 
-	/**
-	 * (non-PHPdoc)
-	 * @see CriterionComposite::count()
-	 */
-	public function count(){
-		return count($this->getChildrens());
-	}
+    /**
+     * (non-PHPdoc)
+     * @see CriterionComposite::count()
+     */
+    public function count(){
+        return count($this->getChildrens());
+    }
 
-	/**
-	 * (non-PHPdoc)
-	 * @see CriterionComposite::isEmpty()
-	 */
-	public function isEmpty(){
-		return $this->count() == 0;
-	}
+    /**
+     * (non-PHPdoc)
+     * @see CriterionComposite::isEmpty()
+     */
+    public function isEmpty(){
+        return $this->count() == 0;
+    }
 
-	/**
-	 *
-	 * @return CriterionComposite
-	 */
-	public function refresh(){
-		$this->sql = null;
-	}
+    /**
+     *
+     * @return CriterionComposite
+     */
+    public function refresh(){
+        $this->sql = null;
+    }
 
-	/**
-	 * (non-PHPdoc)
-	 * @see Query.CriterionComposite::remove()
-	 */
-	public function remove($element)
-	{
-		foreach ($this->getChildrens() as $key => $child){
-			if( $child->contains($element) ){
-				$this->refresh();
-				if( $child instanceof CriterionComposite ){
-					$child->remove($element);
-					if( $child->count() == 0 ){
-						unset($this->criterions[$key]);
-					}
-				}else{
-					unset($this->criterions[$key]);
-				}
-			}
-		}
-		return $this;
-	}
+    /**
+     * (non-PHPdoc)
+     * @see Query.CriterionComposite::remove()
+     */
+    public function remove($element)
+    {
+        foreach ($this->getChildrens() as $key => $child){
+            if( $child->contains($element) ){
+                $this->refresh();
+                if( $child instanceof CriterionComposite ){
+                    $child->remove($element);
+                    if( $child->count() == 0 ){
+                        unset($this->criterions[$key]);
+                    }
+                }else{
+                    unset($this->criterions[$key]);
+                }
+            }
+        }
+        return $this;
+    }
 
-	/**
-	 * (non-PHPdoc)
-	 * @see Query.CriterionComposite::repace()
-	 */
-	public function replace($element, Criterion $criterion)
-	{
-		foreach ($this->getChildrens() as $key => $child){
-			if( $child->contains($element) ){
-				$this->refresh();
-				if( $child instanceof CriterionComposite ){
-					$child->replace($element, $criterion);
-				}else{
-					$criterion->setQuoteStrategy($this->quoteStrategy);
-					$this->criterions[$key] = $criterion;
-				}
-			}
-		}
-		return $this;
-	}
+    /**
+     * (non-PHPdoc)
+     * @see Query.CriterionComposite::repace()
+     */
+    public function replace($element, Criterion $criterion)
+    {
+        foreach ($this->getChildrens() as $key => $child){
+            if( $child->contains($element) ){
+                $this->refresh();
+                if( $child instanceof CriterionComposite ){
+                    $child->replace($element, $criterion);
+                }else{
+                    $criterion->setQuoteStrategy($this->quoteStrategy);
+                    $this->criterions[$key] = $criterion;
+                }
+            }
+        }
+        return $this;
+    }
 
-	/**
+    /**
      *
      * @return string
      */
@@ -240,8 +240,8 @@ class ConditionalComposite implements CriterionComposite
      * @return CriterionComposite
      */
     public function setOperatorLogic($opertatorLogic){
-    	$this->operatorLogic = $opertatorLogic;
-    	return $this;
+        $this->operatorLogic = $opertatorLogic;
+        return $this;
     }
 
     /**
@@ -250,16 +250,16 @@ class ConditionalComposite implements CriterionComposite
      */
     public function isLogicalAND()
     {
-    	return $this->getOperatorLogic() == CriterionComposite::LOGICAL_AND;
+        return $this->getOperatorLogic() == CriterionComposite::LOGICAL_AND;
     }
 
-	/**
+    /**
      *
      * @return boolean
      */
     public function isLogicalOR()
     {
-    	return $this->getOperatorLogic() == CriterionComposite::LOGICAL_OR;
+        return $this->getOperatorLogic() == CriterionComposite::LOGICAL_OR;
     }
 
 }
