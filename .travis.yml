@@ -4,4 +4,9 @@ php:
   - 5.3
   - 5.4
 
+before_script:
+  - mysql -e 'create database IF NOT EXISTS bender;' -uroot
+  - mysql -uroot bender < travis.sql
+
+
 script: phpunit --coverage-text Test/
