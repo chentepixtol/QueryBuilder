@@ -97,7 +97,14 @@ class SimpleQuoteStrategy implements QuoteStrategy
             $this->separator = null;
         }
 
-        $return = is_array($value) ? implode($this->implodeGlue, array_map(array($this, '_quote'), $value)) : "{$this->separator}{$value}{$this->separator}";
+        if( is_array($value) ){
+            $return = implode($this->implodeGlue, array_map(array($this, '_quote'), $value));
+        }else{
+            $search = array("\\","\0","\n","\r","\x1a","'",'"');
+            $replace = array("\\\\","\\0","\\n","\\r","\Z","\'",'\"');
+            $value = str_replace($search, $replace, $value);
+            $return = "{$this->separator}{$value}{$this->separator}";
+        }
         $this->separator = $oldSeparator;
         return $return;
     }

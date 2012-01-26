@@ -5,12 +5,12 @@ use Query\Criteria;
 class MockCriteria extends Criteria
 {
 
-	/**
-	 *
-	 * @return MockCriteria
-	 */
-	public function newMethod(){
-		return $this;
-	}
+    /**
+     *
+     * @return MockCriteria
+     */
+    public function newMethod(){
+        return $this;
+    }
 
 }

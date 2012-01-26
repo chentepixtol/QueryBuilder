@@ -1,16 +1,9 @@
 <?php
 
+require_once 'autoload.php';
+
 use Query\ZendDbQuoteStrategy;
-use Symfony\Component\ClassLoader\UniversalClassLoader;
-
-require_once 'vendor/Symfony/Component/ClassLoader/UniversalClassLoader.php';
-
-$loader = new UniversalClassLoader();
-$loader->registerNamespaces(array(
-	'Query'     => 'src/',
-));
-$loader->register();
-
+use Query\SimpleQuoteStrategy;
 
 /**
  *
@@ -20,32 +13,31 @@ $loader->register();
 abstract class BaseTest extends PHPUnit_Framework_TestCase
 {
 
-	/**
-	 *
-	 * @var QuoteStrategy
-	 */
-	private $quoteStrategy;
+    /**
+     *
+     * @var QuoteStrategy
+     */
+    private $quoteStrategy;
 
-	/**
-	 *
-	 * @return QuoteStrategy
-	 */
-	public function getZendDbQuoteStrategy()
-	{
-		require_once 'Zend/Db.php';
+    /**
+     *
+     * @return QuoteStrategy
+     */
+    public function getZendDbQuoteStrategy()
+    {
+        if( null == $this->quoteStrategy ){
 
-		if( null == $this->quoteStrategy ){
-			$db = Zend_Db::factory('Pdo_Mysql', array(
-			    'host'     => '127.0.0.1',
-			    'username' => 'sd',
-			    'password' => '123',
-			    'dbname'   => 'sd_ixe'
-			));
+            $db = Zend_Db::factory('Pdo_Mysql', array(
+                'host'     => '127.0.0.1',
+                'username' => 'bender',
+                'password' => '123',
+                'dbname'   => 'bender',
+            ));
 
-			$this->quoteStrategy = new ZendDbQuoteStrategy($db);
-		}
-		return $this->quoteStrategy;
-	}
+            $this->quoteStrategy = new ZendDbQuoteStrategy($db);
+        }
+        return $this->quoteStrategy;
+    }
 
 
 }

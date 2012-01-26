@@ -11,20 +11,20 @@ use Query\Query;
 class MockQuery extends Query
 {
 
-	/**
-	 * (non-PHPdoc)
-	 * @see Query.Query::init()
-	 */
-	public function init(){
-		$this->setDefaultColumn("MockTable.*");
-	}
+    /**
+     * (non-PHPdoc)
+     * @see Query.Query::init()
+     */
+    public function init(){
+        $this->setDefaultColumn("MockTable.*");
+    }
 
-	/**
-	 * (non-PHPdoc)
-	 * @see Query.Query::createCriteria()
-	 */
-	protected function createCriteria(){
-		return new MockCriteria($this);
-	}
+    /**
+     * (non-PHPdoc)
+     * @see Query.Query::createCriteria()
+     */
+    protected function createCriteria(){
+        return new MockCriteria($this);
+    }
 
 }
