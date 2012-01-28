@@ -123,10 +123,13 @@ class QueryTest extends BaseTest
         $query->from('table_users');
         $this->assertEquals($query->createFromSql(), $query->createFromSql());
         $this->assertEquals("FROM `table_users`", $query->createFromSql());
+        $this->assertTrue($query->hasFrom('table_users'));
 
         $query->removeFrom('table_users');
 
         $query->from('table_users', 'User');
+        $this->assertTrue($query->hasFrom('table_users'));
+        $this->assertTrue($query->hasFrom('User'));
         $this->assertEquals("FROM `table_users` as `User`", $query->createFromSql());
 
         $query->from('table_persons', 'Person');

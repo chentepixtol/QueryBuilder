@@ -29,11 +29,6 @@ class Query implements SelectCriterion
     protected $quoteStrategy;
 
     /**
-     * @var array
-     */
-    protected $from = array();
-
-    /**
      * @var Columns
      */
     protected $columns;
@@ -74,13 +69,6 @@ class Query implements SelectCriterion
      * @var Criteria
      */
     protected $havingCriteria;
-
-    /**
-     *
-     * Lazy Load
-     * @var string
-     */
-    protected $fromSql;
 
     /**
      *
@@ -153,6 +141,12 @@ class Query implements SelectCriterion
 
     /**
      *
+     * @var Froms
+     */
+    protected $fromPart;
+
+    /**
+     *
      * Construct
      * @param QuoteStrategy $quoteStrategy
      */
@@ -162,6 +156,8 @@ class Query implements SelectCriterion
         $this->havingCriteria = $this->createCriteria();
         $this->columns = new Columns();
         $this->joinPart = new Joins();
+        $this->fromPart = new Froms();
+
         $this->setQuoteStrategy($quoteStrategy ? $quoteStrategy : new SimpleQuoteStrategy());
         $this->init();
     }
@@ -178,6 +174,7 @@ class Query implements SelectCriterion
         $this->whereCriteria->setQuery($this);
         $this->columns = clone $this->columns;
         $this->joinPart = clone $this->joinPart;
+        $this->fromPart = clone $this->fromPart;
     }
 
     /**
@@ -334,16 +331,18 @@ class Query implements SelectCriterion
      * @param string $table
      * @return Query
      */
-    public function from($table, $alias = null)
-    {
-        $this->fromSql = null;
-        if( is_string($alias) ){
-            $this->from[$alias] = $table;
-        }else{
-            $this->from[] = $table;
-        }
-
+    public function from($table, $alias = null){
+        $this->fromPart->addFrom($table, $alias);
         return $this;
+    }
+
+    /**
+     *
+     * @param unknown_type $table
+     * @return boolean
+     */
+    public function hasFrom($table){
+        return $this->fromPart->contains($table);
     }
 
     /**
@@ -351,16 +350,8 @@ class Query implements SelectCriterion
      * @param string $from
      * @return Query
      */
-    public function removeFrom($from = null)
-    {
-        $this->fromSql = null;
-        if( $from ){
-            $k = array_search($from, $this->from);
-            if( $k !== false ) unset($this->from[$k]);
-        }
-        else {
-            $this->from = array();
-        }
+    public function removeFrom($from = null){
+        $this->fromPart->remove($from);
         return $this;
     }
 
@@ -492,28 +483,8 @@ class Query implements SelectCriterion
     /* (non-PHPdoc)
      * @see SelectCriterion::createFromSql()
      */
-    public function createFromSql()
-    {
-        if( null !== $this->fromSql ){
-            return $this->fromSql;
-        }
-
-        $tables = count($this->from);
-
-        if( 0 === $tables){
-            throw new Exception("No se ha definido ninguna tabla en la parte sql del FROM");
-        }
-
-        $sql = 'FROM ';
-        $i = 1;
-        foreach ($this->from as $alias => $table){
-            $alias = is_string($alias) ? ' as '.$this->quoteStrategy->quoteTable($alias) : '';
-            $sql .= $this->quoteStrategy->quoteTable($table).$alias;
-            if($tables != $i) $sql.= ', ';
-            $i++;
-        }
-        $this->fromSql = $sql;
-        return $this->fromSql;
+    public function createFromSql(){
+        return $this->fromPart->createSql();
     }
 
     /* (non-PHPdoc)
@@ -707,6 +678,7 @@ class Query implements SelectCriterion
         $this->havingCriteria->setQuoteStrategy($quoteStrategy);
         $this->columns->setQuoteStrategy($quoteStrategy);
         $this->joinPart->setQuoteStrategy($quoteStrategy);
+        $this->fromPart->setQuoteStrategy($quoteStrategy);
         return $this;
     }
 

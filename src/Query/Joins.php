@@ -72,14 +72,14 @@ class Joins implements Criterion
      * @param mixed $on
      * @param string $using
      */
-    public function join($table, $alias, $type, $on = null, $using = null)
+    public function join($table, $alias, $type, $criterionON = null, $using = null)
     {
         $this->sql = null;
         $key = ( null != $alias )? $alias : $table;
         $this->joins[$key] = array(
                 'table' => $table,
                 'type' => $type,
-                'on' => $on,
+                'on' => $criterionON,
                 'using' => $using,
                 'alias' => $alias,
         );

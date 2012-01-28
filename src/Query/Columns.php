@@ -62,10 +62,10 @@ class Columns implements Criterion
     {
         $this->sql = null;
         if( $column ){
-            $k = array_search($column, $this->columns);
-            if( $k !== false ){
-                unset($this->mutators[$k]);
-                unset($this->columns[$k]);
+            $alias = array_search($column, $this->columns);
+            if( $alias !== false ){
+                unset($this->mutators[$alias]);
+                unset($this->columns[$alias]);
             }
         }
         else {
@@ -162,14 +162,14 @@ class Columns implements Criterion
     protected function createSqlForColumns(array $columns)
     {
         $sql = '';
-        $n = count($columns);
-        $i = 0;
+        $size = count($columns);
+        $number = 0;
         foreach ($columns as $alias => $column)
         {
             $mutator = isset($this->mutators[$alias]) ? $this->mutators[$alias] : null;
             $sql .= ' '. $this->createSqlForColumn($column, $alias, $mutator);
-            $i++;
-            if( $i != $n ) $sql.= ',';
+            $number++;
+            if( $number != $size ) $sql.= ',';
         }
         return $sql;
     }

@@ -113,11 +113,11 @@ class ConditionalComposite implements CriterionComposite
 
         $sql = '';
         $total = $this->count();
-        $i = 0;
+        $number = 0;
         foreach( $this->getChildrens() as $criterion ){
-            $i++;
+            $number++;
             $sql .= $criterion->createSql();
-            if( $total != $i ) $sql .= ' '. $this->getOperatorLogic() . ' ';
+            if( $total != $number ) $sql .= ' '. $this->getOperatorLogic() . ' ';
         }
         $this->sql = '( ' . $sql . ' )';
         return $this->sql;
