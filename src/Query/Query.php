@@ -39,12 +39,7 @@ class Query implements SelectCriterion
     protected $columns;
 
     /**
-     * @var array
-     */
-    protected $joins = array();
-
-    /**
-     * El limite de filas que regresar� el sql .  <code>0</code> significa que regresa todos
+     * Limit
      * rows.
      * @var int $limit
      */
@@ -57,7 +52,7 @@ class Query implements SelectCriterion
     protected $offset = 0;
 
     /**
-     * Columnas por las que se ordenar� el resultado
+     * Order Column
      * @var mixed
      */
     protected $orderByColumns = array ();
@@ -86,13 +81,6 @@ class Query implements SelectCriterion
      * @var string
      */
     protected $fromSql;
-
-    /**
-     *
-     * Lazy Load
-     * @var string
-     */
-    protected $joinSql;
 
     /**
      *
@@ -159,6 +147,12 @@ class Query implements SelectCriterion
 
     /**
      *
+     * @var Joins
+     */
+    protected $joinPart;
+
+    /**
+     *
      * Construct
      * @param QuoteStrategy $quoteStrategy
      */
@@ -167,6 +161,7 @@ class Query implements SelectCriterion
         $this->whereCriteria = $this->createCriteria();
         $this->havingCriteria = $this->createCriteria();
         $this->columns = new Columns();
+        $this->joinPart = new Joins();
         $this->setQuoteStrategy($quoteStrategy ? $quoteStrategy : new SimpleQuoteStrategy());
         $this->init();
     }
@@ -182,6 +177,7 @@ class Query implements SelectCriterion
         $this->whereCriteria = clone $this->whereCriteria;
         $this->whereCriteria->setQuery($this);
         $this->columns = clone $this->columns;
+        $this->joinPart = clone $this->joinPart;
     }
 
     /**
@@ -212,28 +208,6 @@ class Query implements SelectCriterion
      *
      *
      * @param string $table
-     * @param string $alias
-     * @param string $type
-     * @param mixed $on
-     * @param string $using
-     */
-    protected function join($table, $alias, $type, $on = null, $using = null)
-    {
-        $this->joinSql = null;
-        $key = ( null != $alias )? $alias : $table;
-        $this->joins[$key] = array(
-            'table' => $table,
-            'type' => $type,
-            'on' => $on,
-            'using' => $using,
-            'alias' => $alias,
-        );
-    }
-
-    /**
-     *
-     *
-     * @param string $table
      * @param strinf $type
      * @param string $alias
      * @return Criteria
@@ -242,7 +216,7 @@ class Query implements SelectCriterion
     {
         $on = $this->createCriteria();
         $on->setQuoteStrategy($this->quoteStrategy);
-        $this->join($table, $alias, $type, $on);
+        $this->joinPart->join($table, $alias, $type, $on);
         return $on;
     }
 
@@ -256,7 +230,7 @@ class Query implements SelectCriterion
      */
     public function joinUsing($table, $usingColumn, $type = Criterion::JOIN, $alias = null)
     {
-        $this->join($table, $alias, $type, null, $usingColumn);
+        $this->joinPart->join($table, $alias, $type, null, $usingColumn);
         return $this;
     }
 
@@ -329,8 +303,7 @@ class Query implements SelectCriterion
      */
     public function removeJoins()
     {
-        $this->joinSql = null;
-        $this->joins = array();
+        $this->joinPart->reset();
         return $this;
     }
 
@@ -342,10 +315,7 @@ class Query implements SelectCriterion
      */
     public function removeJoin($table)
     {
-        $this->joinSql = null;
-        if( isset($this->joins[$table]) ){
-            unset($this->joins[$table]);
-        }
+        $this->joinPart->remove($table);
         return $this;
     }
 
@@ -355,7 +325,7 @@ class Query implements SelectCriterion
      * @return boolean
      */
     public function hasJoin($table){
-        return isset($this->joins[$table]);
+        return $this->joinPart->contains($table);
     }
 
     /**
@@ -549,31 +519,8 @@ class Query implements SelectCriterion
     /* (non-PHPdoc)
      * @see SelectCriterion::createJoinSql()
      */
-    public function createJoinSql()
-    {
-        if( null !== $this->joinSql ){
-            return $this->joinSql;
-        }
-
-        $sql = '';
-        foreach ($this->joins as $join){
-            $sql .=  $join['type'].' '.  $this->quoteStrategy->quoteTable($join['table']);
-            if( $join['alias'] && is_string($join['alias'])  ){
-                $sql.=' as '. $this->quoteStrategy->quoteTable($join['alias']);
-            }
-            if( $join['using'] ){
-                $field = $this->quoteStrategy->quoteColumn($join['using']);
-                $sql .= " USING( {$field} ) ";
-            }
-            else{
-                if( $join['on'] instanceof Criteria ){
-                    $sql .= " ON{$join['on']->createSql()} ";
-                }
-            }
-
-        }
-        $this->joinSql = trim($sql);
-        return $this->joinSql;
+    public function createJoinSql(){
+        return $this->joinPart->createSql();
     }
 
     /* (non-PHPdoc)
@@ -759,6 +706,7 @@ class Query implements SelectCriterion
         $this->whereCriteria->setQuoteStrategy($quoteStrategy);
         $this->havingCriteria->setQuoteStrategy($quoteStrategy);
         $this->columns->setQuoteStrategy($quoteStrategy);
+        $this->joinPart->setQuoteStrategy($quoteStrategy);
         return $this;
     }
 
