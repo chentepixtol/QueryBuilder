@@ -359,6 +359,28 @@ class QueryTest extends BaseTest
     }
 
     /**
+     * @test
+     * @dataProvider getStrategyQuote
+     */
+    public function page($strategyQuote)
+    {
+        $itemsPerPage = 5;
+        $query = new Query($strategyQuote);
+
+        $query->page(1, $itemsPerPage);
+        $this->assertEquals('LIMIT 5', $query->createLimitSql());
+
+        $query->page(2, $itemsPerPage);
+        $this->assertEquals('LIMIT 5 OFFSET 5', $query->createLimitSql());
+
+        $query->page(3, $itemsPerPage);
+        $this->assertEquals('LIMIT 5 OFFSET 10', $query->createLimitSql());
+
+        $query->page(20, $itemsPerPage);
+        $this->assertEquals('LIMIT 5 OFFSET 95', $query->createLimitSql());
+    }
+
+    /**
      *
      * @test
      * @dataProvider getStrategyQuote

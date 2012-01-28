@@ -44,7 +44,7 @@ class Query implements SelectCriterion
     protected $joins = array();
 
     /**
-     * El limite de filas que regresará el sql .  <code>0</code> significa que regresa todos
+     * El limite de filas que regresarï¿½ el sql .  <code>0</code> significa que regresa todos
      * rows.
      * @var int $limit
      */
@@ -57,13 +57,13 @@ class Query implements SelectCriterion
     protected $offset = 0;
 
     /**
-     * Columnas por las que se ordenará el resultado
+     * Columnas por las que se ordenarï¿½ el resultado
      * @var mixed
      */
     protected $orderByColumns = array ();
 
     /**
-     * Columnas por las que se agruparán los resultados
+     * Columnas por las que se agruparï¿½n los resultados
      * @var mixed
      */
     protected $groupByColumns = array ();
@@ -767,6 +767,17 @@ class Query implements SelectCriterion
      */
     public function getQuoteStrategy() {
         return $this->quoteStrategy;
+    }
+
+    /**
+     *
+     * @param int $page
+     * @param int $itemsPerPage
+     * @return Query
+     */
+    public function page($page, $itemsPerPage){
+        $this->setLimit($itemsPerPage)->setOffset(($page-1) * $itemsPerPage);
+        return $this;
     }
 
     /**

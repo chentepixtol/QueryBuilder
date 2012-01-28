@@ -362,6 +362,27 @@ class CriteriaTest extends BaseTest
     }
 
     /**
+     * @test
+     */
+    public function shorcuts(){
+        $c = $this->createCriteria();
+        $c->greaterThan('age', 18);
+        $this->assertEquals('( `age` > 18 )', $c->createSql());
+
+        $c = $this->createCriteria();
+        $c->lessThan('age', 18);
+        $this->assertEquals('( `age` < 18 )', $c->createSql());
+
+        $c = $this->createCriteria();
+        $c->greaterOrEqual('age', 18);
+        $this->assertEquals('( `age` >= 18 )', $c->createSql());
+
+        $c = $this->createCriteria();
+        $c->lessOrEqual('age', 18);
+        $this->assertEquals('( `age` <= 18 )', $c->createSql());
+    }
+
+    /**
      *
      * @return Criteria
      */
