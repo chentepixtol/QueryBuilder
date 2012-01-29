@@ -34,31 +34,6 @@ class Query implements SelectCriterion
     protected $columns;
 
     /**
-     * Limit
-     * rows.
-     * @var int $limit
-     */
-    protected $limit = 0;
-
-    /**
-     * Para comenzar a desplegar los resultados en una fila diferente a la primera
-     * @var int $offset
-     */
-    protected $offset = 0;
-
-    /**
-     * Order Column
-     * @var mixed
-     */
-    protected $orderByColumns = array ();
-
-    /**
-     * Columnas por las que se agrupar�n los resultados
-     * @var mixed
-     */
-    protected $groupByColumns = array ();
-
-    /**
      *
      * @var Criteria
      */
@@ -72,60 +47,27 @@ class Query implements SelectCriterion
 
     /**
      *
-     * Lazy Load
-     * @var string
+     * @var Groups
      */
-    protected $groupSql;
+    protected $groupPart;
 
     /**
      *
-     * Lazy Load
-     * @var string
+     * @var Orders
      */
-    protected $orderSql;
+    protected $orderPart;
 
     /**
      *
-     * Lazy Load
-     * @var string
+     * @var Limits
      */
-    protected $limitSql;
+    protected $limitPart;
 
     /**
      *
-     * @var string
+     * @var Intos
      */
-    protected $intoSql;
-
-    /**
-     *
-     * @var string
-     */
-    protected $filename;
-
-    /**
-     *
-     * @var string
-     */
-    protected $terminated;
-
-    /**
-     *
-     * @var string
-     */
-    protected $enclosed;
-
-    /**
-     *
-     * @var string
-     */
-    protected $escaped;
-
-    /**
-     *
-     * @var string
-     */
-    protected $linesTerminated;
+    protected $intoPart;
 
     /**
      *
@@ -157,6 +99,10 @@ class Query implements SelectCriterion
         $this->columns = new Columns();
         $this->joinPart = new Joins();
         $this->fromPart = new Froms();
+        $this->groupPart = new Groups();
+        $this->orderPart = new Orders();
+        $this->limitPart = new Limits();
+        $this->intoPart = new Intos();
 
         $this->setQuoteStrategy($quoteStrategy ? $quoteStrategy : new SimpleQuoteStrategy());
         $this->init();
@@ -175,6 +121,10 @@ class Query implements SelectCriterion
         $this->columns = clone $this->columns;
         $this->joinPart = clone $this->joinPart;
         $this->fromPart = clone $this->fromPart;
+        $this->groupPart = clone $this->groupPart;
+        $this->orderPart = clone $this->orderPart;
+        $this->limitPart = clone $this->limitPart;
+        $this->intoPart = clone $this->intoPart;
     }
 
     /**
@@ -497,20 +447,8 @@ class Query implements SelectCriterion
     /* (non-PHPdoc)
      * @see SelectCriterion::createGroupSql()
      */
-    public function createGroupSql()
-    {
-        if( null !== $this->groupSql ){
-            return $this->groupSql;
-        }
-
-        $sql = '';
-        if (count ( $this->groupByColumns )) {
-            $sql .= "GROUP BY ";
-            $columns = array_map(array($this->quoteStrategy, 'quoteColumn'), $this->groupByColumns);
-            $sql .= implode(', ', $columns);
-        }
-        $this->groupSql = $sql;
-        return $this->groupSql;
+    public function createGroupSql(){
+        return $this->groupPart->createSql();
     }
 
     /* (non-PHPdoc)
@@ -527,81 +465,23 @@ class Query implements SelectCriterion
     /* (non-PHPdoc)
      * @see SelectCriterion::createOrderSql()
      */
-    public function createOrderSql()
-    {
-        if( null !== $this->orderSql ){
-            return $this->orderSql;
-        }
-
-        $sql = '';
-        if ( count ($this->orderByColumns ) ) {
-            $sql = "ORDER BY ";
-            $columns = array_map(array($this, '_quoteOrder'), $this->orderByColumns);
-            $sql .= implode(', ',  $columns);
-        }
-        $this->orderSql = $sql;
-        return $this->orderSql;
+    public function createOrderSql(){
+        return $this->orderPart->createSql();
     }
-
-    /**
-     *
-     *
-     * @param array $orderArray
-     * @return string
-     */
-    protected function _quoteOrder($orderArray){
-        return $this->quoteStrategy->quoteColumn($orderArray['column']) .' '. $orderArray['type'];
-    }
-
 
     /* (non-PHPdoc)
      * @see SelectCriterion::createLimitSql()
      */
-    public function createLimitSql()
-    {
-        if( null !== $this->limitSql ){
-            return $this->limitSql;
-        }
-
-        $sql = '';
-        if ($this->limit != 0) {
-            $sql .= "LIMIT " . $this->limit;
-        }
-        if ($this->offset != 0) {
-            $sql .= " OFFSET " . $this->offset;
-        }
-        $this->limitSql = $sql;
-        return $this->limitSql;
+    public function createLimitSql(){
+        return $this->limitPart->createSql();
     }
 
     /**
      * (non-PHPdoc)
      * @see Query.SelectCriterion::createIntoSql()
      */
-    public function createIntoSql()
-    {
-        if( null !== $this->intoSql ){
-            return $this->intoSql;
-        }
-        $sql = '';
-        if( null != $this->filename ){
-            $sql = "INTO OUTFILE '{$this->filename}'";
-            if( $this->terminated ){
-                $sql .= " FIELDS TERMINATED BY '{$this->terminated}'";
-            }
-            if( $this->enclosed ){
-                $sql .= " ENCLOSED BY '{$this->enclosed}'";
-            }
-            if( $this->escaped ){
-                $sql .= " ESCAPED BY '{$this->escaped}'";
-            }
-            if( $this->linesTerminated ){
-                $sql .= " LINES TERMINATED BY '{$this->linesTerminated}'";
-            }
-        }
-
-        $this->intoSql = $sql;
-        return $this->intoSql;
+    public function createIntoSql(){
+       return $this->intoPart->createSql();
     }
 
     /**
@@ -658,7 +538,7 @@ class Query implements SelectCriterion
     }
 
     /**
-     *
+     * TODO Mejorar metodo
      * @return string
      */
     public function createBeautySql(){
@@ -679,6 +559,10 @@ class Query implements SelectCriterion
         $this->columns->setQuoteStrategy($quoteStrategy);
         $this->joinPart->setQuoteStrategy($quoteStrategy);
         $this->fromPart->setQuoteStrategy($quoteStrategy);
+        $this->groupPart->setQuoteStrategy($quoteStrategy);
+        $this->orderPart->setQuoteStrategy($quoteStrategy);
+        $this->limitPart->setQuoteStrategy($quoteStrategy);
+        $this->intoPart->setQuoteStrategy($quoteStrategy);
         return $this;
     }
 
@@ -696,7 +580,7 @@ class Query implements SelectCriterion
      * @return Query
      */
     public function page($page, $itemsPerPage){
-        $this->setLimit($itemsPerPage)->setOffset(($page-1) * $itemsPerPage);
+        $this->limitPart->page($page, $itemsPerPage);
         return $this;
     }
 
@@ -704,14 +588,14 @@ class Query implements SelectCriterion
      * @return int
      */
     public function getLimit() {
-        return $this->limit;
+        return $this->limitPart->getLimit();
     }
 
     /**
      * @return int
      */
     public function getOffset() {
-        return $this->offset;
+        return $this->limitPart->getOffset();
     }
 
     /**
@@ -720,8 +604,7 @@ class Query implements SelectCriterion
      */
     public function setLimit($limit)
     {
-        $this->limitSql = null;
-        $this->limit = $limit;
+        $this->limitPart->setLimit($limit);
         return $this;
     }
 
@@ -731,8 +614,7 @@ class Query implements SelectCriterion
      */
     public function setOffset($offset)
     {
-        $this->limitSql = null;
-        $this->offset = $offset;
+        $this->limitPart->setOffset($offset);
         return $this;
     }
 
@@ -743,18 +625,7 @@ class Query implements SelectCriterion
      */
     public function addGroupBy($groupBy)
     {
-        $this->groupSql = null;
-        if( is_array($groupBy) ){
-            foreach ($groupBy as $group){
-                if( $group ){
-                    $this->groupByColumns[] = $group;
-                }
-            }
-        }else{
-            if( $groupBy ){
-                $this->groupByColumns[] = $groupBy;
-            }
-        }
+        $this->groupPart->addGroupBy($groupBy);
         return $this;
     }
 
@@ -762,7 +633,7 @@ class Query implements SelectCriterion
      * @return array
      */
     public function getGroupByColumns() {
-        return $this->groupByColumns;
+        return $this->groupPart->getGroups();
     }
 
     /**
@@ -774,10 +645,7 @@ class Query implements SelectCriterion
      */
     public function orderBy($name, $type = Query::ASC)
     {
-        if( $name ){
-            $this->orderSql = null;
-            $this->orderByColumns[] = array('column' => $name, 'type' => $type);
-        }
+        $this->orderPart->orderBy($name, $type);
         return $this;
     }
 
@@ -793,12 +661,7 @@ class Query implements SelectCriterion
      */
     public function intoOutfile($filename, $terminated = ',', $enclosed = '"', $escaped = '\\\\', $linesTerminated ='\r\n')
     {
-        $this->intoSql = null;
-        $this->filename = $filename;
-        $this->terminated = $terminated;
-        $this->enclosed = $enclosed;
-        $this->escaped = $escaped;
-        $this->linesTerminated = $linesTerminated;
+        $this->intoPart->intoOutfile($filename, $terminated, $enclosed, $escaped, $linesTerminated);
         return $this;
     }
 
