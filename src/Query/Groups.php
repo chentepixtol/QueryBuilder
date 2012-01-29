@@ -85,8 +85,8 @@ class Groups implements Criterion
      * (non-PHPdoc)
      * @see Query.Criterion::contains()
      */
-    public function contains($table){
-        return isset($this->joins[$table]);
+    public function contains($group){
+        return in_array($group, $this->groupByColumns);
     }
 
     /**

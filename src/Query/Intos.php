@@ -111,7 +111,7 @@ class Intos implements Criterion
      * @see Query.Criterion::contains()
      */
     public function contains($table){
-        return isset($this->joins[$table]);
+        return false;
     }
 
     /**

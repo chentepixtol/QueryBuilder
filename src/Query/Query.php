@@ -638,6 +638,14 @@ class Query implements SelectCriterion
 
     /**
      *
+     * @param string $group
+     */
+    public function hasGroup($group){
+        return $this->groupPart->contains($group);
+    }
+
+    /**
+     *
      * order by
      * @param string $name
      * @param string $type
@@ -647,6 +655,14 @@ class Query implements SelectCriterion
     {
         $this->orderPart->orderBy($name, $type);
         return $this;
+    }
+
+    /**
+     *
+     * @param string $group
+     */
+    public function hasOrder($column){
+        return $this->orderPart->contains($column);
     }
 
     /**

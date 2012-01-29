@@ -71,8 +71,13 @@ class Orders implements Criterion
      * (non-PHPdoc)
      * @see Query.Criterion::contains()
      */
-    public function contains($table){
-        return isset($this->joins[$table]);
+    public function contains($column){
+        foreach ($this->orderByColumns as $info){
+            if( $info['column'] == $column ){
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

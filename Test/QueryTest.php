@@ -308,6 +308,7 @@ class QueryTest extends BaseTest
         $query = new Query($strategyQuote);
         $query->addGroupBy('sales.month');
 
+        $this->assertTrue($query->hasGroup('sales.month'));
         $this->assertEquals("GROUP BY `sales`.`month`", $query->createGroupSql());
 
         $query->addGroupBy('sales.year');
@@ -336,6 +337,7 @@ class QueryTest extends BaseTest
         $query = new Query($strategyQuote);
         $query->addAscendingOrderBy('Person.birthdate');
 
+        $this->assertTrue($query->hasOrder('Person.birthdate'));
         $this->assertEquals('ORDER BY `Person`.`birthdate` ASC', $query->createOrderSql());
 
         $query->addDescendingOrderBy('Person.name');
