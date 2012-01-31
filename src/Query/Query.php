@@ -75,7 +75,7 @@ class Query extends ManipulationStatement implements SelectCriterion
     /**
      *
      * @param string $column
-     * @return Query
+     * @return self
      */
     public function removeColumn($column = null)
     {
@@ -86,7 +86,7 @@ class Query extends ManipulationStatement implements SelectCriterion
     /**
      *
      * @param boolean $flag
-     * @return Query
+     * @return self
      */
     public function distinct($flag = true){
         $this->columns->distinct($flag);
@@ -96,7 +96,7 @@ class Query extends ManipulationStatement implements SelectCriterion
     /**
      *
      * @param mixed $column
-     * @return Query
+     * @return self
      */
     public function select(){
         $this->columns->addColumns(func_get_args());
@@ -107,7 +107,7 @@ class Query extends ManipulationStatement implements SelectCriterion
      *
      * addColumns
      * @param array $columns
-     * @return Query
+     * @return self
      */
     public function addColumns($columns)
     {
@@ -120,7 +120,7 @@ class Query extends ManipulationStatement implements SelectCriterion
      * @param string $column
      * @param string $alias
      * @param string $mutator
-     * @return Query
+     * @return self
      */
     public function addColumn($column, $alias = null, $mutator = null)
     {
@@ -203,7 +203,7 @@ class Query extends ManipulationStatement implements SelectCriterion
     /**
      * (non-PHPdoc)
      * @see Criterion::setQuoteStrategy()
-     * @return Query
+     * @return self
      */
     public function setQuoteStrategy(QuoteStrategy $quoteStrategy)
     {
@@ -218,7 +218,7 @@ class Query extends ManipulationStatement implements SelectCriterion
     /**
      * GUarda una columna para ordenar los resultados
      * @param string $groupBy
-     * @return Query
+     * @return self
      */
     public function addGroupBy($groupBy)
     {
@@ -246,7 +246,7 @@ class Query extends ManipulationStatement implements SelectCriterion
      * order by
      * @param string $name
      * @param string $type
-     * @return Query
+     * @return self
      */
     public function orderBy($name, $type = Query::ASC)
     {
@@ -270,7 +270,7 @@ class Query extends ManipulationStatement implements SelectCriterion
      * @param string $enclosed
      * @param string $escaped
      * @param string $linesTerminated
-     * @return Query
+     * @return self
      */
     public function intoOutfile($filename, $terminated = ',', $enclosed = '"', $escaped = '\\\\', $linesTerminated ='\r\n')
     {
@@ -292,7 +292,7 @@ class Query extends ManipulationStatement implements SelectCriterion
      * Agrega una columna para ordenar de forma descendente
      *
      * @param string $name El nombre de la columna
-     * @return Query
+     * @return self
      */
     public function addDescendingOrderBy($name){
         return $this->orderBy($name, Query::DESC);
@@ -309,7 +309,7 @@ class Query extends ManipulationStatement implements SelectCriterion
     /**
      *
      * @param string $defaultColumn
-     * @return Query
+     * @return self
      */
     public function setDefaultColumn($defaultColumn)
     {

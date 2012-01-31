@@ -98,7 +98,7 @@ abstract class ManipulationStatement implements Criterion
      *
      * Factory
      * @param QuoteStrategy $quoteStrategy
-     * @return Query
+     * @return self
      */
     public static function create(QuoteStrategy $quoteStrategy = null){
         return new static($quoteStrategy);
@@ -134,7 +134,7 @@ abstract class ManipulationStatement implements Criterion
      * @param string $usingColumn
      * @param string $type
      * @param string $alias
-     * @return Query
+     * @return self
      */
     public function joinUsing($table, $usingColumn, $type = Criterion::JOIN, $alias = null)
     {
@@ -157,7 +157,7 @@ abstract class ManipulationStatement implements Criterion
      * @param string $table
      * @param string $on
      * @param string $alias
-     * @return Query
+     * @return self
      */
     public function innerJoinUsing($table, $usingColumn, $alias = null){
         return $this->joinUsing($table, $usingColumn, Criterion::INNER_JOIN, $alias);
@@ -178,7 +178,7 @@ abstract class ManipulationStatement implements Criterion
      * @param string $table
      * @param string $on
      * @param string $alias
-     * @return Query
+     * @return self
      */
     public function leftJoinUsing($table, $usingColumn, $alias = null){
         return $this->joinUsing($table, $usingColumn, Criterion::LEFT_JOIN, $alias);
@@ -199,7 +199,7 @@ abstract class ManipulationStatement implements Criterion
      * @param string $table
      * @param string $on
      * @param string $alias
-     * @return Query
+     * @return self
      */
     public function rightJoinUsing($table, $usingColumn, $alias = null){
         return $this->joinUsing($table, $usingColumn, Criterion::RIGHT_JOIN, $alias);
@@ -207,7 +207,7 @@ abstract class ManipulationStatement implements Criterion
 
     /**
      *
-     * @return Query
+     * @return self
      */
     public function removeJoins()
     {
@@ -219,7 +219,7 @@ abstract class ManipulationStatement implements Criterion
      *
      *
      * @param string $table
-     * @return Query
+     * @return self
      */
     public function removeJoin($table)
     {
@@ -240,7 +240,7 @@ abstract class ManipulationStatement implements Criterion
      *
      *
      * @param string $table
-     * @return Query
+     * @return self
      */
     public function from($table, $alias = null){
         $this->fromPart->addFrom($table, $alias);
@@ -259,7 +259,7 @@ abstract class ManipulationStatement implements Criterion
     /**
      *
      * @param string $from
-     * @return Query
+     * @return self
      */
     public function removeFrom($from = null){
         $this->fromPart->remove($from);
@@ -281,7 +281,7 @@ abstract class ManipulationStatement implements Criterion
      * @param string $comparison
      * @param string $mutatorColumn
      * @param string $mutatorValue
-     * @return Query
+     * @return self
      */
     public function whereAdd($column, $value, $comparison = Criterion::AUTO, $mutatorColumn = null, $mutatorValue = null){
         $this->whereCriteria->add($column, $value, $comparison, $mutatorColumn, $mutatorValue);
@@ -352,7 +352,7 @@ abstract class ManipulationStatement implements Criterion
      *
      * Bind the values to the query
      * @param array $parameters
-     * @return Query
+     * @return self
      */
     public function bind($parameters){
         $this->parameters = $parameters;
@@ -405,7 +405,7 @@ abstract class ManipulationStatement implements Criterion
      *
      * @param int $page
      * @param int $itemsPerPage
-     * @return Query
+     * @return self
      */
     public function page($page, $itemsPerPage){
         $this->limitPart->page($page, $itemsPerPage);
@@ -428,7 +428,7 @@ abstract class ManipulationStatement implements Criterion
 
     /**
      * @param int $limit
-     * @return Query
+     * @return self
      */
     public function setLimit($limit)
     {
@@ -438,7 +438,7 @@ abstract class ManipulationStatement implements Criterion
 
     /**
      * @param int $offset
-     * @return Query
+     * @return self
      */
     public function setOffset($offset)
     {

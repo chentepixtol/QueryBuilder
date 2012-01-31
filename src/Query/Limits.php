@@ -87,7 +87,6 @@ class Limits implements Criterion
 
     /**
      * @param int $limit
-     * @return Query
      */
     public function setLimit($limit)
     {

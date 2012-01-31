@@ -215,13 +215,11 @@ class Columns implements Criterion
     /**
      *
      * @param array $defaultColumn
-     * @return Query
      */
     public function setDefaultColumn($defaultColumn)
     {
         $this->sql = null;
         $this->defaultColumn = $defaultColumn;
-        return $this;
     }
 
 }
