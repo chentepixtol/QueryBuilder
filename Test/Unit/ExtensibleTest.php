@@ -1,11 +1,11 @@
 <?php
+
+namespace Test\Unit;
+
+use Test\Unit\Mock\MockCriteria;
+use Test\Unit\Mock\MockQuery;
 use Query\SimpleQuoteStrategy;
 use Query\Criteria;
-
-
-require_once 'BaseTest.php';
-require_once 'Test/Mock/MockQuery.php';
-require_once 'Test/Mock/MockCriteria.php';
 
 class ExtensibleTest extends BaseTest
 {

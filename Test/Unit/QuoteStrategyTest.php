@@ -1,9 +1,11 @@
 <?php
+
+namespace Test\Unit;
+
 use Query\NullQuoteStrategy;
 use Query\SimpleQuoteStrategy;
 use Query\QuoteStrategy;
 
-require_once 'BaseTest.php';
 class QuoteStrategyTest extends BaseTest
 {
 

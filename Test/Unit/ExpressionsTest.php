@@ -1,13 +1,12 @@
 <?php
 
+namespace Test\Unit;
+
 use Query\Query;
 use Query\Expression\SQLCase;
 use Query\ConditionalCriterion;
 use Query\CriterionComposite;
 use Query\ConditionalComposite;
-
-
-require_once 'BaseTest.php';
 
 class ExpressionseTest extends BaseTest
 {

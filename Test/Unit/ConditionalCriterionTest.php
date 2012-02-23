@@ -1,15 +1,13 @@
 <?php
 
+namespace Test\Unit;
+
 use Query\Expression;
 use Query\AutoConditionalCriterion;
 use Query\SimpleQuoteStrategy;
 use Query\ConditionalCriterion;
 use Query\Criterion;
 use Query\Criteria;
-
-
-
-require_once 'BaseTest.php';
 
 class ConditionalCriterionTest extends BaseTest
 {

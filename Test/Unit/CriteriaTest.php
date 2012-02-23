@@ -1,11 +1,11 @@
 <?php
+
+namespace Test\Unit;
+
 use Query\Criterion;
 use Query\Expression;
 use Query\SimpleQuoteStrategy;
 use Query\Criteria;
-
-
-require_once 'BaseTest.php';
 
 class CriteriaTest extends BaseTest
 {

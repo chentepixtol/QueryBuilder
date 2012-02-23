@@ -1,10 +1,9 @@
 <?php
+namespace Test\Unit;
+
 use Query\SimpleQuoteStrategy;
 use Query\AutoConditionalCriterion;
 use Query\Criterion;
-
-
-require_once 'BaseTest.php';
 
 class AutoConditionalCriterionTest extends BaseTest
 {
@@ -42,7 +41,7 @@ class AutoConditionalCriterionTest extends BaseTest
      */
     public function badArgument()
     {
-        $criterion = new AutoConditionalCriterion('language', new stdClass(), Criterion::AUTO);
+        $criterion = new AutoConditionalCriterion('language', new \stdClass(), Criterion::AUTO);
         $criterion->setQuoteStrategy($this->getZendDbQuoteStrategy());
 
         $criterion->createSql();

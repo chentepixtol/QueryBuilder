@@ -1,6 +1,6 @@
 <?php
 
-require_once 'autoload.php';
+namespace Test\Unit;
 
 use Query\ZendDbQuoteStrategy;
 use Query\SimpleQuoteStrategy;
@@ -10,7 +10,7 @@ use Query\SimpleQuoteStrategy;
  * @author chente
  *
  */
-abstract class BaseTest extends PHPUnit_Framework_TestCase
+abstract class BaseTest extends \PHPUnit_Framework_TestCase
 {
 
     /**
@@ -27,7 +27,7 @@ abstract class BaseTest extends PHPUnit_Framework_TestCase
     {
         if( null == $this->quoteStrategy ){
 
-            $db = Zend_Db::factory('Pdo_Mysql', array(
+            $db = \Zend_Db::factory('Pdo_Mysql', array(
                 'host'     => '127.0.0.1',
                 'username' => 'bender',
                 'password' => '123',

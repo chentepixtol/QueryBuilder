@@ -1,7 +1,8 @@
 <?php
-use Query\Range;
 
-require_once 'BaseTest.php';
+namespace Test\Unit;
+
+use Query\Range;
 
 /**
  *
@@ -221,7 +222,7 @@ class RangeTest extends BaseTest
      * @return array
      */
     public function getInvalidArrays(){
-        $stdClass = new stdClass();
+        $stdClass = new \stdClass();
         $stdClass->temp = 1;
         $array = array(
             array(array(-5,-8,-6,2)),

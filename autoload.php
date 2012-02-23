@@ -4,14 +4,13 @@ use Symfony\Component\ClassLoader\UniversalClassLoader;
 
 require_once 'vendor/Symfony/Component/ClassLoader/UniversalClassLoader.php';
 
-$dirs = explode(':', get_include_path());
-$dirs[] = realpath('vendor/');
-set_include_path(implode(':', $dirs));
+set_include_path(realpath('vendor/') . PATH_SEPARATOR . get_include_path());
 
 $loader = new UniversalClassLoader();
 $loader->registerNamespaces(array(
-    'Query'     => 'src/',
+    'Query' => 'src/',
+    'Test\Unit'  => realpath('.'),
 ));
-$loader->registerPrefix('Zend', 'vendor');
+$loader->registerPrefix('Zend_', 'vendor/');
 $loader->register();
 

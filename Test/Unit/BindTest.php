@@ -1,5 +1,7 @@
 <?php
 
+namespace Test\Unit;
+
 use Query\QuoteStrategy;
 use Query\Expression;
 use Query\Criteria;
@@ -7,8 +9,6 @@ use Query\Criterion;
 use Query\Query;
 use Query\SimpleQuoteStrategy;
 
-
-require_once 'BaseTest.php';
 
 class BindTest extends BaseTest
 {

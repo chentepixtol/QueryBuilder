@@ -1,5 +1,7 @@
 <?php
 
+namespace Test\Unit\Mock;
+
 use Query\Criteria;
 
 class MockCriteria extends Criteria
