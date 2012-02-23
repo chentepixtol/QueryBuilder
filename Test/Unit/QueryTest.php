@@ -337,6 +337,7 @@ class QueryTest extends BaseTest
         $query->addAscendingOrderBy('Person.birthdate');
 
         $this->assertTrue($query->hasOrder('Person.birthdate'));
+        $this->assertFalse($query->hasOrder('NotExistent.column'));
         $this->assertEquals('ORDER BY `Person`.`birthdate` ASC', $query->createOrderSql());
 
         $query->addDescendingOrderBy('Person.name');

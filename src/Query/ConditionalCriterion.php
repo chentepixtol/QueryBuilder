@@ -121,23 +121,15 @@ class ConditionalCriterion implements Criterion
     }
 
     /**
-     * (non-PHPdoc)
-     * @see Criterion::createSql()
+     *
+     * @param mixed $column
+     * @param mixed $mutatorColumn
+     * @return string
      */
-    public function createSql()
+    private function calculatePart1($column, $mutatorColumn)
     {
-        if( null !== $this->sql )
-            return $this->sql;
-
-        $column = is_string($this->column) ? str_replace('`', '', $this->column) : $this->column;
-        $mutatorValue = $this->mutatorValue;
-        $mutatorColumn = $this->mutatorColumn;
-        $value = $this->value;
-        $comparision = $this->comparison;
-
-        if( $mutatorValue == Criterion::AS_EXPRESSION ){
-            $value = new Expression($value);
-            $mutatorValue = null;
+        if( is_string($column) ){
+            $column = str_replace('`', '', $column);
         }
 
         if( $mutatorColumn == Criterion::AS_EXPRESSION ){
@@ -146,31 +138,67 @@ class ConditionalCriterion implements Criterion
         }
 
         $column = $this->quoteStrategy->quoteColumn($column);
+
+        $part1 = $mutatorColumn ? sprintf($mutatorColumn, $column) : $column;
+
+        return trim($part1);
+    }
+
+    /**
+     *
+     * @param string $comparision
+     * @return string
+     */
+    private function calculatePart2($comparision)
+    {
+        if( in_array($comparision, self::$Likes) ){
+            $comparision = str_replace('_',' ', $comparision);
+        }
+
+        if( $comparision == Criterion::RANGE ){
+            $comparision = Criterion::IN;
+        }
+
+        return trim($comparision);
+    }
+
+    /**
+     *
+     * @param mixed $value
+     * @param mixed $mutatorValue
+     * @param mixed $comparision
+     * @return string
+     */
+    private function calculatePart3($value, $mutatorValue, $comparision)
+    {
+        if( $mutatorValue == Criterion::AS_EXPRESSION ){
+            $value = new Expression($value);
+            $mutatorValue = null;
+        }
+
         if( is_string($value) && preg_match('/^\:[a-z0-9\-\_]+$/i', $value) || $value == '?'){
             $value = new Expression($value);
         }
 
-        if( in_array($this->comparison, self::$Likes) ){
+        if( in_array($comparision, self::$Likes) ){
             $aux = str_replace(' ','%', $comparision);
-            $comparision = str_replace('_',' ', $comparision);
             $aux = str_replace('_',' ', $aux);
             $value = str_replace(array('NOT LIKE','LIKE'), $value, $aux);
         }
 
-        if( $this->comparison == Criterion::RANGE ){
+        if( $comparision == Criterion::RANGE ){
             $comparision = Criterion::IN;
             $range = new Range();
             $range->fromString($value);
             $value = $range->toArray();
         }
 
-        $part1 = $mutatorColumn ? sprintf($mutatorColumn, $column) : $column;
-
-        $append = $prepend = '';
+        $append = $prepend = null;
         if( is_array($value) || $comparision == Criterion::IN ){
             $append = ')';
             $prepend = '(';
         }
+
         if( Criterion::AS_FIELD == $mutatorValue ){
             $value = $this->quoteStrategy->quoteColumn($value);
             $mutatorValue = '%s';
@@ -189,10 +217,26 @@ class ConditionalCriterion implements Criterion
             $part3 = '';
         }
 
-        $part1 = trim($part1);
-        $part2 = trim($comparision);
-        $part3 = trim($part3);
+        return trim($part3);
+    }
+
+
+
+    /**
+     * (non-PHPdoc)
+     * @see Criterion::createSql()
+     */
+    public function createSql()
+    {
+        if( null !== $this->sql ){
+            return $this->sql;
+        }
+
+        $part1 = $this->calculatePart1($this->column, $this->mutatorColumn);
+        $part2 = $this->calculatePart2($this->comparison);
+        $part3 = $this->calculatePart3($this->value, $this->mutatorValue, $this->comparison);
         $this->sql = trim("{$part1} {$part2} {$part3}");
+
         return $this->sql;
     }
 
