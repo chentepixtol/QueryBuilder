@@ -197,6 +197,9 @@ class ConditionalCriterion implements Criterion
         if( is_array($value) || $comparision == Criterion::IN ){
             $append = ')';
             $prepend = '(';
+            if( empty($value) ){
+                $value = array(-1);
+            }
         }
 
         if( Criterion::AS_FIELD == $mutatorValue ){

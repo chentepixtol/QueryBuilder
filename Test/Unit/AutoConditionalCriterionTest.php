@@ -61,6 +61,7 @@ class AutoConditionalCriterionTest extends BaseTest
             array(4, 'system', 'mac os', Criterion::AUTO),
             array(5, 'system', array('mac os', 'linux'), Criterion::AUTO),
             array(6, 'is_admin', null, Criterion::AUTO),
+            array(7, 'id', array(), Criterion::AUTO),
         );
     }
 
@@ -79,6 +80,7 @@ class AutoConditionalCriterionTest extends BaseTest
             4 => "`system` LIKE 'mac os'",
             5 => "`system` IN ('mac os', 'linux')",
             6 => "`is_admin` IS NULL",
+            7 => "`id` IN (-1)",
         );
         return $expected[$i];
     }
