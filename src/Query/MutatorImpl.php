@@ -74,13 +74,27 @@ class MutatorImpl implements Criterion
 
         $value = $this->value;
         $mutator = $this->mutator;
+        $type = $this->type;
+
+        if( is_string($value) ){
+            $value = str_replace('`', '', $value);
+        }
+
+        if( is_string($value) && preg_match('/^\:[a-z0-9\-\_]+$/i', $value) || $value == '?'){
+            $value = new Expression($value);
+        }
+
+        if( Criterion::AS_FIELD == $mutator ){
+            $mutator = null;
+            $type = self::TYPE_COLUMN;
+        }
 
         if( $mutator == Criterion::AS_EXPRESSION ){
             $value = new Expression($value);
             $mutator = null;
         }
 
-        if( $this->type == self::TYPE_COLUMN ){
+        if( $type == self::TYPE_COLUMN ){
             $value = $this->quoteStrategy->quoteColumn($value);
         }else{
             $value = $this->quoteStrategy->quote($value);

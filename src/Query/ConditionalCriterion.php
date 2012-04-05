@@ -126,22 +126,9 @@ class ConditionalCriterion implements Criterion
      * @param mixed $mutatorColumn
      * @return string
      */
-    private function calculatePart1($column, $mutatorColumn)
-    {
-        if( is_string($column) ){
-            $column = str_replace('`', '', $column);
-        }
-
-        if( $mutatorColumn == Criterion::AS_EXPRESSION ){
-            $column = new Expression($column);
-            $mutatorColumn = null;
-        }
-
-        $column = $this->quoteStrategy->quoteColumn($column);
-
-        $part1 = $mutatorColumn ? sprintf($mutatorColumn, $column) : $column;
-
-        return trim($part1);
+    private function calculatePart1($column, $mutatorColumn){
+        $mutator = new MutatorImpl($column, $mutatorColumn, $this->quoteStrategy, MutatorImpl::TYPE_COLUMN);
+        return trim($mutator->createSql());
     }
 
     /**
@@ -171,15 +158,6 @@ class ConditionalCriterion implements Criterion
      */
     private function calculatePart3($value, $mutatorValue, $comparision)
     {
-        if( $mutatorValue == Criterion::AS_EXPRESSION ){
-            $value = new Expression($value);
-            $mutatorValue = null;
-        }
-
-        if( is_string($value) && preg_match('/^\:[a-z0-9\-\_]+$/i', $value) || $value == '?'){
-            $value = new Expression($value);
-        }
-
         if( in_array($comparision, self::$Likes) ){
             $aux = str_replace(' ','%', $comparision);
             $aux = str_replace('_',' ', $aux);
@@ -202,15 +180,12 @@ class ConditionalCriterion implements Criterion
             }
         }
 
-        if( Criterion::AS_FIELD == $mutatorValue ){
-            $value = $this->quoteStrategy->quoteColumn($value);
-            $mutatorValue = '%s';
-        }
-        else{
-            $value = $prepend.$this->quoteStrategy->quote($value).$append;
-        }
+        $mutator = new MutatorImpl($value, $mutatorValue, $this->quoteStrategy, MutatorImpl::TYPE_VALUE);
+        $part3 = $mutator->createSql();
 
-        $part3 = $mutatorValue ? sprintf($mutatorValue, $value) : $value;
+        if( $append || $prepend ){
+            $part3 = $prepend . $part3 . $append;
+        }
 
         if( Criterion::BETWEEN == $comparision ){
             $part3 = str_replace(array('(',')', ','), array('','',' AND'), $part3);
