@@ -56,7 +56,7 @@ class Criteria implements Criterion
      *
      *
      */
-    public function __construct(Query $query = null){
+    public function __construct(ManipulationStatement $query = null){
         $this->setQuery($query);
         $this->currentComposite = $this->mainComposite = new ConditionalComposite();
         $this->setQuoteStrategy(new NullQuoteStrategy());
@@ -534,10 +534,10 @@ class Criteria implements Criterion
     /**
      *
      *
-     * @param Query $query
+     * @param ManipulationStatement $query
      * @return Criteria
      */
-    public function setQuery(Query $query = null){
+    public function setQuery(ManipulationStatement $query = null){
         $this->query = $query;
     }
 

@@ -379,10 +379,10 @@ abstract class ManipulationStatement implements Criterion
         return $sql;
     }
 
-    /* (non-PHPdoc)
+    /**
+     * (non-PHPdoc)
      * @see Criterion::setQuoteStrategy()
-    *
-    */
+     */
     public function setQuoteStrategy(QuoteStrategy $quoteStrategy)
     {
         $this->quoteStrategy = $quoteStrategy;
