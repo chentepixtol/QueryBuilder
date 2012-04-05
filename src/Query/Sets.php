@@ -52,8 +52,10 @@ class Sets implements Criterion
         $i = 0;
         foreach ($this->sets as $column => $set){
             $i++;
+
             $columnPart = $this->quoteStrategy->quoteColumn($column);
-            $valuePart = $this->quoteStrategy->quote($set['value']);
+            $mutator = new MutatorImpl($set['value'], $set['mutatorValue'], $this->quoteStrategy, MutatorImpl::TYPE_VALUE);
+            $valuePart = $mutator->createSql();
             $this->sql .= "{$columnPart} = {$valuePart}";
             if( $size != $i ){
                 $this->sql .= ", ";

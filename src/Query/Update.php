@@ -48,10 +48,11 @@ class Update extends ManipulationStatement implements Criterion
      *
      * @param string $column
      * @param mixed $value
+     * @param string $mutator
      * @return self
      */
-    public function addSet($column, $value){
-        $this->setPart->add($column, $value);
+    public function addSet($column, $value, $mutator = null){
+        $this->setPart->add($column, $value, $mutator);
         return $this;
     }
 

@@ -63,7 +63,7 @@ class UpdateTest extends BaseTest
 
     /**
      *
-     *
+     * @test
      * @dataProvider getStrategyQuote
      */
     public function expressions($strategyQuote){
@@ -73,6 +73,10 @@ class UpdateTest extends BaseTest
 
         $update->addSet('created_at', '2012-01-01 13:00:00', Criterion::DATE);
         $this->assertEquals("SET `updated_at` = NOW(), `created_at` = DATE('2012-01-01 13:00:00')", $update->createSetSql());
+
+        $update = Update::create($strategyQuote);
+        $update->addSet('created_at', "DATE('2012-01-01 13:00:00')", Criterion::AS_EXPRESSION);
+        $this->assertEquals("SET `created_at` = DATE('2012-01-01 13:00:00')", $update->createSetSql());
     }
 
     /**
