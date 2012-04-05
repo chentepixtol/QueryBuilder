@@ -183,13 +183,9 @@ class Columns implements Criterion
      */
     protected function createSqlForColumn($column, $alias = null, $mutator = null)
     {
-        if( $mutator == Criterion::AS_EXPRESSION){
-            $column = new Expression($column);
-            $mutator = null;
-        }
-        $column = $this->quoteStrategy->quoteColumn($column);
-        $column = $mutator ? sprintf($mutator, $column) : $column;
-        $sql = $column;
+        $mutatorColumn = new MutatorImpl($column, $mutator, $this->quoteStrategy, MutatorImpl::TYPE_COLUMN);
+
+        $sql = $mutatorColumn->createSql();
         if( is_string($alias) ){
             $sql.= ' as '. $this->quoteStrategy->quoteColumn($alias);
         }
