@@ -16,6 +16,18 @@ class UpdateTest extends BaseTest
      * @test
      * @dataProvider getStrategyQuote
      */
+    public function complete($strategyQuote){
+        $update = Update::create($strategyQuote);
+        $update->from('users')->addSet('status', 'active')->whereAdd('id_user', 1)->setLimit(1);
+
+        $this->assertEquals("UPDATE `users` SET `status` = 'active' WHERE ( `id_user` = 1 ) LIMIT 1", $update->createSql());
+    }
+
+    /**
+     *
+     * @test
+     * @dataProvider getStrategyQuote
+     */
     public function constructor($strategyQuote){
         $update = Update::create($strategyQuote);
         $this->assertTrue($update instanceof Update);

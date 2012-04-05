@@ -27,6 +27,7 @@ class Update extends ManipulationStatement implements Criterion
     public function __construct(QuoteStrategy $quoteStrategy = null){
         $this->setPart = new Sets();
         parent::__construct($quoteStrategy);
+        $this->fromPart->setKeyword("");
     }
 
     /**
@@ -35,6 +36,17 @@ class Update extends ManipulationStatement implements Criterion
      */
     public function createSql(){
 
+        $parts = array(
+            $this->createFromSql(),
+            $this->createSetSql(),
+            $this->createJoinSql(),
+            $this->createWhereSql(),
+            $this->createLimitSql(),
+        );
+
+        $sql = "UPDATE " . implode(' ', array_filter($parts));
+
+        return $this->replaceParameters($sql);
     }
 
     /**

@@ -33,6 +33,12 @@ class Froms implements Criterion
     protected $from = array();
 
     /**
+     *
+     * @var string
+     */
+    protected $keyword = "FROM ";
+
+    /**
      * (non-PHPdoc)
      * @see Query.Criterion::createSql()
      */
@@ -48,7 +54,7 @@ class Froms implements Criterion
             throw new Exception("No se ha definido ninguna tabla en la parte sql del FROM");
         }
 
-        $sql = 'FROM ';
+        $sql = $this->keyword;
         $number = 1;
         foreach( $this->from as $alias => $table ){
             $alias = is_string($alias) ? ' as '.$this->quoteStrategy->quoteTable($alias) : '';
@@ -90,6 +96,15 @@ class Froms implements Criterion
         else {
             $this->from = array();
         }
+    }
+
+    /**
+     *
+     * @param string $keyword
+     */
+    public function setKeyword($keyword){
+        $this->sql = null;
+        $this->keyword = $keyword;
     }
 
     /**
