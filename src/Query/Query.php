@@ -47,6 +47,12 @@ class Query extends ManipulationStatement implements SelectCriterion
 
     /**
      *
+     * @var Criteria
+     */
+    protected $havingCriteria;
+
+    /**
+     *
      * Construct
      * @param QuoteStrategy $quoteStrategy
      */
@@ -56,6 +62,7 @@ class Query extends ManipulationStatement implements SelectCriterion
         $this->groupPart = new Groups();
         $this->orderPart = new Orders();
         $this->intoPart = new Intos();
+        $this->havingCriteria = $this->createCriteria();
         parent::__construct($quoteStrategy);
     }
 
@@ -69,6 +76,8 @@ class Query extends ManipulationStatement implements SelectCriterion
         $this->groupPart = clone $this->groupPart;
         $this->orderPart = clone $this->orderPart;
         $this->intoPart = clone $this->intoPart;
+        $this->havingCriteria = clone $this->havingCriteria;
+        $this->havingCriteria->setQuery($this);
         parent::__clone();
     }
 
@@ -136,6 +145,25 @@ class Query extends ManipulationStatement implements SelectCriterion
      */
     public function hasColumn($column){
         return $this->columns->contains($column);
+    }
+
+    /**
+     *
+     * @return Criteria
+     */
+    public function having(){
+        return $this->havingCriteria;
+    }
+
+    /** (non-PHPdoc)
+     * @see SelectCriterion::createHavingSql()
+     */
+    public function createHavingSql()
+    {
+        if( $this->havingCriteria->isEmpty() ){
+            return '';
+        }
+        return "HAVING ".$this->havingCriteria->createSql();
     }
 
     /* (non-PHPdoc)
@@ -208,6 +236,7 @@ class Query extends ManipulationStatement implements SelectCriterion
     public function setQuoteStrategy(QuoteStrategy $quoteStrategy)
     {
         parent::setQuoteStrategy($quoteStrategy);
+        $this->havingCriteria->setQuoteStrategy($quoteStrategy);
         $this->columns->setQuoteStrategy($quoteStrategy);
         $this->groupPart->setQuoteStrategy($quoteStrategy);
         $this->orderPart->setQuoteStrategy($quoteStrategy);

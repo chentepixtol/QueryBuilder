@@ -28,12 +28,6 @@ abstract class ManipulationStatement implements Criterion
 
     /**
      *
-     * @var Criteria
-     */
-    protected $havingCriteria;
-
-    /**
-     *
      * @var Limits
      */
     protected $limitPart;
@@ -64,7 +58,6 @@ abstract class ManipulationStatement implements Criterion
     public function __construct(QuoteStrategy $quoteStrategy = null)
     {
         $this->whereCriteria = $this->createCriteria();
-        $this->havingCriteria = $this->createCriteria();
         $this->joinPart = new Joins();
         $this->fromPart = new Froms();
         $this->limitPart = new Limits();
@@ -85,8 +78,6 @@ abstract class ManipulationStatement implements Criterion
      */
     public function __clone()
     {
-        $this->havingCriteria = clone $this->havingCriteria;
-        $this->havingCriteria->setQuery($this);
         $this->whereCriteria = clone $this->whereCriteria;
         $this->whereCriteria->setQuery($this);
         $this->joinPart = clone $this->joinPart;
@@ -308,14 +299,6 @@ abstract class ManipulationStatement implements Criterion
         return $this->whereCriteria->contains($element);
     }
 
-    /**
-     *
-     * @return Criteria
-     */
-    public function having(){
-        return $this->havingCriteria;
-    }
-
     /** (non-PHPdoc)
      * @see SelectCriterion::createFromSql()
      */
@@ -328,17 +311,6 @@ abstract class ManipulationStatement implements Criterion
      */
     public function createJoinSql(){
         return $this->joinPart->createSql();
-    }
-
-    /** (non-PHPdoc)
-     * @see SelectCriterion::createHavingSql()
-     */
-    public function createHavingSql()
-    {
-        if( $this->havingCriteria->isEmpty() ){
-            return '';
-        }
-        return "HAVING ".$this->havingCriteria->createSql();
     }
 
     /** (non-PHPdoc)
@@ -387,7 +359,6 @@ abstract class ManipulationStatement implements Criterion
     {
         $this->quoteStrategy = $quoteStrategy;
         $this->whereCriteria->setQuoteStrategy($quoteStrategy);
-        $this->havingCriteria->setQuoteStrategy($quoteStrategy);
         $this->joinPart->setQuoteStrategy($quoteStrategy);
         $this->fromPart->setQuoteStrategy($quoteStrategy);
         $this->limitPart->setQuoteStrategy($quoteStrategy);
@@ -445,4 +416,5 @@ abstract class ManipulationStatement implements Criterion
         $this->limitPart->setOffset($offset);
         return $this;
     }
+
 }
