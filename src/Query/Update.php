@@ -50,6 +50,13 @@ class Update extends ManipulationStatement implements Criterion
     }
 
     /**
+     * @return MongoQuery
+     */
+    public function createMongoQuery(){
+
+    }
+
+    /**
      * @return string
      */
     public function createSetSql(){

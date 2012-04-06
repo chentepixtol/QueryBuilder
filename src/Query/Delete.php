@@ -31,4 +31,11 @@ class Delete extends ManipulationStatement implements Criterion
         return $this->replaceParameters($sql);
     }
 
+    /**
+     * @return MongoQuery
+     */
+    public function createMongoQuery(){
+
+    }
+
 }

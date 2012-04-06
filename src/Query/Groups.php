@@ -54,6 +54,13 @@ class Groups implements Criterion
     }
 
     /**
+     * @return MongoQuery
+     */
+    public function createMongoQuery(){
+
+    }
+
+    /**
      * GUarda una columna para ordenar los resultados
      * @param string $groupBy
      */

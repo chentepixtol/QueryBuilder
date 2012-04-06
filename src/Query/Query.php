@@ -219,6 +219,13 @@ class Query extends ManipulationStatement implements SelectCriterion
     }
 
     /**
+     * @return MongoQuery
+     */
+    public function createMongoQuery(){
+
+    }
+
+    /**
      * TODO Mejorar metodo
      * @return string
      */

@@ -62,6 +62,13 @@ class Limits implements Criterion
     }
 
     /**
+     * @return MongoQuery
+     */
+    public function createMongoQuery(){
+
+    }
+
+    /**
      *
      * @param int $page
      * @param int $itemsPerPage

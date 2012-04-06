@@ -219,6 +219,13 @@ class ConditionalCriterion implements Criterion
     }
 
     /**
+     * @return MongoQuery
+     */
+    public function createMongoQuery(){
+
+    }
+
+    /**
      * (non-PHPdoc)
      * @see Criterion::setQuoteStrategy()
      */

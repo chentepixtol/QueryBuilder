@@ -54,6 +54,13 @@ class Orders implements Criterion
     }
 
     /**
+     * @return MongoQuery
+     */
+    public function createMongoQuery(){
+
+    }
+
+    /**
      *
      * order by
      * @param string $name

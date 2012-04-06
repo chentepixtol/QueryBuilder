@@ -424,6 +424,13 @@ class Criteria implements Criterion
     }
 
     /**
+     * @return MongoQuery
+     */
+    public function createMongoQuery(){
+
+    }
+
+    /**
      *
      * @return boolean
      */

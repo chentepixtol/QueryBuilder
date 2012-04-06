@@ -110,6 +110,13 @@ class MutatorImpl implements Criterion
     }
 
     /**
+     * @return MongoQuery
+     */
+    public function createMongoQuery(){
+
+    }
+
+    /**
      *
      * @param QuoteStrategy $quoteStrategy
      */

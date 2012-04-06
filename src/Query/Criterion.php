@@ -26,6 +26,11 @@ interface Criterion extends Mutator, Cmp
       public function createSql();
 
       /**
+       * @return MongoQuery
+       */
+      public function createMongoQuery();
+
+      /**
        *
        * @param QuoteStrategy $quoteStrategy
        */

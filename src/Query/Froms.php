@@ -67,6 +67,13 @@ class Froms implements Criterion
     }
 
     /**
+     * @return MongoQuery
+     */
+    public function createMongoQuery(){
+
+    }
+
+    /**
      *
      *
      * @param string $table

@@ -156,6 +156,13 @@ class Columns implements Criterion
     }
 
     /**
+     * @return MongoQuery
+     */
+    public function createMongoQuery(){
+
+    }
+
+    /**
      *
      * @return string
      */

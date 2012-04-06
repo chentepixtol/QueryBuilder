@@ -87,6 +87,13 @@ class Intos implements Criterion
     }
 
     /**
+     * @return MongoQuery
+     */
+    public function createMongoQuery(){
+
+    }
+
+    /**
      *
      * into outfile
      * @param string $filename

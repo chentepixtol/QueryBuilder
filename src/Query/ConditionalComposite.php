@@ -124,6 +124,13 @@ class ConditionalComposite implements CriterionComposite
     }
 
     /**
+     * @return MongoQuery
+     */
+    public function createMongoQuery(){
+
+    }
+
+    /**
      * (non-PHPdoc)
      * @see Criterion::setQuoteStrategy()
      */

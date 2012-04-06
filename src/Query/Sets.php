@@ -66,6 +66,13 @@ class Sets implements Criterion
     }
 
     /**
+     * @return MongoQuery
+     */
+    public function createMongoQuery(){
+
+    }
+
+    /**
      *
      * @param string $column
      * @param mixed $value
