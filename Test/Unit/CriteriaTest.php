@@ -354,11 +354,11 @@ class CriteriaTest extends BaseTest
                 ->add('name', 'Vicente')
                 ->add('bithdate', 1986, Criterion::EQUAL, Criterion::YEAR)
             ->prefix('Address')
-                ->add('street', 'vincenes #245')
+                ->add('street', 'ja')
                 ->add(array('Address', 'zipcode'), '05069')
             ->endPrefix();
 
-        $this->assertEquals("( `Person`.`name` LIKE 'Vicente' AND YEAR(`Person`.`bithdate`) = 1986 AND `Address`.`street` LIKE 'vincenes #245' AND `Address`.`zipcode` = '05069' )", $criteria->createSql());
+        $this->assertEquals("( `Person`.`name` LIKE 'Vicente' AND YEAR(`Person`.`bithdate`) = 1986 AND `Address`.`street` LIKE 'ja' AND `Address`.`zipcode` = '05069' )", $criteria->createSql());
     }
 
     /**
